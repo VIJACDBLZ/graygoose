@@ -2,9 +2,10 @@ package com.codeforces.graygoose.model;
 
 import javax.jdo.annotations.*;
 import java.util.Date;
+import java.io.Serializable;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class Site {
+public class Site implements Serializable {
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
     private Long id;

@@ -1,8 +1,8 @@
 package com.codeforces.graygoose.frame;
 
-import com.codeforces.graygoose.page.WebPage;
-import com.codeforces.graygoose.page.DashboardPage;
-import com.codeforces.graygoose.page.SitesPage;
+import com.codeforces.graygoose.page.web.DashboardPage;
+import com.codeforces.graygoose.page.web.WebPage;
+import com.codeforces.graygoose.page.web.SitesPage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,9 +24,11 @@ public class MainMenuFrame extends ApplicationFrame {
         for (Link link : links) {
             if (page.getClass().equals(link.getWebPageClass())) {
                 link.setActive(true);
-                put("currentPage", link.getText());
             }
         }
+
+        Page currentPage = ApplicationContext.getInstance().getCurrentPage();
+        put("currentPage", ((WebPage) currentPage).getTitle());
     }
 
     private void setupLinks() {

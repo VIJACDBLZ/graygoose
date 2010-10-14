@@ -1,29 +1,41 @@
 package com.codeforces.graygoose.dao.impl;
 
-import com.google.inject.Inject;
-
-import javax.jdo.PersistenceManagerFactory;
 import javax.jdo.PersistenceManager;
+import javax.jdo.JDOObjectNotFoundException;
 
 public class BasicDaoImpl {
-    @Inject
-    private PersistenceManagerFactory persistenceManagerFactory;
+    public static volatile ThreadLocal<PersistenceManager> persistenceManagerByThread =
+            new ThreadLocal<PersistenceManager>();
+
+    public static void setPersistenceManager(PersistenceManager manager) {
+        persistenceManagerByThread.set(manager);
+    }
+
+    private static PersistenceManager getPersistenceManager() {
+        return persistenceManagerByThread.get();
+    }
+
+    public static void closePersistenceManager() {
+        getPersistenceManager().close();
+    }
 
     protected void makePersistent(Object object) {
-        PersistenceManager pm = persistenceManagerFactory.getPersistenceManager();
+        getPersistenceManager().makePersistent(object);
+    }
+
+    protected void deletePersistent(Object object) {
+        getPersistenceManager().deletePersistent(object);
+    }
+
+    protected <T> T getObjectById(Class<T> clazz, Object id) {
         try {
-            pm.makePersistent(object);
-        } finally {
-            pm.close();
+            return getPersistenceManager().getObjectById(clazz, id);
+        } catch (JDOObjectNotFoundException e) {
+            return null;
         }
     }
 
     protected Object execute(String query) {
-        PersistenceManager pm = persistenceManagerFactory.getPersistenceManager();
-        try {
-            return pm.newQuery(query).execute();
-        } finally {
-            pm.close();
-        }
+        return getPersistenceManager().newQuery(query).execute();
     }
 }

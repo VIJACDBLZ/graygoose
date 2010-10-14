@@ -5,7 +5,7 @@
             <id>development-settings</id>
             <properties>
                 <!-- Directory to the root of the project. -->
-                <development.home>R:\graygoose\code/graygoose</development.home>
+                <development.home>P:\graygoose\code/graygoose</development.home>
 
                 <!-- True iff you want to use the debug mode. -->
                 <nocturne.debug>true</nocturne.debug>

@@ -16,4 +16,8 @@ public abstract class ApplicationFrame extends Frame {
     public User getUser() {
         return userService.getCurrentUser();
     }
+
+    public void setMessage(String message) {
+        putSession(MessageBoxFrame.MESSAGE_BOX_TEXT, message);
+    }
 }

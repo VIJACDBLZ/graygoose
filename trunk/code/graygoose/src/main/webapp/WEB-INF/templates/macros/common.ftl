@@ -19,6 +19,7 @@
     </#list>
 </head>
 <body>
+<@frame name="messageBoxFrame"/>
 <div id="header">
     <@frame name="topMenuFrame"/>
     <a href="${home}" title="{{Webmail home page}}">
@@ -27,7 +28,9 @@
 </div>
 <div id="content">
     <@frame name="mainMenuFrame"/>
+    <div style="padding: 1em 0;">
     <#nested>
+    </div>
 </div>
 <div id="footer">
     <@caption params=["http://code.google.com/p/graygoose"]>

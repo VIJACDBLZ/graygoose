@@ -1,4 +1,4 @@
-package com.codeforces.graygoose.page;
+package com.codeforces.graygoose.page.web;
 
 import org.nocturne.link.Link;
 import com.codeforces.graygoose.dao.SiteDao;
