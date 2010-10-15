@@ -33,7 +33,7 @@
                 <td>${site.id}</td>
                 <td>${site.name?html}</td>
                 <td>${site.url?html}</td>
-                <td>${site.rescanPeriodSeconds}</td>
+                <td>${site.rescanPeriodSeconds?int}</td>
                 <td>${site.creationTime?datetime}</td>
                 <td>
                     <a href="<@link name="SiteEditPage" id="${site.id}"/>">{{Edit}}</a>

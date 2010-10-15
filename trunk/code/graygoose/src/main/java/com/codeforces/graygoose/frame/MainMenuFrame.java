@@ -3,6 +3,7 @@ package com.codeforces.graygoose.frame;
 import com.codeforces.graygoose.page.web.DashboardPage;
 import com.codeforces.graygoose.page.web.WebPage;
 import com.codeforces.graygoose.page.web.SitesPage;
+import com.codeforces.graygoose.page.web.AlertsPage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +33,7 @@ public class MainMenuFrame extends ApplicationFrame {
     }
 
     private void setupLinks() {
+        links.add(new Link(AlertsPage.class, $("Alerts")));
         links.add(new Link(SitesPage.class, $("Sites")));
         links.add(new Link(DashboardPage.class, $("Dashboard")));
     }

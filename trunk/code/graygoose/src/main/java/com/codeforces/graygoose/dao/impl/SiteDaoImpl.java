@@ -19,7 +19,7 @@ public class SiteDaoImpl extends BasicDaoImpl implements SiteDao {
 
     @Override
     public List<Site> findAll() {
-        return (List<Site>) execute("select from " + Site.class.getName() + " order by creationTime desc");
+        return (List<Site>) execute("SELECT FROM " + Site.class.getName() + " ORDER BY creationTime DESC");
     }
 
     @Override

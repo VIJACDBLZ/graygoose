@@ -1,8 +1,8 @@
 package com.codeforces.graygoose.model;
 
 import javax.jdo.annotations.*;
-import java.util.Date;
 import java.io.Serializable;
+import java.util.Date;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class Site implements Serializable {

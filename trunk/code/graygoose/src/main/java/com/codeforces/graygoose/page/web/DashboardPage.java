@@ -11,6 +11,6 @@ public class DashboardPage extends WebPage {
 
     @Override
     public void action() {
-        System.out.println("123");
+        //
     }
 }

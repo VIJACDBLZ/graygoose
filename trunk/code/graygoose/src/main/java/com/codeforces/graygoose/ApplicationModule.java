@@ -5,7 +5,9 @@ import com.google.inject.Module;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 import com.codeforces.graygoose.dao.SiteDao;
+import com.codeforces.graygoose.dao.AlertDao;
 import com.codeforces.graygoose.dao.impl.SiteDaoImpl;
+import com.codeforces.graygoose.dao.impl.AlertDaoImpl;
 import com.codeforces.graygoose.misc.PersistenceManagerFactoryInstance;
 
 import javax.jdo.PersistenceManagerFactory;
@@ -16,5 +18,6 @@ public class ApplicationModule implements Module {
         binder.bind(UserService.class).toInstance(UserServiceFactory.getUserService());
         binder.bind(PersistenceManagerFactory.class).toInstance(PersistenceManagerFactoryInstance.getFactory());
         binder.bind(SiteDao.class).to(SiteDaoImpl.class);
+        binder.bind(AlertDao.class).to(AlertDaoImpl.class);
     }
 }

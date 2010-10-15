@@ -1,6 +1,7 @@
 package com.codeforces.graygoose.page;
 
 import org.nocturne.main.Page;
+import org.nocturne.main.ApplicationContext;
 import com.google.inject.Inject;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.User;
@@ -20,6 +21,10 @@ public abstract class ApplicationPage extends Page {
 
     @Override
     public void initializeAction() {
+        getTemplateEngineConfiguration().setNumberFormat("0.######");
+        getTemplateEngineConfiguration().setLocale(ApplicationContext.getInstance().getLocale());
+        getTemplateEngineConfiguration().setEncoding(ApplicationContext.getInstance().getLocale(), "UTF-8");
+
         if (getUser() == null) {
             abortWithRedirect(getUserService().createLoginURL(getRequest().getRequestURI()));
         }

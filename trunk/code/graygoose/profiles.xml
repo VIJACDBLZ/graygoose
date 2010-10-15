@@ -2,20 +2,20 @@
 <profilesXml>
     <profiles>
         <profile>
-            <id>development-settings</id>
+            <id>production-settings</id>
             <properties>
-                <!-- Directory to the root of the project. -->
-                <development.home>P:\graygoose\code/graygoose</development.home>
+                <!-- Not used in the production mode. -->
+                <development.home/>
 
-                <!-- True iff you want to use the debug mode. -->
-                <nocturne.debug>true</nocturne.debug>
+                <!-- Do not use debug mode. -->
+                <nocturne.debug>false</nocturne.debug>
 
                 <!-- Path to write log file. -->
-                <logging.path>${development.home}/graygoose.log</logging.path>
+                <logging.path>graygoose.log</logging.path>
             </properties>
         </profile>
     </profiles>
     <activeProfiles>
-        <activeProfile>development-settings</activeProfile>
+        <activeProfile>production-settings</activeProfile>
     </activeProfiles>
 </profilesXml>

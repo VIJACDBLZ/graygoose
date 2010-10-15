@@ -1,20 +1,24 @@
 package com.codeforces.graygoose;
 
-import com.codeforces.graygoose.page.web.DashboardPage;
-import com.codeforces.graygoose.page.web.SitesPage;
-import com.codeforces.graygoose.page.web.SiteAddPage;
-import com.codeforces.graygoose.page.web.SiteEditPage;
 import com.codeforces.graygoose.page.data.SitesDataPage;
-import org.nocturne.main.LinkedRequestRouter;
+import com.codeforces.graygoose.page.data.AlertsDataPage;
+import com.codeforces.graygoose.page.web.*;
 import org.nocturne.link.Links;
+import org.nocturne.main.LinkedRequestRouter;
 
 public class ApplicationRequestRouter extends LinkedRequestRouter {
     static {
+        //Web pages
         Links.add(DashboardPage.class);
         Links.add(SitesPage.class);
         Links.add(SiteAddPage.class);
         Links.add(SiteEditPage.class);
+        Links.add(AlertsPage.class);
+        Links.add(AlertAddPage.class);
+        Links.add(AlertEditPage.class);
 
+        //Data pages
         Links.add(SitesDataPage.class);
+        Links.add(AlertsDataPage.class);
     }
 }
