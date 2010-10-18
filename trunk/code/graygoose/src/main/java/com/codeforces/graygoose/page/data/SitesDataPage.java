@@ -1,11 +1,11 @@
 package com.codeforces.graygoose.page.data;
 
-import org.nocturne.link.Link;
+import com.codeforces.graygoose.dao.SiteDao;
+import com.codeforces.graygoose.model.Site;
+import com.google.inject.Inject;
 import org.nocturne.annotation.Action;
 import org.nocturne.annotation.Parameter;
-import com.codeforces.graygoose.model.Site;
-import com.codeforces.graygoose.dao.SiteDao;
-import com.google.inject.Inject;
+import org.nocturne.link.Link;
 
 @Link("data/sites")
 public class SitesDataPage extends DataPage {
@@ -32,7 +32,7 @@ public class SitesDataPage extends DataPage {
             if (site != null) {
                 siteDao.delete(site);
                 put("success", true);
-                
+
                 setMessage($("Site has been deleted"));
             } else {
                 put("error", $("No such site"));

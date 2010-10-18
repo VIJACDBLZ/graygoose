@@ -1,7 +1,7 @@
 package com.codeforces.graygoose.misc;
 
-import org.nocturne.validation.Validator;
 import org.nocturne.validation.ValidationException;
+import org.nocturne.validation.Validator;
 
 public class ConfirmPasswordValidator extends Validator {
 

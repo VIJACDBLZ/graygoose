@@ -281,6 +281,7 @@ public final class TextBlock extends TemplateElement {
             return s.substring(i);
         }
     */
+
     private int firstNewLineIndex() {
         String content = new String(text);
         int newlineIndex1 = content.indexOf('\n');

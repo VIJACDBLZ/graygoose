@@ -12,8 +12,12 @@ public class Alert implements Serializable {
     @Persistent
     private String name;
 
+    /**
+     * This field contains the name of an alert type.
+     * Valid values are (without apostrophes) 'E-mail' and 'Google calendar event'.
+     */
     @Persistent
-    private String type;    // E-mail, Google calendar event
+    private String type;
 
     @Persistent
     private String email;

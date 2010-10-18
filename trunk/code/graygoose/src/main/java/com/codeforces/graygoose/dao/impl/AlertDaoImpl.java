@@ -19,7 +19,7 @@ public class AlertDaoImpl extends BasicDaoImpl implements AlertDao {
 
     @Override
     public List<Alert> findAll() {
-        return (List<Alert>) execute("SELECT FROM " + Alert.class.getName() + " ORDER BY name DESC");
+        return (List<Alert>) execute("SELECT FROM " + Alert.class.getName() + " ORDER BY name");
     }
 
     @Override

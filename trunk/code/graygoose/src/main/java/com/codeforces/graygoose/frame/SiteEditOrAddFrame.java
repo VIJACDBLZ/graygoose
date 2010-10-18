@@ -1,16 +1,16 @@
 package com.codeforces.graygoose.frame;
 
-import org.nocturne.annotation.Parameter;
-import org.nocturne.annotation.Validate;
-import org.nocturne.annotation.Action;
-import org.nocturne.validation.*;
-import com.google.inject.Inject;
 import com.codeforces.graygoose.dao.SiteDao;
 import com.codeforces.graygoose.model.Site;
 import com.codeforces.graygoose.page.web.WebPage;
+import com.google.inject.Inject;
+import org.nocturne.annotation.Action;
+import org.nocturne.annotation.Parameter;
+import org.nocturne.annotation.Validate;
+import org.nocturne.validation.*;
 
-import java.net.URL;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Date;
 
 public class SiteEditOrAddFrame extends ApplicationFrame {

@@ -24,6 +24,6 @@ public class SiteDaoImpl extends BasicDaoImpl implements SiteDao {
 
     @Override
     public Site find(long id) {
-        return getObjectById(Site.class, id);        
+        return getObjectById(Site.class, id);
     }
 }

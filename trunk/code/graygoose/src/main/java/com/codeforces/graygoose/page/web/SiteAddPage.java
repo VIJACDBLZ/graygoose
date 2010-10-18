@@ -1,18 +1,8 @@
 package com.codeforces.graygoose.page.web;
 
-import org.nocturne.link.Link;
-import org.nocturne.annotation.Validate;
-import org.nocturne.annotation.Action;
-import org.nocturne.annotation.Parameter;
-import org.nocturne.validation.*;
-import com.codeforces.graygoose.dao.SiteDao;
-import com.codeforces.graygoose.model.Site;
 import com.codeforces.graygoose.frame.SiteEditOrAddFrame;
 import com.google.inject.Inject;
-
-import java.net.URL;
-import java.net.MalformedURLException;
-import java.util.Date;
+import org.nocturne.link.Link;
 
 @Link("addSite")
 public class SiteAddPage extends WebPage {

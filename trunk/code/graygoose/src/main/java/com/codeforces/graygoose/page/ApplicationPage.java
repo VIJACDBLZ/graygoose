@@ -1,11 +1,11 @@
 package com.codeforces.graygoose.page;
 
-import org.nocturne.main.Page;
-import org.nocturne.main.ApplicationContext;
-import com.google.inject.Inject;
-import com.google.appengine.api.users.UserService;
-import com.google.appengine.api.users.User;
 import com.codeforces.graygoose.frame.MessageBoxFrame;
+import com.google.appengine.api.users.User;
+import com.google.appengine.api.users.UserService;
+import com.google.inject.Inject;
+import org.nocturne.main.ApplicationContext;
+import org.nocturne.main.Page;
 
 public abstract class ApplicationPage extends Page {
     @Inject

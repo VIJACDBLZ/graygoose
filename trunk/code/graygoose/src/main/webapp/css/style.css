@@ -45,7 +45,7 @@ body {
 
 .vertical-form td {
     padding: 0.5em 0.2em 0 0.2em;
-    text-align:left;
+    text-align: left;
 }
 
 .vertical-form input.textbox {
@@ -83,6 +83,7 @@ body {
 .caption a, .caption span {
     margin-right: 0.5em;
 }
+
 .grid {
     width: 98%;
     margin: 0.25em 1em 0 1em;
@@ -144,6 +145,7 @@ body {
     border: 1px solid rgb(204, 204, 204);
     background-color: rgb(248, 233, 161);
 }
+
 .color-box {
     z-index: 2;
     margin: 1em;
@@ -217,4 +219,8 @@ ul.menu li {
     width: 25em;
     margin: 1em auto;
     text-align: center;
+}
+
+div.rulesHeaderContainer {
+    margin-top: 5em;
 }

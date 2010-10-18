@@ -53,6 +53,11 @@
             <artifactId>geronimo-jpa_1.0_spec</artifactId>
             <version>1.1.2</version>
         </dependency>
+        <!--<dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>1.4</version>
+        </dependency>-->        
     </dependencies>
     <build>
         <finalName>sld-test</finalName>

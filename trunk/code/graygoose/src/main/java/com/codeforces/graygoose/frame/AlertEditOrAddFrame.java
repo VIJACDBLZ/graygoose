@@ -1,9 +1,10 @@
 package com.codeforces.graygoose.frame;
 
 import com.codeforces.graygoose.dao.AlertDao;
-import com.codeforces.graygoose.dto.AlertDto;
+import com.codeforces.graygoose.dao.RuleDao;
 import com.codeforces.graygoose.misc.ConfirmPasswordValidator;
 import com.codeforces.graygoose.model.Alert;
+import com.codeforces.graygoose.model.Rule;
 import com.codeforces.graygoose.page.web.WebPage;
 import com.google.inject.Inject;
 import org.nocturne.annotation.Action;
@@ -13,6 +14,8 @@ import org.nocturne.validation.EmailValidator;
 import org.nocturne.validation.LengthValidator;
 import org.nocturne.validation.OptionValidator;
 import org.nocturne.validation.RequiredValidator;
+
+import java.util.Date;
 
 public class AlertEditOrAddFrame extends ApplicationFrame {
     @Parameter
@@ -36,11 +39,15 @@ public class AlertEditOrAddFrame extends ApplicationFrame {
     @Parameter
     private int maxAlertCountPerHour;
 
-    private AlertDto alertDto;
+    private Alert alert;
     private Class<? extends WebPage> redirectPageClass;
 
     @Inject
     private AlertDao alertDao;
+
+    @Inject
+    //TODO: delete it
+    private RuleDao ruleDao;
 
     public void setup(long id, Class<? extends WebPage> redirectPageClass) {
         this.id = id;
@@ -56,16 +63,15 @@ public class AlertEditOrAddFrame extends ApplicationFrame {
         super.initializeAction();
 
         if (id != null) {
-            Alert alert = alertDao.find(id);
+            alert = alertDao.find(id);
 
             if (alert != null) {
-                alertDto = new AlertDto(alert);
-                put("name", alertDto.getName());
-                put("type", alertDto.getType());
-                put("email", alertDto.getEmail());
-                put("password", alertDto.getPassword());
-                put("passwordConfirmation", alertDto.getPassword());
-                put("maxAlertCountPerHour", "" + alertDto.getMaxAlertCountPerHour());
+                put("name", alert.getName());
+                put("type", alert.getType());
+                put("email", alert.getEmail());
+                put("password", alert.getPassword());
+                put("passwordConfirmation", alert.getPassword());
+                put("maxAlertCountPerHour", "" + alert.getMaxAlertCountPerHour());
 
                 put("edit", true);
             }
@@ -110,12 +116,12 @@ public class AlertEditOrAddFrame extends ApplicationFrame {
 
     @Action("edit")
     public void onEdit() {
-        if (alertDto != null) {
-            alertDto.setName(name);
-            alertDto.setType(type);
-            alertDto.setEmail(email);
-            alertDto.setPassword(password, passwordConfirmation);
-            alertDto.setMaxAlertCountPerHour(maxAlertCountPerHour);
+        if (alert != null) {
+            alert.setName(name);
+            alert.setType(type);
+            alert.setEmail(email);
+            alert.setPassword(password);
+            alert.setMaxAlertCountPerHour(maxAlertCountPerHour);
 
             setMessage($("Alert has been updated."));
         } else {
@@ -128,15 +134,16 @@ public class AlertEditOrAddFrame extends ApplicationFrame {
     @Action("add")
     public void onAdd() {
         Alert alert = new Alert();
-        AlertDto dto = new AlertDto(alert);
 
-        dto.setName(name);
-        dto.setType(type);
-        dto.setEmail(email);
-        dto.setPassword(password, passwordConfirmation);
-        dto.setMaxAlertCountPerHour(maxAlertCountPerHour);
+        alert.setName(name);
+        alert.setType(type);
+        alert.setEmail(email);
+        alert.setPassword(password);
+        alert.setMaxAlertCountPerHour(maxAlertCountPerHour);
 
         alertDao.insert(alert);
+        ruleDao.insert(new Rule(1L, Rule.RuleType.RESPONSE_CODE_RULE_TYPE, new Date(), ""));
+
         setMessage($("Alert has been added."));
         abortWithRedirect(redirectPageClass);
     }

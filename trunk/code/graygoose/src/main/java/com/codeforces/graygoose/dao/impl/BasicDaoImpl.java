@@ -1,7 +1,7 @@
 package com.codeforces.graygoose.dao.impl;
 
-import javax.jdo.PersistenceManager;
 import javax.jdo.JDOObjectNotFoundException;
+import javax.jdo.PersistenceManager;
 
 public class BasicDaoImpl {
     public static volatile ThreadLocal<PersistenceManager> persistenceManagerByThread =

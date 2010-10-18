@@ -1,7 +1,7 @@
 package com.codeforces.graygoose.misc;
 
-import javax.jdo.PersistenceManagerFactory;
 import javax.jdo.JDOHelper;
+import javax.jdo.PersistenceManagerFactory;
 
 public class PersistenceManagerFactoryInstance {
     private static final PersistenceManagerFactory factory

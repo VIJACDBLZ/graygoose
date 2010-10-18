@@ -1,9 +1,8 @@
 package com.codeforces.graygoose.page.web;
 
-import org.nocturne.link.Link;
-import com.google.inject.Inject;
 import com.codeforces.graygoose.dao.AlertDao;
-import com.codeforces.graygoose.dto.AlertDto;
+import com.google.inject.Inject;
+import org.nocturne.link.Link;
 
 @Link("alerts")
 public class AlertsPage extends WebPage {
@@ -17,6 +16,6 @@ public class AlertsPage extends WebPage {
 
     @Override
     public void action() {
-        put("alerts", AlertDto.getWrappedAlertsList(alertDao.findAll()));
+        put("alerts", alertDao.findAll());
     }
 }
