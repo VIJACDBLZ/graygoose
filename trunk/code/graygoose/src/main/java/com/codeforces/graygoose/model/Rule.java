@@ -1,21 +1,19 @@
 package com.codeforces.graygoose.model;
 
-//import com.google.gson.reflect.TypeToken;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import javax.jdo.annotations.*;
-//import java.lang.reflect.Type;
+import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class Rule {
-    /*private static final String RESPONSE_CODE_RULE_TYPE = "Response code is in list";
-    private static final String REG_EX_RULE_TYPE = "RegEx match count is between";*/
-
-    /*private static final Type DATA_TYPE = new TypeToken<Map<String, String>>() {
-    }.getType();*/
-    //private final Gson gson = new Gson();
+    private static final Type DATA_TYPE = new TypeToken<Map<String, String>>() {
+    }.getType();
+    private final Gson gson = new Gson();
 
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
@@ -24,21 +22,17 @@ public class Rule {
     @Persistent
     private Long siteId;
 
+    @Persistent
     private RuleType ruleType;
+
+    /**
+     * Contains key-value pairs, specific for each rule type.
+     */
+    @Persistent(serialized = "true")
+    private Map<String, String> data = new HashMap<String, String>();
 
     @Persistent
     private Date creationTime;
-
-    @Persistent
-    private String jsonData;
-
-    /**
-     * This map mirrors jsonData jdo-field.
-     * Contains <String, String> key-value pairs, specific for each rule type.
-     *
-    */
-    @Persistent(serialized = "true")
-    private Map<String, String> data = new HashMap<String, String>();
 
     public Rule(Long siteId, RuleType ruleType, Date creationTime, String jsonData) {
         this.siteId = siteId;
@@ -46,9 +40,6 @@ public class Rule {
         this.creationTime = creationTime;
 
         setJsonData(jsonData);
-
-        data.put("key", "value");
-        data.put("key1", "value1");
     }
 
     public Long getId() {
@@ -80,13 +71,15 @@ public class Rule {
     }
 
     public String getJsonData() {
-        return jsonData;
-        //return gson.toJson(data, DATA_TYPE);
+        return gson.toJson(data, DATA_TYPE);
     }
 
     public void setJsonData(String jsonData) {
-        this.jsonData = jsonData;
-        //data = gson.fromJson(jsonData, DATA_TYPE);
+        data = gson.fromJson(jsonData, DATA_TYPE);
+    }
+
+    public Map<String, String> getData() {
+        return data;
     }
 
     public String getProperty(String key) {

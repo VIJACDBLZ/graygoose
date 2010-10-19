@@ -33,9 +33,9 @@ public class AlertsDataPage extends DataPage {
                 alertDao.delete(alert);
                 put("success", true);
 
-                setMessage($("Alert has been deleted"));
+                setMessage($("Alert has been deleted."));
             } else {
-                put("error", $("No such alert"));
+                put("error", $("No such alert."));
             }
         } catch (Exception e) {
             put("error", e.getMessage());

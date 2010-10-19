@@ -15,7 +15,7 @@ public abstract class ApplicationPage extends Page {
         return userService;
     }
 
-    public User getUser() {
+    public User getCurrentUser() {
         return userService.getCurrentUser();
     }
 
@@ -25,7 +25,7 @@ public abstract class ApplicationPage extends Page {
         getTemplateEngineConfiguration().setLocale(ApplicationContext.getInstance().getLocale());
         getTemplateEngineConfiguration().setEncoding(ApplicationContext.getInstance().getLocale(), "UTF-8");
 
-        if (getUser() == null) {
+        if (getCurrentUser() == null) {
             abortWithRedirect(getUserService().createLoginURL(getRequest().getRequestURI()));
         }
     }

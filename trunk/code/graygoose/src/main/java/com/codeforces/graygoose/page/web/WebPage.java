@@ -21,7 +21,7 @@ public abstract class WebPage extends ApplicationPage {
     public void initializeAction() {
         super.initializeAction();
 
-        putGlobal("user", getUser());
+        putGlobal("user", getCurrentUser());
         putGlobal("pageTitle", getTitle());
 
         parse("topMenuFrame", topMenuFrame);

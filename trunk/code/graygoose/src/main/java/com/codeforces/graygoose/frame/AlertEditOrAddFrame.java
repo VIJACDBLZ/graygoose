@@ -1,21 +1,14 @@
 package com.codeforces.graygoose.frame;
 
 import com.codeforces.graygoose.dao.AlertDao;
-import com.codeforces.graygoose.dao.RuleDao;
 import com.codeforces.graygoose.misc.ConfirmPasswordValidator;
 import com.codeforces.graygoose.model.Alert;
-import com.codeforces.graygoose.model.Rule;
 import com.codeforces.graygoose.page.web.WebPage;
 import com.google.inject.Inject;
 import org.nocturne.annotation.Action;
 import org.nocturne.annotation.Parameter;
 import org.nocturne.annotation.Validate;
-import org.nocturne.validation.EmailValidator;
-import org.nocturne.validation.LengthValidator;
-import org.nocturne.validation.OptionValidator;
-import org.nocturne.validation.RequiredValidator;
-
-import java.util.Date;
+import org.nocturne.validation.*;
 
 public class AlertEditOrAddFrame extends ApplicationFrame {
     @Parameter
@@ -44,10 +37,6 @@ public class AlertEditOrAddFrame extends ApplicationFrame {
 
     @Inject
     private AlertDao alertDao;
-
-    @Inject
-    //TODO: delete it
-    private RuleDao ruleDao;
 
     public void setup(long id, Class<? extends WebPage> redirectPageClass) {
         this.id = id;
@@ -142,7 +131,6 @@ public class AlertEditOrAddFrame extends ApplicationFrame {
         alert.setMaxAlertCountPerHour(maxAlertCountPerHour);
 
         alertDao.insert(alert);
-        ruleDao.insert(new Rule(1L, Rule.RuleType.RESPONSE_CODE_RULE_TYPE, new Date(), ""));
 
         setMessage($("Alert has been added."));
         abortWithRedirect(redirectPageClass);

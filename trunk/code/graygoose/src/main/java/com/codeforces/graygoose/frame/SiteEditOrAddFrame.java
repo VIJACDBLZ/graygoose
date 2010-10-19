@@ -1,5 +1,6 @@
 package com.codeforces.graygoose.frame;
 
+import com.codeforces.graygoose.dao.RuleDao;
 import com.codeforces.graygoose.dao.SiteDao;
 import com.codeforces.graygoose.model.Site;
 import com.codeforces.graygoose.page.web.WebPage;
@@ -32,6 +33,9 @@ public class SiteEditOrAddFrame extends ApplicationFrame {
     @Inject
     private SiteDao siteDao;
 
+    @Inject
+    private RuleDao ruleDao;
+
     public void setup(long id, Class<? extends WebPage> redirectPageClass) {
         this.id = id;
         this.redirectPageClass = redirectPageClass;
@@ -43,15 +47,19 @@ public class SiteEditOrAddFrame extends ApplicationFrame {
 
     @Override
     public void initializeAction() {
-        super.initializeAction();
+        addJs("js/jquery.smartmodal.js");   //???
+        super.initializeAction();        
 
         if (id != null) {
             site = siteDao.find(id);
+            put("id", site.getId());
             put("name", site.getName());
             put("url", site.getUrl());
             put("rescanPeriod", "" + site.getRescanPeriodSeconds());
+
+            put("rules", ruleDao.findBySite(id));
+
             put("edit", true);
-            put("id", site.getId());
         } else {
             put("edit", false);
         }
@@ -74,10 +82,10 @@ public class SiteEditOrAddFrame extends ApplicationFrame {
                 try {
                     String protocol = new URL(value).getProtocol();
                     if (!"http".equalsIgnoreCase(protocol)) {
-                        throw new ValidationException($("Only http protocol is supported"));
+                        throw new ValidationException($("Only http protocol is supported."));
                     }
                 } catch (MalformedURLException e) {
-                    throw new ValidationException($("Enter valid URL"));
+                    throw new ValidationException($("Enter valid URL."));
                 }
             }
         });
@@ -105,9 +113,9 @@ public class SiteEditOrAddFrame extends ApplicationFrame {
             site.setRescanPeriodSeconds(rescanPeriod);
             site.setUrl(url);
 
-            setMessage($("Site has been updated"));
+            setMessage($("Site has been updated."));
         } else {
-            setMessage($("Can't find site to update"));
+            setMessage($("Can't find site to update."));
         }
 
         abortWithRedirect(redirectPageClass);
@@ -117,7 +125,7 @@ public class SiteEditOrAddFrame extends ApplicationFrame {
     public void onAdd() {
         Site site = new Site(name, url, rescanPeriod, new Date());
         siteDao.insert(site);
-        setMessage($("Site has been added"));
+        setMessage($("Site has been added."));
         abortWithRedirect(redirectPageClass);
     }
 }

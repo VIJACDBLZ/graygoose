@@ -11,7 +11,7 @@
     </#list>
     </div>
     <div class="langs">
-        <a href="?lang=en">Eng</a> |2
+        <a href="?lang=en">Eng</a> |
         <a href="?lang=ru">Rus</a>
     </div>
 </div>

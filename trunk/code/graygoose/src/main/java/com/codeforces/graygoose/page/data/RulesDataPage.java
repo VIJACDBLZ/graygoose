@@ -1,41 +1,41 @@
 package com.codeforces.graygoose.page.data;
 
+import com.codeforces.graygoose.dao.RuleDao;
 import com.codeforces.graygoose.dao.SiteDao;
+import com.codeforces.graygoose.model.Rule;
 import com.codeforces.graygoose.model.Site;
 import com.google.inject.Inject;
 import org.nocturne.annotation.Action;
 import org.nocturne.annotation.Parameter;
 import org.nocturne.link.Link;
 
-@Link("data/sites")
-public class SitesDataPage extends DataPage {
+@Link("data/rules")
+public class RulesDataPage extends DataPage {
     @Parameter
-    private Long siteId;
+    private Long ruleId;
 
-    private Site site;
+    private Rule rule;
 
     @Inject
-    private SiteDao siteDao;
+    private RuleDao ruleDao;
 
     @Override
     public void initializeAction() {
         super.initializeAction();
 
-        if (siteId != null) {
-            site = siteDao.find(siteId);
+        if (ruleId != null) {
+            rule = ruleDao.find(ruleId);
         }
     }
 
-    @Action("deleteSite")
-    public void onDeleteSite() {
+    @Action("deleteRule")
+    public void onDeleteRule() {
         try {
-            if (site != null) {
-                siteDao.delete(site);
+            if (rule != null) {
+                ruleDao.delete(rule);
                 put("success", true);
-
-                setMessage($("Site has been deleted."));
             } else {
-                put("error", $("No such site."));
+                put("error", $("No such rule."));
             }
         } catch (Exception e) {
             put("error", e.getMessage());

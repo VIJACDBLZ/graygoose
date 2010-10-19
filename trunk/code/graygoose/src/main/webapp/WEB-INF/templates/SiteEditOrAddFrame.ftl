@@ -70,8 +70,86 @@
     </table>
 </div>
 
+<div>
+    <div class="rulesHeaderContainer" align="center">
+        <h4>Alert Rules</h4>
+    </div>
+    <table class="grid">
+        <thead>
+        <tr>
+            <th>{{Id}}</th>
+            <th>{{Type}}</th>
+            <th>{{Settings}}</th>
+            <th>{{Creation time}}</th>
+            <th>{{Actions}}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <#if rules??>
+            <#list rules as rule>
+            <tr id="rule${rule.id}">
+                <td>${rule.id}</td>
+                <td>${rule.ruleType?html}</td>
+                <td>
+                    <#list rule.data?keys as key>
+                        <div><label>${key}: </label>${rule.data[key]}</div>
+                    </#list>
+                </td>
+                <td>${rule.creationTime?datetime}</td>
+                <td>
+                    <a href="#" class="edit-rule-link" rel="rule-add-edit-dialog" ruleId="${rule.id}">{{Edit}}</a>
+                    <a href="#" class="delete-rule-link" ruleId="${rule.id}">{{Delete}}</a>
+                </td>
+            </tr>
+            </#list>
+            <#else>
+            <tr>
+                <td colspan="5">
+                    {{No rules for this site}}
+                </td>
+            </tr>
+        </#if>
+        </tbody>
+    </table>
+</div>
+
 <script type="text/javascript">
     $(function() {
         $("input[name='name']").focus();
     });
 </script>
+
+<script type="text/javascript">
+    $(function() {
+        $("a.edit-rule-link").smart_modal({show: function() {
+            var ruleId = $(this).attr("ruleId");
+            $("#sm_content input[name='id']").attr("value", ruleId);    //???
+        }});
+    });
+</script>
+
+<script type="text/javascript">
+    $(function() {
+        $("a.delete-rule-link").click(function() {
+            var ruleId = $(this).attr("ruleId");
+            if (confirm("{{Are you sure you want to delete rule No}}" + " " + ruleId + "?")) {
+                $.post("<@link name="RulesDataPage"/>", {action: "deleteRule", ruleId: ruleId}, function(json) {
+                    if (json["success"] == "true") {
+                        $("#rule" + ruleId).remove();
+                    } else {
+                        alert(json["error"]);
+                    }
+                }, "json");
+            }
+        });
+    });
+</script>
+
+<div class="rule-add-edit-dialog" style="visibility:hidden;">
+    <form action="" method="post">
+        <label>
+            {{Id}}:
+            <input name="id" type="text"/>
+        </label>
+    </form>
+</div>

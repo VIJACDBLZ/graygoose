@@ -1,6 +1,7 @@
 package com.codeforces.graygoose;
 
 import com.codeforces.graygoose.page.data.AlertsDataPage;
+import com.codeforces.graygoose.page.data.RulesDataPage;
 import com.codeforces.graygoose.page.data.SitesDataPage;
 import com.codeforces.graygoose.page.web.*;
 import org.nocturne.link.Links;
@@ -20,5 +21,6 @@ public class ApplicationRequestRouter extends LinkedRequestRouter {
         //Data pages
         Links.add(SitesDataPage.class);
         Links.add(AlertsDataPage.class);
+        Links.add(RulesDataPage.class);
     }
 }
