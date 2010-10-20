@@ -3,6 +3,7 @@ package com.codeforces.graygoose.frame;
 import com.codeforces.graygoose.dao.RuleDao;
 import com.codeforces.graygoose.dao.SiteDao;
 import com.codeforces.graygoose.model.Site;
+import com.codeforces.graygoose.model.Rule;
 import com.codeforces.graygoose.page.web.WebPage;
 import com.google.inject.Inject;
 import org.nocturne.annotation.Action;
@@ -47,7 +48,7 @@ public class SiteEditOrAddFrame extends ApplicationFrame {
 
     @Override
     public void initializeAction() {
-        addJs("js/jquery.smartmodal.js");   //???
+        addJs("js/jquery.smartmodal.js");
         super.initializeAction();        
 
         if (id != null) {

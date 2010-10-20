@@ -34,12 +34,10 @@ public class Rule {
     @Persistent
     private Date creationTime;
 
-    public Rule(Long siteId, RuleType ruleType, Date creationTime, String jsonData) {
+    public Rule(long siteId, RuleType ruleType, Date creationTime) {
         this.siteId = siteId;
         this.ruleType = ruleType;
         this.creationTime = creationTime;
-
-        setJsonData(jsonData);
     }
 
     public Long getId() {
@@ -70,14 +68,6 @@ public class Rule {
         this.creationTime = creationTime;
     }
 
-    public String getJsonData() {
-        return gson.toJson(data, DATA_TYPE);
-    }
-
-    public void setJsonData(String jsonData) {
-        data = gson.fromJson(jsonData, DATA_TYPE);
-    }
-
     public Map<String, String> getData() {
         return data;
     }
@@ -97,6 +87,6 @@ public class Rule {
     public static enum RuleType {
         RESPONSE_CODE_RULE_TYPE,
         SUBSTRING_RULE_TYPE,
-        REG_EX_RULE_TYPE
+        REGEX_RULE_TYPE
     }
 }

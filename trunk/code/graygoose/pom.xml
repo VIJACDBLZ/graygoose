@@ -88,10 +88,10 @@
         </dependency>
     </dependencies>
 
-    <repositories>
+    <!--<repositories>
         <repository>
             <id>nocturne</id>
             <url>http://nocturne.googlecode.com/svn/trunk/repo/</url>
         </repository>
-    </repositories>
+    </repositories>-->
 </project>

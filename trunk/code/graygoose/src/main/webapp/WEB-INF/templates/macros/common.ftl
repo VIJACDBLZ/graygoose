@@ -11,6 +11,7 @@
     " rel="icon" type="image/x-icon" />
     <link rel="stylesheet" href="${home}/css/clear.css" type="text/css"/>
     <link rel="stylesheet" href="${home}/css/style.css" type="text/css"/>
+    <link rel="stylesheet" href="${home}/css/modal.css" type="text/css"/>
     <#list css as file>
         <link rel="stylesheet" href="${home}/${file}"/>
     </#list>
