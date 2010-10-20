@@ -129,7 +129,7 @@
                     <td class="field-name">{{Type}}:</td>
                     <td>
                         <select name="ruleType">
-                            <option value="">{{Select value}}</option>
+                            <option value="">{{select value}}</option>
                             <option value="RESPONSE_CODE_RULE_TYPE">{{Check response code}}</option>
                             <option value="SUBSTRING_RULE_TYPE">{{Check by substring}}</option>
                             <option value="REGEX_RULE_TYPE">{{Check by regex}}</option>
@@ -138,7 +138,7 @@
                 </tr>
                 <tr>
                     <td>&nbsp;</td>
-                    <td class="error" errorVar="error__expectedRuleType"></td>
+                    <td class="error under" errorVar="error__ruleType"></td>
                 </tr>
 
                 <tr class="RESPONSE_CODE_RULE_TYPE typeRow">
@@ -147,7 +147,7 @@
                 </tr>
                 <tr class="RESPONSE_CODE_RULE_TYPE typeRow">
                     <td>&nbsp;</td>
-                    <td class="error" errorVar="error__expectedCodes"></td>
+                    <td class="error under" errorVar="error__expectedCodes"></td>
                 </tr>
 
                 <tr class="SUBSTRING_RULE_TYPE typeRow">
@@ -156,7 +156,7 @@
                 </tr>
                 <tr class="SUBSTRING_RULE_TYPE typeRow">
                     <td>&nbsp;</td>
-                    <td class="error" errorVar="error__expectedSubstring"></td>
+                    <td class="error under" errorVar="error__expectedSubstring"></td>
                 </tr>
 
                 <tr class="SUBSTRING_RULE_TYPE typeRow">
@@ -165,7 +165,7 @@
                 </tr>
                 <tr class="SUBSTRING_RULE_TYPE typeRow">
                     <td>&nbsp;</td>
-                    <td class="error" errorVar="error__expectedSubstringMinimalCount"></td>
+                    <td class="error under" errorVar="error__expectedSubstringMinimalCount"></td>
                 </tr>
 
                 <tr class="SUBSTRING_RULE_TYPE typeRow">
@@ -174,7 +174,7 @@
                 </tr>
                 <tr class="SUBSTRING_RULE_TYPE typeRow">
                     <td>&nbsp;</td>
-                    <td class="error" errorVar="error__expectedSubstringMaximalCount"></td>
+                    <td class="error under" errorVar="error__expectedSubstringMaximalCount"></td>
                 </tr>
 
                 <tr class="REGEX_RULE_TYPE typeRow">
@@ -183,7 +183,7 @@
                 </tr>
                 <tr class="REGEX_RULE_TYPE typeRow">
                     <td>&nbsp;</td>
-                    <td class="error" errorVar="error__expectedRegex"></td>
+                    <td class="error under" errorVar="error__expectedRegex"></td>
                 </tr>
 
                 <tr>
@@ -207,19 +207,18 @@
     }
 
     function updateFormByRule(ruleJson) {
-        var type = ruleJson["ruleType"];
+        var ruleType = ruleJson["ruleType"];
 
-        $("#sm_content select[name='ruleType'] > option:first").attr("selected", "selected");
         $("#sm_content select[name='ruleType'] > option").each(function() {
-            if ($(this).val() == type) {
+            if ($(this).val() == ruleType) {
                 $(this).attr("selected", "selected");
             }
         });
 
         updateFormByType();
 
-        $("#sm_content tr." + type + " input[type='text']").each(function() {
-            $(this).val(ruleJson[$(this).name]);
+        $("#sm_content tr." + ruleType + " input").each(function() {
+            $(this).val(ruleJson[$(this).attr("name")]);
         });
     }
 
@@ -230,7 +229,6 @@
 
             a.smart_modal({show: function() {
                 $("#sm_content input[name='ruleId']").val(ruleId);
-
                 updateFormByType();
 
                 $("#sm_content select[name='ruleType']").change(function() {
@@ -245,15 +243,20 @@
                         postParameters[$(this).attr("name")] = $(this).val();
                     });
 
-                    alert("ssss1`");
-
                     $.post("<@link name="RulesDataPage"/>", postParameters, function(json) {
                         if (json["success"] == "true") {
                             document.location = "";
                         } else {
-                            alert("ssssss");
-                            $("#sm_content td.error").text(json[$(this).attr("errorVar")]);
-                            alert(json["error"]);
+                            $("#sm_content td.error").each(function() {
+                                var errorContainer = $(this);
+                                errorContainer.text("");
+                                errorContainer.text(json[$(this).attr("errorVar")]);
+                            });
+
+                            var error = json["error"];
+                            if (error) {
+                                alert(error);
+                            }
                         }
                     }, "json");
                 });

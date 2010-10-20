@@ -5,6 +5,7 @@ import com.codeforces.graygoose.dao.SiteDao;
 import com.codeforces.graygoose.model.Rule;
 import com.codeforces.graygoose.model.Site;
 import com.codeforces.graygoose.page.web.SiteEditPage;
+import com.codeforces.graygoose.validation.ResponseCodesValidator;
 import com.google.inject.Inject;
 import org.nocturne.annotation.Action;
 import org.nocturne.annotation.Parameter;
@@ -89,9 +90,14 @@ public class RulesDataPage extends DataPage {
 
         if (Rule.RuleType.RESPONSE_CODE_RULE_TYPE.toString().equals(ruleType)) {
             addValidator("expectedCodes", new RequiredValidator());
+            addValidator("expectedCodes", new ResponseCodesValidator());
+        } else if (Rule.RuleType.SUBSTRING_RULE_TYPE.toString().equals(ruleType)) {
+            //TODO:
+        } else if (Rule.RuleType.REGEX_RULE_TYPE.toString().equals(ruleType)) {
+            //TODO:
         }
 
-        return runValidation();
+        return runValidationAndPrintErrors();
     }
 
     @Validate("add")
@@ -108,6 +114,8 @@ public class RulesDataPage extends DataPage {
     public void onEdit() {
         if (rule != null) {
             rule.setRuleType(Rule.RuleType.valueOf(ruleType));
+
+            //TODO: process type specific parameters
 
             put("success", true);
         } else {

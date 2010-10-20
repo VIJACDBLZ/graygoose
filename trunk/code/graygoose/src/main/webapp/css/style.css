@@ -34,13 +34,13 @@ body {
 
 .vertical-form {
     margin: 4em auto 1em auto;
-    width: 25em;
+    width: 26em;
 }
 
 .vertical-form .field-name {
     text-align: right;
     padding-right: 1em;
-    width: 10em;
+    width: 12em;
 }
 
 .vertical-form td {

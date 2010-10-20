@@ -1,4 +1,4 @@
-package com.codeforces.graygoose.misc;
+package com.codeforces.graygoose.validation;
 
 import org.nocturne.validation.ValidationException;
 import org.nocturne.validation.Validator;

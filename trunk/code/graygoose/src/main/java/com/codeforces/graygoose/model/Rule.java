@@ -6,8 +6,8 @@ import com.google.gson.reflect.TypeToken;
 import javax.jdo.annotations.*;
 import java.lang.reflect.Type;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class Rule {
@@ -29,7 +29,7 @@ public class Rule {
      * Contains key-value pairs, specific for each rule type.
      */
     @Persistent(serialized = "true")
-    private Map<String, String> data = new HashMap<String, String>();
+    private Map<String, String> data = new TreeMap<String, String>();
 
     @Persistent
     private Date creationTime;

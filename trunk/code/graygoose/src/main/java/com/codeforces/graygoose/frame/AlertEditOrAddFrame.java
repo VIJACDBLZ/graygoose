@@ -1,7 +1,7 @@
 package com.codeforces.graygoose.frame;
 
 import com.codeforces.graygoose.dao.AlertDao;
-import com.codeforces.graygoose.misc.ConfirmPasswordValidator;
+import com.codeforces.graygoose.validation.ConfirmPasswordValidator;
 import com.codeforces.graygoose.model.Alert;
 import com.codeforces.graygoose.page.web.WebPage;
 import com.google.inject.Inject;
