@@ -72,6 +72,10 @@ public class Rule {
         return data;
     }
 
+    public void setData(Map<String, String> data) {
+        this.data = data;
+    }
+
     public String getProperty(String key) {
         return data.get(key);
     }
@@ -85,8 +89,18 @@ public class Rule {
     }
 
     public static enum RuleType {
-        RESPONSE_CODE_RULE_TYPE,
-        SUBSTRING_RULE_TYPE,
-        REGEX_RULE_TYPE
+        RESPONSE_CODE_RULE_TYPE("expectedCodes"),
+        SUBSTRING_RULE_TYPE("expectedSubstring", "expectedSubstringMinimalCount", "expectedSubstringMaximalCount"),
+        REGEX_RULE_TYPE("expectedRegex");
+
+        private final String[] propertyNames;
+
+        private RuleType(String... propertyNames) {
+            this.propertyNames = propertyNames;
+        }
+
+        public String[] getPropertyNames() {
+            return propertyNames;
+        }
     }
 }

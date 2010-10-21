@@ -1,22 +1,21 @@
 package com.codeforces.graygoose.page.data;
 
 import com.codeforces.graygoose.dao.RuleDao;
-import com.codeforces.graygoose.dao.SiteDao;
 import com.codeforces.graygoose.model.Rule;
-import com.codeforces.graygoose.model.Site;
-import com.codeforces.graygoose.page.web.SiteEditPage;
 import com.codeforces.graygoose.validation.ResponseCodesValidator;
 import com.google.inject.Inject;
 import org.nocturne.annotation.Action;
 import org.nocturne.annotation.Parameter;
 import org.nocturne.annotation.Validate;
 import org.nocturne.link.Link;
-import org.nocturne.validation.*;
+import org.nocturne.validation.OptionValidator;
+import org.nocturne.validation.RequiredValidator;
+import org.nocturne.validation.LengthValidator;
+import org.nocturne.validation.IntegerValidator;
 
-import java.util.Map;
 import java.util.Date;
-import java.net.URL;
-import java.net.MalformedURLException;
+import java.util.Map;
+import java.util.TreeMap;
 
 @Link("data/rules")
 public class RulesDataPage extends DataPage {
@@ -24,10 +23,25 @@ public class RulesDataPage extends DataPage {
     private Long ruleId;
 
     @Parameter
-    private String ruleType;
+    private long siteId;
 
     @Parameter
+    private String ruleType;
+
+    @Parameter(stripMode = Parameter.StripMode.NONE)
     private String expectedCodes;
+
+    @Parameter(stripMode = Parameter.StripMode.NONE)
+    private String expectedSubstring;
+
+    @Parameter
+    private String expectedSubstringMinimalCount;
+
+    @Parameter
+    private String expectedSubstringMaximalCount;
+
+    @Parameter(stripMode = Parameter.StripMode.NONE)
+    private String expectedRegex;
 
     private Rule rule;
 
@@ -79,10 +93,12 @@ public class RulesDataPage extends DataPage {
             put("error", e.getMessage());
         }
 
-        printTemplateMapAsStringsUsingJson("ruleType", "success", "error");
+        printTemplateMapAsStringsUsingJson();
     }
 
     private boolean validateEditOrAdd() {
+        addValidator("siteId", new RequiredValidator());
+
         addValidator("ruleType", new RequiredValidator());
         addValidator("ruleType", new OptionValidator(Rule.RuleType.RESPONSE_CODE_RULE_TYPE.toString(),
                 Rule.RuleType.SUBSTRING_RULE_TYPE.toString(),
@@ -92,9 +108,17 @@ public class RulesDataPage extends DataPage {
             addValidator("expectedCodes", new RequiredValidator());
             addValidator("expectedCodes", new ResponseCodesValidator());
         } else if (Rule.RuleType.SUBSTRING_RULE_TYPE.toString().equals(ruleType)) {
-            //TODO:
+            addValidator("expectedSubstring", new RequiredValidator());
+            addValidator("expectedSubstring", new LengthValidator(1, 512));
+
+            addValidator("expectedSubstringMinimalCount", new RequiredValidator());
+            addValidator("expectedSubstringMinimalCount", new IntegerValidator(0, 1024));
+
+            addValidator("expectedSubstringMaximalCount", new RequiredValidator());
+            addValidator("expectedSubstringMaximalCount", new IntegerValidator(0, 1024));
         } else if (Rule.RuleType.REGEX_RULE_TYPE.toString().equals(ruleType)) {
-            //TODO:
+            addValidator("expectedRegex", new RequiredValidator());
+            addValidator("expectedRegex", new LengthValidator(1, 512));
         }
 
         return runValidationAndPrintErrors();
@@ -107,6 +131,7 @@ public class RulesDataPage extends DataPage {
 
     @Validate("edit")
     public boolean validateEdit() {
+        addValidator("ruleId", new RequiredValidator());
         return validateEditOrAdd();
     }
 
@@ -114,8 +139,7 @@ public class RulesDataPage extends DataPage {
     public void onEdit() {
         if (rule != null) {
             rule.setRuleType(Rule.RuleType.valueOf(ruleType));
-
-            //TODO: process type specific parameters
+            setupRuleProperties(rule);
 
             put("success", true);
         } else {
@@ -125,13 +149,42 @@ public class RulesDataPage extends DataPage {
         printTemplateMapAsStringsUsingJson("success", "error");
     }
 
-    /*@Action("add")
+    @Action("add")
     public void onAdd() {
-        Site site = new Site(name, url, rescanPeriod, new Date());
-        siteDao.insert(site);
-        setMessage($("Site has been added."));
-        abortWithRedirect(redirectPageClass);
-    }*/
+        try {
+            Rule rule = new Rule(siteId, Rule.RuleType.valueOf(ruleType), new Date());
+            setupRuleProperties(rule);
+            ruleDao.insert(rule);
+
+            put("success", true);
+            setMessage($("Rule has been added."));
+        } catch (Exception e) {
+            put("error", e.getMessage());
+        }
+
+        printTemplateMapAsStringsUsingJson("success", "error");
+    }
+
+    private void setupRuleProperties(Rule rule) {
+        Map<String, String> properties = new TreeMap<String, String>();
+
+        switch (rule.getRuleType()) {
+            case RESPONSE_CODE_RULE_TYPE:
+                properties.put("expectedCodes", expectedCodes);
+                break;
+            case SUBSTRING_RULE_TYPE:
+                properties.put("expectedSubstring", expectedSubstring);
+                properties.put("expectedSubstringMinimalCount", expectedSubstringMinimalCount);
+                properties.put("expectedSubstringMaximalCount", expectedSubstringMaximalCount);
+                break;
+            case REGEX_RULE_TYPE:
+                properties.put("expectedRegex", expectedRegex);
+                break;
+            default:
+        }
+
+        rule.setData(properties);
+    }
 
     @Override
     public void action() {

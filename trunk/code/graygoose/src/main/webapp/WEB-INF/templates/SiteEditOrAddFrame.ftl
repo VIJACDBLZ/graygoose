@@ -81,6 +81,9 @@
     <div class="rulesHeaderContainer" align="center">
         <h4>Alert Rules</h4>
     </div>
+    <div style="text-align:right;padding-right:1em;">
+        <a href="#" class="add-rule-link" rel="rule-add-edit-dialog">{{Add Rule}}</a>
+    </div>
     <table class="grid">
         <thead>
         <tr>
@@ -222,7 +225,59 @@
         });
     }
 
+    function saveRule() {
+        var ruleType = $("#sm_content select[name='ruleType']").val();
+        var siteId = $("input[name='id']").val();
+        var postParameters = {ruleType: ruleType, siteId: siteId};
+
+        var ruleId = $("#sm_content input[name='ruleId']").val();
+
+        if (ruleId) {
+            postParameters["ruleId"] = ruleId;
+            postParameters["action"] = "edit";
+        } else {
+            postParameters["action"] = "add";
+        }
+
+        $("#sm_content tr." + ruleType + " input").each(function() {
+            postParameters[$(this).attr("name")] = $(this).val();
+        });
+
+        $.post("<@link name="RulesDataPage"/>", postParameters, function(json) {
+            if (json["success"] == "true") {
+                document.location = "";
+            } else {
+                $("#sm_content td.error").each(function() {
+                    var errorContainer = $(this);
+                    errorContainer.text("");
+                    errorContainer.text(json[$(this).attr("errorVar")]);
+                });
+
+                var error = json["error"];
+                if (error) {
+                    alert(error);
+                }
+            }
+        }, "json");
+    }
+
     $(function() {
+        $("a.add-rule-link").each(function() {
+            var a = $(this);
+
+            a.smart_modal({show: function() {
+                updateFormByType();
+
+                $("#sm_content select[name='ruleType']").change(function() {
+                    updateFormByType();
+                });
+
+                $("#sm_content input[type='button']").click(function() {
+                    saveRule();
+                });
+            }});
+        });
+
         $("a.edit-rule-link").each(function() {
             var a = $(this);
             var ruleId = a.attr("ruleId");
@@ -236,29 +291,7 @@
                 });
 
                 $("#sm_content input[type='button']").click(function() {
-                    var ruleType = $("#sm_content select[name='ruleType']").val();
-                    var postParameters = {action: "edit", ruleId: ruleId, ruleType: ruleType};
-
-                    $("#sm_content tr." + ruleType + " input").each(function() {
-                        postParameters[$(this).attr("name")] = $(this).val();
-                    });
-
-                    $.post("<@link name="RulesDataPage"/>", postParameters, function(json) {
-                        if (json["success"] == "true") {
-                            document.location = "";
-                        } else {
-                            $("#sm_content td.error").each(function() {
-                                var errorContainer = $(this);
-                                errorContainer.text("");
-                                errorContainer.text(json[$(this).attr("errorVar")]);
-                            });
-
-                            var error = json["error"];
-                            if (error) {
-                                alert(error);
-                            }
-                        }
-                    }, "json");
+                    saveRule();
                 });
 
                 $.post("<@link name="RulesDataPage"/>", {action: "findById", ruleId: ruleId}, function(json) {
