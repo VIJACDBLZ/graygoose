@@ -5,13 +5,13 @@
 
 <ul class="menu">
     <#list links as item>
-        <#if item.active>
-            <#assign clazz="active">
-            <#else>
-                <#assign clazz="">
-        </#if>
+    <#if item.active>
+    <#assign clazz="active">
+    <#else>
+    <#assign clazz="">
+    </#if>
 
-        <li><a href="<@link name=item.webPageClassName/>" class="${clazz!}">${item.text}</a></li>
+    <li><a href="<@link name=item.webPageClassName/>" class="${clazz!}">${item.text}</a></li>
     </#list>
 </ul>
 </@common.colorBox>

@@ -2,7 +2,6 @@ package com.codeforces.graygoose.dao.impl;
 
 import com.codeforces.graygoose.dao.RuleDao;
 import com.codeforces.graygoose.model.Rule;
-import com.codeforces.graygoose.model.RuleAlertRelation;
 import com.codeforces.graygoose.model.Site;
 
 import java.util.LinkedList;
@@ -38,7 +37,7 @@ public class RuleDaoImpl extends BasicDaoImpl implements RuleDao {
 
         for (Rule rule : allRules) {
             if (rule.getSiteId() == siteId)
-            rulesBySite.add(rule);
+                rulesBySite.add(rule);
         }
 
         return rulesBySite;

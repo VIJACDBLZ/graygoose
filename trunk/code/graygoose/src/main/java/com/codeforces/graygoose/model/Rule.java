@@ -1,20 +1,12 @@
 package com.codeforces.graygoose.model;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
 import javax.jdo.annotations.*;
-import java.lang.reflect.Type;
 import java.util.Date;
-import java.util.Map;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class Rule {
-    private static final Type DATA_TYPE = new TypeToken<Map<String, String>>() {
-    }.getType();
-    private final Gson gson = new Gson();
-
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
     private Long id;
@@ -27,9 +19,10 @@ public class Rule {
 
     /**
      * Contains key-value pairs, specific for each rule type.
+     * Type settings can be accessed via <code>(String[]) ruleType.getPropertyNames()</code> function call.
      */
     @Persistent(serialized = "true")
-    private Map<String, String> data = new TreeMap<String, String>();
+    private SortedMap<String, String> data = new TreeMap<String, String>();
 
     @Persistent
     private Date creationTime;
@@ -68,11 +61,11 @@ public class Rule {
         this.creationTime = creationTime;
     }
 
-    public Map<String, String> getData() {
+    public SortedMap<String, String> getData() {
         return data;
     }
 
-    public void setData(Map<String, String> data) {
+    public void setData(SortedMap<String, String> data) {
         this.data = data;
     }
 

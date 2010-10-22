@@ -28,26 +28,26 @@
     </tr>
     </thead>
     <tbody>
-        <#list sites as site>
-        <tr>
-            <td>${site.id}</td>
-            <td>${site.name?html}</td>
-            <td>${site.url?html}</td>
-            <td>${site.rescanPeriodSeconds?int}</td>
-            <td>${site.creationTime?datetime}</td>
-            <td>
-                <a href="<@link name="SiteEditPage" id="${site.id}"/>">{{Edit}}</a>
-                <a href="#" class="delete-site-link" siteName="${site.name}" siteId="${site.id}">{{Delete}}</a>
-            </td>
-        </tr>
-        </#list>
-        <#if sites?size==0>
-        <tr>
-            <td colspan="6">
-                {{No sites}}
-            </td>
-        </tr>
-        </#if>
+    <#list sites as site>
+    <tr>
+        <td>${site.id}</td>
+        <td>${site.name?html}</td>
+        <td>${site.url?html}</td>
+        <td>${site.rescanPeriodSeconds?int}</td>
+        <td>${site.creationTime?datetime}</td>
+        <td>
+            <a href="<@link name="SiteEditPage" id="${site.id}"/>">{{Edit}}</a>
+            <a href="#" class="delete-site-link" siteName="${site.name}" siteId="${site.id}">{{Delete}}</a>
+        </td>
+    </tr>
+    </#list>
+    <#if sites?size==0>
+    <tr>
+        <td colspan="6">
+            {{No sites}}
+        </td>
+    </tr>
+    </#if>
     </tbody>
 </table>
 <script type="text/javascript">
@@ -67,4 +67,4 @@
         });
     });
 </script>
-</@common.page>
+        </@common.page>

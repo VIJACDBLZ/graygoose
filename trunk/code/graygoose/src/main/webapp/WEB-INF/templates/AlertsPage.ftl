@@ -31,27 +31,28 @@
     </tr>
     </thead>
     <tbody>
-        <#list alerts as alert>
-        <tr>
-            <td>${alert.id}</td>
-            <td>${alert.name?html}</td>
-            <td>${alert.type?html}</td>
-            <td>${alert.email?html}</td>
-            <td><#if alert.password??>{{*present*}}</#if></td>
-            <td>${alert.maxAlertCountPerHour?int}</td>
-            <td>
-                <a href="<@link name="AlertEditPage" id="${alert.id}"/>">{{Edit}}</a>
-                <a href="#" class="delete-alert-link" alertName="${alert.name}" alertId="${alert.id}">{{Delete}}</a>
-            </td>
-        </tr>
-        </#list>
-        <#if alerts?size==0>
-        <tr>
-            <td colspan="7">
-                {{No alerts}}
-            </td>
-        </tr>
-        </#if>
+    <#list alerts as alert>
+    <tr>
+        <td>${alert.id}</td>
+        <td>${alert.name?html}</td>
+        <td>${alert.type?html}</td>
+        <td>${alert.email?html}</td>
+        <td><#if alert.password?? && (alert.password?length > 0)>{{*present*}}</#if></td>
+        <td>${alert.maxAlertCountPerHour?int}</td>
+        <td>
+            <a href="<@link name="AlertEditPage" id="${alert.id}"/>">{{Edit}}</a>
+            <a href="#" class="delete-alert-link" alertName="${alert.name}" alertId="${alert.id}">{{Delete}}</a>
+            <a href="#" class="test-alert-link" alertId="${alert.id}">{{Test}}</a>
+        </td>
+    </tr>
+    </#list>
+    <#if alerts?size==0>
+    <tr>
+        <td colspan="7">
+            {{No alerts}}
+        </td>
+    </tr>
+    </#if>
     </tbody>
 </table>
 <script type="text/javascript">
@@ -69,6 +70,17 @@
                 }, "json");
             }
         });
+
+        $("a.test-alert-link").click(function() {
+            var id = $(this).attr("alertId");
+            $.post("<@link name="AlertsDataPage"/>", {action: "testAlert", alertId: id}, function(json) {
+                if (json["success"] == "true") {
+                    alert("{{All alert routines were processed without any error.}}");
+                } else {
+                    alert(json["error"]);
+                }
+            }, "json");
+        });
     });
 </script>
-</@common.page>
+        </@common.page>

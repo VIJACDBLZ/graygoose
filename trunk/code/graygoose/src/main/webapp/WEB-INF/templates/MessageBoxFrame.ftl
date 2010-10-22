@@ -2,7 +2,7 @@
 
 <#if text?? && (text?length>0)>
 <div class="message-box-wrapper">
-<@common.colorBox clazz="brown-box message-box">${text?html}</@common.colorBox>
+    <@common.colorBox clazz="brown-box message-box">${text?html}</@common.colorBox>
 </div>
 <script type="text/javascript">
     $(function() {
@@ -11,4 +11,4 @@
         }, 5000);
     });
 </script>
-</#if>
+        </#if>

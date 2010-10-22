@@ -8,13 +8,14 @@ import org.nocturne.annotation.Action;
 import org.nocturne.annotation.Parameter;
 import org.nocturne.annotation.Validate;
 import org.nocturne.link.Link;
+import org.nocturne.validation.IntegerValidator;
+import org.nocturne.validation.LengthValidator;
 import org.nocturne.validation.OptionValidator;
 import org.nocturne.validation.RequiredValidator;
-import org.nocturne.validation.LengthValidator;
-import org.nocturne.validation.IntegerValidator;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 @Link("data/rules")
@@ -109,7 +110,7 @@ public class RulesDataPage extends DataPage {
             addValidator("expectedCodes", new ResponseCodesValidator());
         } else if (Rule.RuleType.SUBSTRING_RULE_TYPE.toString().equals(ruleType)) {
             addValidator("expectedSubstring", new RequiredValidator());
-            addValidator("expectedSubstring", new LengthValidator(1, 512));
+            addValidator("expectedSubstring", new LengthValidator(1, 256));
 
             addValidator("expectedSubstringMinimalCount", new RequiredValidator());
             addValidator("expectedSubstringMinimalCount", new IntegerValidator(0, 1024));
@@ -166,7 +167,7 @@ public class RulesDataPage extends DataPage {
     }
 
     private void setupRuleProperties(Rule rule) {
-        Map<String, String> properties = new TreeMap<String, String>();
+        SortedMap<String, String> properties = new TreeMap<String, String>();
 
         switch (rule.getRuleType()) {
             case RESPONSE_CODE_RULE_TYPE:
@@ -181,6 +182,7 @@ public class RulesDataPage extends DataPage {
                 properties.put("expectedRegex", expectedRegex);
                 break;
             default:
+                throw new UnsupportedOperationException($("Unsupported rule type."));
         }
 
         rule.setData(properties);

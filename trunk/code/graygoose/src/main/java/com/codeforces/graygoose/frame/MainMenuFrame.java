@@ -1,6 +1,9 @@
 package com.codeforces.graygoose.frame;
 
-import com.codeforces.graygoose.page.web.*;
+import com.codeforces.graygoose.page.web.AlertsPage;
+import com.codeforces.graygoose.page.web.DashboardPage;
+import com.codeforces.graygoose.page.web.SitesPage;
+import com.codeforces.graygoose.page.web.WebPage;
 import org.nocturne.main.ApplicationContext;
 import org.nocturne.main.Page;
 

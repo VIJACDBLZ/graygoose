@@ -1,14 +1,17 @@
 package com.codeforces.graygoose.frame;
 
 import com.codeforces.graygoose.dao.AlertDao;
-import com.codeforces.graygoose.validation.ConfirmPasswordValidator;
 import com.codeforces.graygoose.model.Alert;
 import com.codeforces.graygoose.page.web.WebPage;
+import com.codeforces.graygoose.validation.ConfirmPasswordValidator;
 import com.google.inject.Inject;
 import org.nocturne.annotation.Action;
 import org.nocturne.annotation.Parameter;
 import org.nocturne.annotation.Validate;
-import org.nocturne.validation.*;
+import org.nocturne.validation.EmailValidator;
+import org.nocturne.validation.LengthValidator;
+import org.nocturne.validation.OptionValidator;
+import org.nocturne.validation.RequiredValidator;
 
 public class AlertEditOrAddFrame extends ApplicationFrame {
     @Parameter

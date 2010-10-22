@@ -2,4 +2,4 @@
 
 <@common.page>
 This is dashboard page
-</@common.page>
+        </@common.page>
