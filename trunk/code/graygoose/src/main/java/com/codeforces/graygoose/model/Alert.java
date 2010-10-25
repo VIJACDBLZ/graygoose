@@ -1,5 +1,7 @@
 package com.codeforces.graygoose.model;
 
+import com.codeforces.graygoose.util.EncryptUtil;
+
 import javax.jdo.annotations.*;
 import java.io.Serializable;
 
@@ -68,11 +70,11 @@ public class Alert implements Serializable {
     }
 
     public String getPassword() {
-        return password;
+        return EncryptUtil.decrypt(password);
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.password = EncryptUtil.encrypt(password);
     }
 
     public int getMaxAlertCountPerHour() {

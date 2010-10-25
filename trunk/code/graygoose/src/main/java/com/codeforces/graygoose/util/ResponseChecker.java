@@ -8,24 +8,22 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ResponseChecker {
-
-    public static boolean check(Response response, Collection<Rule> rules) {
-
+    public static String getErrorMessage(Response response, Collection<Rule> rules) {
         for (Rule rule : rules) {
             switch (rule.getRuleType()) {
                 case RESPONSE_CODE_RULE_TYPE:
                     if (!checkResponseCode(response, rule)) {
-                        return false;
+                        return rule.toString() + " fails.";
                     }
                     break;
                 case SUBSTRING_RULE_TYPE:
                     if (!checkSubstringCount(response, rule)) {
-                        return false;
+                        return rule.toString() + " fails.";
                     }
                     break;
                 case REGEX_RULE_TYPE:
                     if (!checkRegexMatch(response, rule)) {
-                        return false;
+                        return rule.toString() + " fails.";
                     }
                     break;
                 default:
@@ -33,7 +31,7 @@ public class ResponseChecker {
             }
         }
 
-        return true;
+        return null;
     }
 
     private static boolean checkResponseCode(Response response, Rule rule) {

@@ -81,6 +81,15 @@ public class Rule {
         data.put(key, value);
     }
 
+    @Override
+    public String toString() {
+        return "Rule{" +
+                "siteId=" + siteId +
+                ", ruleType=" + ruleType +
+                ", data=" + data +
+                '}';
+    }
+
     public static enum RuleType {
         RESPONSE_CODE_RULE_TYPE("expectedCodes"),
         SUBSTRING_RULE_TYPE("expectedSubstring", "expectedSubstringMinimalCount", "expectedSubstringMaximalCount"),
