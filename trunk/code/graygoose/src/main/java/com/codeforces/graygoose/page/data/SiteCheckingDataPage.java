@@ -2,23 +2,14 @@ package com.codeforces.graygoose.page.data;
 
 import com.codeforces.graygoose.dao.RuleDao;
 import com.codeforces.graygoose.dao.SiteDao;
-import com.codeforces.graygoose.model.Rule;
+import com.codeforces.graygoose.util.FetchUtil;
 import com.codeforces.graygoose.util.ResponseChecker;
 import com.google.inject.Inject;
-import org.apache.commons.io.IOUtils;
 import org.nocturne.annotation.Action;
 import org.nocturne.link.Link;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.Arrays;
 
 
 @Link("data/checkSites")
@@ -36,57 +27,45 @@ public class SiteCheckingDataPage extends DataPage {
 
     @Action("checkSites")
     public void onCheckSites() throws Exception {
+        //
+    }
+
+    @Action("fetch")
+    public void onFetch() {
         try {
-            URL url = new URL("http://acm.sgu.ru/");
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            ResponseChecker.Response response = FetchUtil.fetchUrl(getString("url"));
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String text = IOUtils.toString(reader);
-            reader.close();
+            put("responseCode", response.getCode());
+            put("responseText", response.getText());
 
-            ResponseChecker.Response response = new ResponseChecker.Response(
-                    connection.getResponseCode(), text);
-
-            connection.disconnect();
-
-            List<Rule> rules = new ArrayList<Rule>();
-
-            Rule rule = new Rule(0, Rule.RuleType.RESPONSE_CODE_RULE_TYPE, null);
-            SortedMap<String, String> settings = new TreeMap<String, String>();
-            settings.put("expectedCodes", "100,200,300-400");
-            rule.setData(settings);
-
-            rules.add(rule);
-
-            String errorMessage = ResponseChecker.getErrorMessage(response, rules);
-            System.out.println(errorMessage);
-        } catch (MalformedURLException e) {
-            //
+            put("success", true);
         } catch (IOException e) {
-            //
+            put("error", e.getMessage());
         }
-        /*List<Site> sites = siteDao.findAll();
-        for (Site site : sites) {
-            try {
-                URL url = new URL(site.getUrl());
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                String text = IOUtils.toString(reader);
-                reader.close();
+        printTemplateMapAsStringsUsingJson("success", "error", "responseCode", "responseText");
+    }
 
-                ResponseChecker.Response response = new ResponseChecker.Response(
-                        connection.getResponseCode(), text);
+    @Action("checkRule")
+    public void onCheckRule() {
+        try {
+            ResponseChecker.Response response = new ResponseChecker.Response(
+                    getString("url"), getInteger("responseCode"), getString("responseText"));
 
-                connection.disconnect();
+            String errorMessage = ResponseChecker.getErrorMessage(response, Arrays.asList(
+                    ruleDao.find(getLong("ruleId"))
+            ));
 
-                List<Rule> rules = ruleDao.findBySite(site);
-            } catch (MalformedURLException e) {
-                //
-            } catch (IOException e) {
-                //
+            if (errorMessage == null) {
+                put("success", true);
+            } else {
+                put("error", errorMessage);
             }
-        }*/
+        } catch (Exception e) {
+            put("error", e.getMessage());
+        }
+
+        printTemplateMapAsStringsUsingJson("success", "error");
     }
 
     @Override

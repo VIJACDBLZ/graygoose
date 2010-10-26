@@ -1,9 +1,7 @@
 package com.codeforces.graygoose.model;
 
 import javax.jdo.annotations.*;
-import java.util.Date;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class Rule {
@@ -83,11 +81,14 @@ public class Rule {
 
     @Override
     public String toString() {
-        return "Rule{" +
-                "siteId=" + siteId +
-                ", ruleType=" + ruleType +
-                ", data=" + data +
-                '}';
+        StringBuilder result = new StringBuilder();
+
+        result.append("Rule {")
+                .append("ruleType=").append(ruleType)
+                .append(", parameters=").append(data)
+                .append('}');
+
+        return result.toString();
     }
 
     public static enum RuleType {
@@ -95,14 +96,14 @@ public class Rule {
         SUBSTRING_RULE_TYPE("expectedSubstring", "expectedSubstringMinimalCount", "expectedSubstringMaximalCount"),
         REGEX_RULE_TYPE("expectedRegex");
 
-        private final String[] propertyNames;
+        private final SortedSet<String> propertyNames = new TreeSet<String>();
 
         private RuleType(String... propertyNames) {
-            this.propertyNames = propertyNames;
+            this.propertyNames.addAll(Arrays.asList(propertyNames));
         }
 
-        public String[] getPropertyNames() {
-            return propertyNames;
+        public Set<String> getPropertyNames() {
+            return Collections.unmodifiableSortedSet(propertyNames);
         }
     }
 }

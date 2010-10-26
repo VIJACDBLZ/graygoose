@@ -91,6 +91,7 @@
             <th>{{Type}}</th>
             <th>{{Settings}}</th>
             <th>{{Creation time}}</th>
+            <th>{{Attached alerts}}</th>
             <th>{{Actions}}</th>
         </tr>
         </thead>
@@ -101,20 +102,26 @@
             <td>${rule.id}</td>
             <td>${rule.ruleType?html}</td>
             <td>
-                <#list rule.data?keys as key>
-                <div><label>${key}: </label>${rule.data[key]}</div>
+                <#list rule.ruleType.propertyNames as propertyName>
+                <div><label>${propertyName}: </label>${rule.data[propertyName]}</div>
                 </#list>
             </td>
             <td>${rule.creationTime?datetime}</td>
             <td>
+                <#list ruleAlertRelations[rule.id] as ruleAlertRelation>
+                    <#--TODO:-->
+                </#list>
+            </td>
+            <td>
                 <a href="#" class="edit-rule-link" rel="rule-add-edit-dialog" ruleId="${rule.id}">{{Edit}}</a>
                 <a href="#" class="delete-rule-link" ruleId="${rule.id}">{{Delete}}</a>
+                <a href="#" class="test-rule-link" rel="rule-test-dialog" ruleId="${rule.id}">{{Test}}</a>
             </td>
         </tr>
         </#list>
         <#else>
         <tr>
-            <td colspan="5">
+            <td colspan="6">
                 {{No rules for this site}}
             </td>
         </tr>
@@ -192,6 +199,35 @@
                 <tr>
                     <td colspan="2" class="buttons">
                         <input type="button" value="{{Save}}" style="padding: 0.25em 1.5em;">
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>
+
+<div class="rule-test-dialog" style="visibility:hidden;">
+    <div class="vertical-form" style="width:40em;'">
+        <form action="" method="post">
+            <table style="width:100%;">
+                <tr>
+                    <td style="text-align:left; width:10em;">{{Response code}}:</td>
+                    <td><input name="responseCode" value="" style="width:100%;"></td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align:left;">{{Response text}}:</td>
+                </tr>
+                <tr height="100em">
+                    <td colspan="2" height="100%">
+                        <textarea name="responseText" wrap="off" style="overflow:scroll;width:100%;" rows="10">                            
+                        </textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align:center;">
+                        <input name="test" type="button" value="{{Test}}" style="padding: 0.25em 1.5em;">
+                        <input name="fetch" type="button" value="{{Fetch}}"
+                               style="padding: 0.25em 1.5em;margin-left:2em;">
                     </td>
                 </tr>
             </table>
@@ -311,6 +347,39 @@
                     }
                 }, "json");
             }
+        });
+
+        $("a.test-rule-link").each(function() {
+            var a = $(this);
+            var ruleId = a.attr("ruleId");
+            var url = $("input.textbox[name='url']").val();
+
+            a.smart_modal({show: function() {
+                $("#sm_content input[name='test']").click(function() {
+                    $.post("<@link name="SiteCheckingDataPage"/>", {
+                        action: "checkRule", ruleId: ruleId, url: url,
+                        responseCode: $("#sm_content input[name='responseCode']").val(),
+                        responseText: $("#sm_content textarea[name='responseText']").val()
+                    }, function(json) {
+                        if (json["success"] == "true") {
+                            alert("{{Test passed successfully.}}");
+                        } else {
+                            alert(json["error"]);
+                        }
+                    }, "json");
+                });
+
+                $("#sm_content input[name='fetch']").click(function() {
+                    $.post("<@link name="SiteCheckingDataPage"/>", {action: "fetch", url: url}, function(json) {
+                        if (json["success"] == "true") {
+                            $("#sm_content input[name='responseCode']").val(json["responseCode"]);
+                            $("#sm_content textarea[name='responseText']").val(json["responseText"]);
+                        } else {
+                            alert(json["error"]);
+                        }
+                    }, "json");
+                });
+            }});
         });
     });
 </script>

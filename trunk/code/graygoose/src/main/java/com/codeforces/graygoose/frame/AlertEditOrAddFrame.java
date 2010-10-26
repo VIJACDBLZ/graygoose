@@ -29,9 +29,6 @@ public class AlertEditOrAddFrame extends ApplicationFrame {
     @Parameter(stripMode = Parameter.StripMode.NONE)
     private String password;
 
-    @Parameter(stripMode = Parameter.StripMode.NONE)
-    private String passwordConfirmation;
-
     @Parameter
     private int maxAlertCountPerHour;
 

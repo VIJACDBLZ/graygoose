@@ -17,15 +17,15 @@ public class ResponseCheckerTestCase extends TestCase {
         properties.put("expectedCodes", "200, 300, 400-500");
         rule.setData(properties);
 
-        assertNull("testResponseCode", ResponseChecker.getErrorMessage(new Response(200, ""), Arrays.asList(rule)));
-        assertNull("testResponseCode", ResponseChecker.getErrorMessage(new Response(300, ""), Arrays.asList(rule)));
-        assertNull("testResponseCode", ResponseChecker.getErrorMessage(new Response(400, ""), Arrays.asList(rule)));
-        assertNull("testResponseCode", ResponseChecker.getErrorMessage(new Response(500, ""), Arrays.asList(rule)));
-        assertNull("testResponseCode", ResponseChecker.getErrorMessage(new Response(450, ""), Arrays.asList(rule)));
+        assertNull("testResponseCode", ResponseChecker.getErrorMessage(new Response(null, 200, ""), Arrays.asList(rule)));
+        assertNull("testResponseCode", ResponseChecker.getErrorMessage(new Response(null, 300, ""), Arrays.asList(rule)));
+        assertNull("testResponseCode", ResponseChecker.getErrorMessage(new Response(null, 400, ""), Arrays.asList(rule)));
+        assertNull("testResponseCode", ResponseChecker.getErrorMessage(new Response(null, 500, ""), Arrays.asList(rule)));
+        assertNull("testResponseCode", ResponseChecker.getErrorMessage(new Response(null, 450, ""), Arrays.asList(rule)));
 
-        assertNotNull("testResponseCode", ResponseChecker.getErrorMessage(new Response(501, ""), Arrays.asList(rule)));
-        assertNotNull("testResponseCode", ResponseChecker.getErrorMessage(new Response(399, ""), Arrays.asList(rule)));
-        assertNotNull("testResponseCode", ResponseChecker.getErrorMessage(new Response(100, ""), Arrays.asList(rule)));
+        assertNotNull("testResponseCode", ResponseChecker.getErrorMessage(new Response(null, 501, ""), Arrays.asList(rule)));
+        assertNotNull("testResponseCode", ResponseChecker.getErrorMessage(new Response(null, 399, ""), Arrays.asList(rule)));
+        assertNotNull("testResponseCode", ResponseChecker.getErrorMessage(new Response(null, 100, ""), Arrays.asList(rule)));
     }
 
     public void testSubstringCount() {
@@ -37,12 +37,12 @@ public class ResponseCheckerTestCase extends TestCase {
         properties.put("expectedSubstringMaximalCount", "3");
         rule.setData(properties);
 
-        assertNull("testSubstringCount", ResponseChecker.getErrorMessage(new Response(0, "abc"), Arrays.asList(rule)));
-        assertNull("testSubstringCount", ResponseChecker.getErrorMessage(new Response(0, "abc abc"), Arrays.asList(rule)));
-        assertNull("testSubstringCount", ResponseChecker.getErrorMessage(new Response(0, "abc abc abc"), Arrays.asList(rule)));
+        assertNull("testSubstringCount", ResponseChecker.getErrorMessage(new Response(null, 0, "abc"), Arrays.asList(rule)));
+        assertNull("testSubstringCount", ResponseChecker.getErrorMessage(new Response(null, 0, "abc abc"), Arrays.asList(rule)));
+        assertNull("testSubstringCount", ResponseChecker.getErrorMessage(new Response(null, 0, "abc abc abc"), Arrays.asList(rule)));
 
-        assertNotNull("testSubstringCount", ResponseChecker.getErrorMessage(new Response(0, "abz"), Arrays.asList(rule)));
-        assertNotNull("testSubstringCount", ResponseChecker.getErrorMessage(new Response(0, "abc abc abc abc"), Arrays.asList(rule)));
+        assertNotNull("testSubstringCount", ResponseChecker.getErrorMessage(new Response(null, 0, "abz"), Arrays.asList(rule)));
+        assertNotNull("testSubstringCount", ResponseChecker.getErrorMessage(new Response(null, 0, "abc abc abc abc"), Arrays.asList(rule)));
 
         properties = new TreeMap<String, String>();
         properties.put("expectedSubstring", "abc");
@@ -50,9 +50,9 @@ public class ResponseCheckerTestCase extends TestCase {
         properties.put("expectedSubstringMaximalCount", "0");
         rule.setData(properties);
 
-        assertNull("testSubstringCount", ResponseChecker.getErrorMessage(new Response(0, "asdfghjkl"), Arrays.asList(rule)));
+        assertNull("testSubstringCount", ResponseChecker.getErrorMessage(new Response(null, 0, "asdfghjkl"), Arrays.asList(rule)));
 
-        assertNotNull("testSubstringCount", ResponseChecker.getErrorMessage(new Response(0, "abc"), Arrays.asList(rule)));
+        assertNotNull("testSubstringCount", ResponseChecker.getErrorMessage(new Response(null, 0, "abc"), Arrays.asList(rule)));
     }
 
     public void testRegexMatch() {
@@ -62,19 +62,19 @@ public class ResponseCheckerTestCase extends TestCase {
         properties.put("expectedRegex", "\\d+");
         rule.setData(properties);
 
-        assertNull("testRegexMatch", ResponseChecker.getErrorMessage(new Response(0, "0123456789"), Arrays.asList(rule)));
-        assertNull("testRegexMatch", ResponseChecker.getErrorMessage(new Response(0, "1024"), Arrays.asList(rule)));
+        assertNull("testRegexMatch", ResponseChecker.getErrorMessage(new Response(null, 0, "0123456789"), Arrays.asList(rule)));
+        assertNull("testRegexMatch", ResponseChecker.getErrorMessage(new Response(null, 0, "1024"), Arrays.asList(rule)));
 
-        assertNotNull("testRegexMatch", ResponseChecker.getErrorMessage(new Response(0, ""), Arrays.asList(rule)));
-        assertNotNull("testRegexMatch", ResponseChecker.getErrorMessage(new Response(0, "1024x"), Arrays.asList(rule)));
+        assertNotNull("testRegexMatch", ResponseChecker.getErrorMessage(new Response(null, 0, ""), Arrays.asList(rule)));
+        assertNotNull("testRegexMatch", ResponseChecker.getErrorMessage(new Response(null, 0, "1024x"), Arrays.asList(rule)));
 
         properties = new TreeMap<String, String>();
         properties.put("expectedRegex", "\\d*");
         rule.setData(properties);
 
-        assertNull("testRegexMatch", ResponseChecker.getErrorMessage(new Response(0, "1024"), Arrays.asList(rule)));
-        assertNull("testRegexMatch", ResponseChecker.getErrorMessage(new Response(0, ""), Arrays.asList(rule)));
+        assertNull("testRegexMatch", ResponseChecker.getErrorMessage(new Response(null, 0, "1024"), Arrays.asList(rule)));
+        assertNull("testRegexMatch", ResponseChecker.getErrorMessage(new Response(null, 0, ""), Arrays.asList(rule)));
 
-        assertNotNull("testRegexMatch", ResponseChecker.getErrorMessage(new Response(0, " "), Arrays.asList(rule)));
+        assertNotNull("testRegexMatch", ResponseChecker.getErrorMessage(new Response(null, 0, " "), Arrays.asList(rule)));
     }
 }

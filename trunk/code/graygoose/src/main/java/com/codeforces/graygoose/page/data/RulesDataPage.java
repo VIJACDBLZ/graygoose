@@ -2,21 +2,17 @@ package com.codeforces.graygoose.page.data;
 
 import com.codeforces.graygoose.dao.RuleDao;
 import com.codeforces.graygoose.model.Rule;
-import com.codeforces.graygoose.validation.ResponseCodesValidator;
+import com.codeforces.graygoose.util.RuleTypeUtil;
 import com.google.inject.Inject;
 import org.nocturne.annotation.Action;
 import org.nocturne.annotation.Parameter;
 import org.nocturne.annotation.Validate;
 import org.nocturne.link.Link;
-import org.nocturne.validation.IntegerValidator;
-import org.nocturne.validation.LengthValidator;
 import org.nocturne.validation.OptionValidator;
 import org.nocturne.validation.RequiredValidator;
 
 import java.util.Date;
 import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 @Link("data/rules")
 public class RulesDataPage extends DataPage {
@@ -28,21 +24,6 @@ public class RulesDataPage extends DataPage {
 
     @Parameter
     private String ruleType;
-
-    @Parameter(stripMode = Parameter.StripMode.NONE)
-    private String expectedCodes;
-
-    @Parameter(stripMode = Parameter.StripMode.NONE)
-    private String expectedSubstring;
-
-    @Parameter
-    private String expectedSubstringMinimalCount;
-
-    @Parameter
-    private String expectedSubstringMaximalCount;
-
-    @Parameter(stripMode = Parameter.StripMode.NONE)
-    private String expectedRegex;
 
     private Rule rule;
 
@@ -101,26 +82,17 @@ public class RulesDataPage extends DataPage {
         addValidator("siteId", new RequiredValidator());
 
         addValidator("ruleType", new RequiredValidator());
-        addValidator("ruleType", new OptionValidator(Rule.RuleType.RESPONSE_CODE_RULE_TYPE.toString(),
-                Rule.RuleType.SUBSTRING_RULE_TYPE.toString(),
-                Rule.RuleType.REGEX_RULE_TYPE.toString()));
 
-        if (Rule.RuleType.RESPONSE_CODE_RULE_TYPE.toString().equals(ruleType)) {
-            addValidator("expectedCodes", new RequiredValidator());
-            addValidator("expectedCodes", new ResponseCodesValidator());
-        } else if (Rule.RuleType.SUBSTRING_RULE_TYPE.toString().equals(ruleType)) {
-            addValidator("expectedSubstring", new RequiredValidator());
-            addValidator("expectedSubstring", new LengthValidator(1, 256));
+        Rule.RuleType[] ruleTypes = Rule.RuleType.values();
+        String[] ruleTypeNames = new String[ruleTypes.length];
 
-            addValidator("expectedSubstringMinimalCount", new RequiredValidator());
-            addValidator("expectedSubstringMinimalCount", new IntegerValidator(0, 1024));
-
-            addValidator("expectedSubstringMaximalCount", new RequiredValidator());
-            addValidator("expectedSubstringMaximalCount", new IntegerValidator(0, 1024));
-        } else if (Rule.RuleType.REGEX_RULE_TYPE.toString().equals(ruleType)) {
-            addValidator("expectedRegex", new RequiredValidator());
-            addValidator("expectedRegex", new LengthValidator(1, 512));
+        for (int ruleTypeIndex = 0; ruleTypeIndex < ruleTypes.length; ++ruleTypeIndex) {
+            ruleTypeNames[ruleTypeIndex] = ruleTypes[ruleTypeIndex].toString();
         }
+
+        addValidator("ruleType", new OptionValidator((Object[]) ruleTypeNames));
+
+        RuleTypeUtil.addRulePropertyValidators(this, ruleType);
 
         return runValidationAndPrintErrors();
     }
@@ -167,25 +139,7 @@ public class RulesDataPage extends DataPage {
     }
 
     private void setupRuleProperties(Rule rule) {
-        SortedMap<String, String> properties = new TreeMap<String, String>();
-
-        switch (rule.getRuleType()) {
-            case RESPONSE_CODE_RULE_TYPE:
-                properties.put("expectedCodes", expectedCodes);
-                break;
-            case SUBSTRING_RULE_TYPE:
-                properties.put("expectedSubstring", expectedSubstring);
-                properties.put("expectedSubstringMinimalCount", expectedSubstringMinimalCount);
-                properties.put("expectedSubstringMaximalCount", expectedSubstringMaximalCount);
-                break;
-            case REGEX_RULE_TYPE:
-                properties.put("expectedRegex", expectedRegex);
-                break;
-            default:
-                throw new UnsupportedOperationException($("Unsupported rule type."));
-        }
-
-        rule.setData(properties);
+        RuleTypeUtil.setupRuleProperties(rule, this);
     }
 
     @Override

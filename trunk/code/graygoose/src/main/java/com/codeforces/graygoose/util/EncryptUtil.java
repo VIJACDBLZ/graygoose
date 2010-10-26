@@ -28,12 +28,12 @@ public class EncryptUtil {
                 num = num * 32 + vals[7 - i];
             }
 
-            return (char)(num);
+            return (char) (num);
         }
     }
 
     private static String encrypt(char c) {
-        int num = (int)c;
+        int num = (int) c;
 
         if (num <= 0) {
             return "???????" + c;
@@ -47,7 +47,7 @@ public class EncryptUtil {
 
             StringBuilder result = new StringBuilder(8);
             for (int i = 0; i < 8; i++) {
-                result.append((char)(' ' + 1 + ENCRYPT_PERMUTATION[vals[i]]));
+                result.append((char) (' ' + 1 + ENCRYPT_PERMUTATION[vals[i]]));
             }
 
             return result.toString();
@@ -74,6 +74,9 @@ public class EncryptUtil {
             result.append(encrypt(message.charAt(i)));
         }
         return result.toString();
+    }
+
+    protected EncryptUtil() {
     }
 
     static {

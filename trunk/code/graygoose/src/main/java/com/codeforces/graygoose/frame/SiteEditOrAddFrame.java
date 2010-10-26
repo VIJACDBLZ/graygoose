@@ -2,7 +2,12 @@ package com.codeforces.graygoose.frame;
 
 import com.codeforces.graygoose.dao.RuleDao;
 import com.codeforces.graygoose.dao.SiteDao;
+import com.codeforces.graygoose.dao.AlertDao;
+import com.codeforces.graygoose.dao.RuleAlertRelationDao;
+import com.codeforces.graygoose.model.Rule;
 import com.codeforces.graygoose.model.Site;
+import com.codeforces.graygoose.model.RuleAlertRelation;
+import com.codeforces.graygoose.model.Alert;
 import com.codeforces.graygoose.page.web.WebPage;
 import com.google.inject.Inject;
 import org.nocturne.annotation.Action;
@@ -13,6 +18,9 @@ import org.nocturne.validation.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 public class SiteEditOrAddFrame extends ApplicationFrame {
     @Parameter
@@ -36,6 +44,9 @@ public class SiteEditOrAddFrame extends ApplicationFrame {
     @Inject
     private RuleDao ruleDao;
 
+    @Inject
+    private RuleAlertRelationDao ruleAlertRelationDao;
+
     public void setup(long id, Class<? extends WebPage> redirectPageClass) {
         this.id = id;
         this.redirectPageClass = redirectPageClass;
@@ -57,7 +68,19 @@ public class SiteEditOrAddFrame extends ApplicationFrame {
             put("url", site.getUrl());
             put("rescanPeriod", "" + site.getRescanPeriodSeconds());
 
-            put("rules", ruleDao.findBySite(id));
+            put("ruleTypes", Rule.RuleType.values());
+
+            List<Rule> rules = ruleDao.findBySite(id);
+            put("rules", rules);
+
+            Map<Long, List<Alert>> ruleAlertRelations = new HashMap<Long, List<Alert>>();
+
+            for (Rule rule : rules) {
+                //TODO:
+                //ruleAlertRelations.put(rule.getId(), ruleAlertRelationDao.findByRule(rule));
+            }
+
+            put("ruleAlertRelations", ruleAlertRelations);
 
             put("edit", true);
         } else {

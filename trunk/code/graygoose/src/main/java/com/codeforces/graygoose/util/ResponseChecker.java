@@ -13,17 +13,17 @@ public class ResponseChecker {
             switch (rule.getRuleType()) {
                 case RESPONSE_CODE_RULE_TYPE:
                     if (!checkResponseCode(response, rule)) {
-                        return rule.toString() + " fails.";
+                        return getErrorString(response, rule);
                     }
                     break;
                 case SUBSTRING_RULE_TYPE:
                     if (!checkSubstringCount(response, rule)) {
-                        return rule.toString() + " fails.";
+                        return getErrorString(response, rule);
                     }
                     break;
                 case REGEX_RULE_TYPE:
                     if (!checkRegexMatch(response, rule)) {
-                        return rule.toString() + " fails.";
+                        return getErrorString(response, rule);
                     }
                     break;
                 default:
@@ -32,6 +32,10 @@ public class ResponseChecker {
         }
 
         return null;
+    }
+
+    private static String getErrorString(Response response, Rule rule) {
+        return rule.toString() + " " + "fails for site" + " " + response.getSiteUrl() + ".";
     }
 
     private static boolean checkResponseCode(Response response, Rule rule) {
@@ -82,12 +86,18 @@ public class ResponseChecker {
 
     public static class Response {
 
+        private final String siteUrl;
         private final int code;
         private final String text;
 
-        public Response(int code, String text) {
+        public Response(String siteUrl, int code, String text) {
+            this.siteUrl = siteUrl;
             this.code = code;
             this.text = text;
+        }
+
+        public String getSiteUrl() {
+            return siteUrl;
         }
 
         public int getCode() {
