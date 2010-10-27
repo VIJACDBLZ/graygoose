@@ -30,7 +30,7 @@ public class SitesDataPage extends DataPage {
     public void onDeleteSite() {
         try {
             if (site != null) {
-                siteDao.delete(site);
+                siteDao.markDeleted(site);
                 put("success", true);
 
                 setMessage($("Site has been deleted."));

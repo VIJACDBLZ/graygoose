@@ -122,15 +122,7 @@ public class AlertEditOrAddFrame extends ApplicationFrame {
 
     @Action("add")
     public void onAdd() {
-        Alert alert = new Alert();
-
-        alert.setName(name);
-        alert.setType(type);
-        alert.setEmail(email);
-        alert.setPassword(password);
-        alert.setMaxAlertCountPerHour(maxAlertCountPerHour);
-
-        alertDao.insert(alert);
+        alertDao.insert(new Alert(name, type, email, password, maxAlertCountPerHour));
 
         setMessage($("Alert has been added."));
         abortWithRedirect(redirectPageClass);

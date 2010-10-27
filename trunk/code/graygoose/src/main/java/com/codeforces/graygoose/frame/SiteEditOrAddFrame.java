@@ -153,7 +153,7 @@ public class SiteEditOrAddFrame extends ApplicationFrame {
 
     @Action("add")
     public void onAdd() {
-        Site site = new Site(name, url, rescanPeriod, new Date());
+        Site site = new Site(name, url, rescanPeriod);
         siteDao.insert(site);
         setMessage($("Site has been added."));
         abortWithRedirect(redirectPageClass);

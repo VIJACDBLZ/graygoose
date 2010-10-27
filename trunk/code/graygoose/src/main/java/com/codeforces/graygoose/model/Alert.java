@@ -4,9 +4,10 @@ import com.codeforces.graygoose.util.EncryptUtil;
 
 import javax.jdo.annotations.*;
 import java.io.Serializable;
+import java.util.Date;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class Alert extends AbstractEntity implements Serializable {
+public class Alert extends AbstractEntity {
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
     private Long id;
@@ -30,8 +31,11 @@ public class Alert extends AbstractEntity implements Serializable {
     @Persistent
     private int maxAlertCountPerHour;
 
-    public Alert() {
-    }
+    @Persistent
+    private boolean deleted;
+
+    @Persistent
+    private Date creationTime;
 
     public Alert(String name, String type, String email, String password, int maxAlertCountPerHour) {
         this.name = name;
@@ -39,6 +43,8 @@ public class Alert extends AbstractEntity implements Serializable {
         this.email = email;
         this.password = password;
         this.maxAlertCountPerHour = maxAlertCountPerHour;
+        deleted = false;
+        creationTime = new Date();
     }
 
     public Long getId() {
@@ -83,5 +89,20 @@ public class Alert extends AbstractEntity implements Serializable {
 
     public void setMaxAlertCountPerHour(int maxAlertCountPerHour) {
         this.maxAlertCountPerHour = maxAlertCountPerHour;
+    }
+
+    @Override
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    @Override
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    @Override
+    public Date getCreationTime() {
+        return creationTime;
     }
 }

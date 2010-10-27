@@ -15,7 +15,15 @@ public class AlertTriggerEvent extends AbstractEntity {
     @Persistent
     private Date triggerTime;
 
+    @Persistent
+    private boolean deleted;
+
+    @Persistent
+    private Date creationTime;
+
     public AlertTriggerEvent() {
+        deleted = false;
+        creationTime = new Date();
     }
 
     public Long getId() {
@@ -36,5 +44,20 @@ public class AlertTriggerEvent extends AbstractEntity {
 
     public void setTriggerTime(Date triggerTime) {
         this.triggerTime = triggerTime;
+    }
+
+    @Override
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    @Override
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    @Override
+    public Date getCreationTime() {
+        return creationTime;
     }
 }

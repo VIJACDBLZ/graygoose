@@ -32,7 +32,7 @@ public class AlertsDataPage extends DataPage {
     public void onDeleteAlert() {
         try {
             if (alert != null) {
-                alertDao.delete(alert);
+                alertDao.markDeleted(alert);
                 put("success", true);
 
                 setMessage($("Alert has been deleted."));

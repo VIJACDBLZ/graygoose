@@ -5,7 +5,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class Site extends AbstractEntity implements Serializable {
+public class Site extends AbstractEntity {
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
     private Long id;
@@ -20,13 +20,17 @@ public class Site extends AbstractEntity implements Serializable {
     private int rescanPeriodSeconds;
 
     @Persistent
+    private boolean deleted;
+
+    @Persistent
     private Date creationTime;
 
-    public Site(String name, String url, int rescanPeriodSeconds, Date creationTime) {
+    public Site(String name, String url, int rescanPeriodSeconds) {
         this.name = name;
         this.url = url;
         this.rescanPeriodSeconds = rescanPeriodSeconds;
-        this.creationTime = creationTime;
+        deleted = false;
+        creationTime = new Date();
     }
 
     public Long getId() {
@@ -57,11 +61,18 @@ public class Site extends AbstractEntity implements Serializable {
         this.rescanPeriodSeconds = rescanPeriodSeconds;
     }
 
-    public Date getCreationTime() {
-        return creationTime;
+    @Override
+    public boolean isDeleted() {
+        return deleted;
     }
 
-    public void setCreationTime(Date creationTime) {
-        this.creationTime = creationTime;
+    @Override
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    @Override
+    public Date getCreationTime() {
+        return creationTime;
     }
 }

@@ -1,14 +1,9 @@
 package com.codeforces.graygoose;
 
-import com.codeforces.graygoose.dao.AlertDao;
-import com.codeforces.graygoose.dao.RuleDao;
-import com.codeforces.graygoose.dao.SiteDao;
-import com.codeforces.graygoose.dao.RuleAlertRelationDao;
-import com.codeforces.graygoose.dao.impl.AlertDaoImpl;
-import com.codeforces.graygoose.dao.impl.RuleDaoImpl;
-import com.codeforces.graygoose.dao.impl.SiteDaoImpl;
-import com.codeforces.graygoose.dao.impl.RuleAlertRelationDaoImpl;
+import com.codeforces.graygoose.dao.*;
+import com.codeforces.graygoose.dao.impl.*;
 import com.codeforces.graygoose.misc.PersistenceManagerFactoryInstance;
+import com.codeforces.graygoose.model.RuleCheckEvent;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 import com.google.inject.Binder;
@@ -27,5 +22,7 @@ public class ApplicationModule implements Module {
         binder.bind(AlertDao.class).to(AlertDaoImpl.class).in(Singleton.class);
         binder.bind(RuleDao.class).to(RuleDaoImpl.class).in(Singleton.class);
         binder.bind(RuleAlertRelationDao.class).to(RuleAlertRelationDaoImpl.class).in(Singleton.class);
+        binder.bind(RuleCheckEventDao.class).to(RuleCheckEventDaoImpl.class).in(Singleton.class);
+        binder.bind(AlertTriggerEventDao.class).to(AlertTriggerEventDaoImpl.class).in(Singleton.class);
     }
 }

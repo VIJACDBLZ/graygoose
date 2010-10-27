@@ -1,6 +1,7 @@
 package com.codeforces.graygoose.model;
 
 import javax.jdo.annotations.*;
+import java.util.Date;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class RuleAlertRelation extends AbstractEntity {
@@ -18,16 +19,18 @@ public class RuleAlertRelation extends AbstractEntity {
     @Persistent
     private long maxConsecutiveFailCount;
 
+    @Persistent
+    private boolean deleted;
+
+    @Persistent
+    private Date creationTime;
+
     public RuleAlertRelation(long ruleId, long alertId, long maxConsecutiveFailCount) {
         this.ruleId = ruleId;
         this.alertId = alertId;
         this.maxConsecutiveFailCount = maxConsecutiveFailCount;
-    }
-
-    public RuleAlertRelation(Rule rule, Alert alert, long maxConsecutiveFailCount) {
-        this.ruleId = rule.getId();
-        this.alertId = alert.getId();
-        this.maxConsecutiveFailCount = maxConsecutiveFailCount;
+        deleted = false;
+        creationTime = new Date();
     }
 
     public long getRuleId() {
@@ -52,5 +55,20 @@ public class RuleAlertRelation extends AbstractEntity {
 
     public void setMaxConsecutiveFailCount(long maxConsecutiveFailCount) {
         this.maxConsecutiveFailCount = maxConsecutiveFailCount;
+    }
+
+    @Override
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    @Override
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    @Override
+    public Date getCreationTime() {
+        return creationTime;
     }
 }

@@ -6,17 +6,10 @@ import com.codeforces.graygoose.model.RuleCheckEvent;
 
 import java.util.List;
 
-@SuppressWarnings({"unchecked"})
-public class RuleCheckEventDaoImpl extends BasicDaoImpl implements RuleCheckEventDao {
+public class RuleCheckEventDaoImpl extends BasicDaoImpl<RuleCheckEvent> implements RuleCheckEventDao {
     @Override
-    public void insert(RuleCheckEvent ruleCheckEvent) {
-        makePersistent(ruleCheckEvent);
-    }
-
-    @Override
-    public void delete(RuleCheckEvent ruleCheckEvent) {
-        ruleCheckEvent.setDeleted(true);
-        //TODO: delete linked entities
+    public RuleCheckEvent find(long id) {
+        return super.find(RuleCheckEvent.class, id);
     }
 
     @Override
@@ -31,11 +24,6 @@ public class RuleCheckEventDaoImpl extends BasicDaoImpl implements RuleCheckEven
 
     @Override
     public List<RuleCheckEvent> findByRule(long ruleId) {
-        return super.findAll(RuleCheckEvent.class, "WHERE ruleId == %d", ruleId);
-    }
-
-    @Override
-    public RuleCheckEvent find(long id) {
-        return getObjectById(RuleCheckEvent.class, id);
+        return super.findAll(RuleCheckEvent.class, String.format("ruleId == %d", ruleId), null, true);
     }
 }

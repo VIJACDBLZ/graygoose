@@ -23,12 +23,16 @@ public class Rule extends AbstractEntity {
     private SortedMap<String, String> data = new TreeMap<String, String>();
 
     @Persistent
+    private boolean deleted;
+
+    @Persistent
     private Date creationTime;
 
-    public Rule(long siteId, RuleType ruleType, Date creationTime) {
+    public Rule(long siteId, RuleType ruleType) {
         this.siteId = siteId;
         this.ruleType = ruleType;
-        this.creationTime = creationTime;
+        deleted = false;
+        creationTime = new Date();
     }
 
     public Long getId() {
@@ -49,14 +53,6 @@ public class Rule extends AbstractEntity {
 
     public void setRuleType(RuleType ruleType) {
         this.ruleType = ruleType;
-    }
-
-    public Date getCreationTime() {
-        return creationTime;
-    }
-
-    public void setCreationTime(Date creationTime) {
-        this.creationTime = creationTime;
     }
 
     public SortedMap<String, String> getData() {
@@ -105,5 +101,20 @@ public class Rule extends AbstractEntity {
         public Set<String> getPropertyNames() {
             return Collections.unmodifiableSortedSet(propertyNames);
         }
+    }
+
+    @Override
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    @Override
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    @Override
+    public Date getCreationTime() {
+        return creationTime;
     }
 }

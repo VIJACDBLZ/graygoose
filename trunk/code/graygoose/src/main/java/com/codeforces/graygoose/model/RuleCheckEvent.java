@@ -21,7 +21,15 @@ public class RuleCheckEvent extends AbstractEntity {
     @Persistent
     private Date checkTime;
 
+    @Persistent
+    private boolean deleted;
+
+    @Persistent
+    private Date creationTime;
+
     public RuleCheckEvent() {
+        deleted = false;
+        creationTime = new Date();
     }
 
     public Long getId() {
@@ -64,5 +72,20 @@ public class RuleCheckEvent extends AbstractEntity {
         PENDING,
         SUCCEEDED,
         FAILED
+    }
+
+    @Override
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    @Override
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    @Override
+    public Date getCreationTime() {
+        return creationTime;
     }
 }

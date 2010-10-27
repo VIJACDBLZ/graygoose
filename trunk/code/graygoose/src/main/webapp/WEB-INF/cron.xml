@@ -3,6 +3,6 @@
     <cron>
         <url>/data/checkSites?action=checkSites</url>
         <description>Check sites</description>
-        <schedule>every 30 seconds</schedule>
+        <schedule>every 1 minutes</schedule>
     </cron>
 </cronentries>

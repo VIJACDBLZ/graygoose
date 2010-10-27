@@ -43,7 +43,7 @@ public class RulesDataPage extends DataPage {
     public void onDeleteRule() {
         try {
             if (rule != null) {
-                ruleDao.delete(rule);
+                ruleDao.markDeleted(rule);
                 put("success", true);
             } else {
                 put("error", $("No such rule."));
@@ -125,7 +125,7 @@ public class RulesDataPage extends DataPage {
     @Action("add")
     public void onAdd() {
         try {
-            Rule rule = new Rule(siteId, Rule.RuleType.valueOf(ruleType), new Date());
+            Rule rule = new Rule(siteId, Rule.RuleType.valueOf(ruleType));
             setupRuleProperties(rule);
             ruleDao.insert(rule);
 

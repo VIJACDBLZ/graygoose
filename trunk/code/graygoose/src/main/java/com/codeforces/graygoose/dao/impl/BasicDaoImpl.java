@@ -1,15 +1,14 @@
 package com.codeforces.graygoose.dao.impl;
 
+import com.codeforces.graygoose.dao.BasicDao;
 import com.codeforces.graygoose.model.AbstractEntity;
+import org.nocturne.util.StringUtil;
 
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 import java.util.List;
 
-import org.nocturne.util.StringUtil;
-
-@SuppressWarnings({"unchecked"})
-public class BasicDaoImpl {
+public abstract class BasicDaoImpl<T extends AbstractEntity> implements BasicDao<T> {
     public static volatile ThreadLocal<PersistenceManager> persistenceManagerByThread =
             new ThreadLocal<PersistenceManager>();
 
@@ -25,15 +24,12 @@ public class BasicDaoImpl {
         getPersistenceManager().close();
     }
 
-    protected void makePersistent(AbstractEntity abstractEntity) {
-        getPersistenceManager().makePersistent(abstractEntity);
+
+    private Object executeQuery(String query) {
+        return getPersistenceManager().newQuery(query).execute();
     }
 
-    private void deletePersistent(AbstractEntity abstractEntity) {
-        getPersistenceManager().deletePersistent(abstractEntity);
-    }
-
-    protected <T extends AbstractEntity> T getObjectById(Class<T> clazz, Object id) {
+    protected T find(Class<T> clazz, long id) {
         try {
             return getPersistenceManager().getObjectById(clazz, id);
         } catch (JDOObjectNotFoundException e) {
@@ -41,22 +37,56 @@ public class BasicDaoImpl {
         }
     }
 
-    private Object execute(String query) {
-        return getPersistenceManager().newQuery(query).execute();
+    @SuppressWarnings({"unchecked"})
+    protected List<T> findAll(Class<T> clazz) {
+        return findAll(clazz, null, null, true);
     }
 
-    protected <T extends AbstractEntity> List<T> findAll(Class<T> clazz) {
-        return findAll(clazz, "");
-    }
+    @SuppressWarnings({"unchecked"})
+    protected List<T> findAll(Class<T> clazz, String whereClause, String orderByClause, boolean ignoreDeleted) {
 
-    protected <T extends AbstractEntity> List<T> findAll(
-            Class<T> clazz, String additionalClause, Object... clauseParameters) {
+        StringBuilder queryText = new StringBuilder();
+        queryText.append("SELECT FROM ").append(clazz.getName());
 
-        String queryText = "SELECT FROM " + clazz.getName();
-        if (!StringUtil.isEmptyOrNull(additionalClause)) {
-            queryText += " " + String.format(additionalClause, clauseParameters);
+        if (ignoreDeleted) {
+            queryText.append(" WHERE (deleted == false)");
         }
 
-        return (List<T>) execute(queryText);
+        if (!StringUtil.isEmptyOrNull(whereClause)) {
+            if (ignoreDeleted) {
+                queryText.append(" && ");
+            } else {
+                queryText.append(" WHERE ");
+            }
+
+            queryText.append("(").append(whereClause).append(")");
+        }
+
+        if (!StringUtil.isEmptyOrNull(orderByClause)) {
+            queryText.append(" ORDER BY ").append(orderByClause);
+        }
+
+        return (List<T>) executeQuery(queryText.toString());
+    }
+
+
+    @Override
+    public void insert(T entity) {
+        getPersistenceManager().makePersistent(entity);
+    }
+
+    @Override
+    public void delete(T entity) {
+        getPersistenceManager().deletePersistent(entity);
+    }
+
+    @Override
+    public void markDeleted(T entity) {
+        entity.setDeleted(true);
+    }
+
+    @Override
+    public void unmarkDeleted(T entity) {
+        entity.setDeleted(false);
     }
 }

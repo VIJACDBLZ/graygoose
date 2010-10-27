@@ -9,17 +9,10 @@ import com.codeforces.graygoose.model.Alert;
 
 import java.util.List;
 
-@SuppressWarnings({"unchecked"})
-public class AlertTriggerEventDaoImpl extends BasicDaoImpl implements AlertTriggerEventDao {
+public class AlertTriggerEventDaoImpl extends BasicDaoImpl<AlertTriggerEvent> implements AlertTriggerEventDao {
     @Override
-    public void insert(AlertTriggerEvent alertTriggerEvent) {
-        makePersistent(alertTriggerEvent);
-    }
-
-    @Override
-    public void delete(AlertTriggerEvent alertTriggerEvent) {
-        alertTriggerEvent.setDeleted(true);
-        //TODO: delete linked entities
+    public AlertTriggerEvent find(long id) {
+        return super.find(AlertTriggerEvent.class, id);
     }
 
     @Override
@@ -34,11 +27,6 @@ public class AlertTriggerEventDaoImpl extends BasicDaoImpl implements AlertTrigg
 
     @Override
     public List<AlertTriggerEvent> findByAlert(long alertId) {
-        return super.findAll(AlertTriggerEvent.class, "WHERE alertId == %d", alertId);
-    }
-
-    @Override
-    public AlertTriggerEvent find(long id) {
-        return getObjectById(AlertTriggerEvent.class, id);
+        return super.findAll(AlertTriggerEvent.class, String.format("alertId == %d", alertId), null, true);
     }
 }

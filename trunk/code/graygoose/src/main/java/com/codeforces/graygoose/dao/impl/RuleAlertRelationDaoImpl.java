@@ -7,17 +7,10 @@ import com.codeforces.graygoose.model.RuleAlertRelation;
 
 import java.util.List;
 
-@SuppressWarnings({"unchecked"})
-public class RuleAlertRelationDaoImpl extends BasicDaoImpl implements RuleAlertRelationDao {
+public class RuleAlertRelationDaoImpl extends BasicDaoImpl<RuleAlertRelation> implements RuleAlertRelationDao {
     @Override
-    public void insert(RuleAlertRelation ruleAlertRelation) {
-        makePersistent(ruleAlertRelation);
-    }
-
-    @Override
-    public void delete(RuleAlertRelation ruleAlertRelation) {
-        ruleAlertRelation.setDeleted(true);
-        //TODO: delete linked entities
+    public RuleAlertRelation find(long id) {
+        return super.find(RuleAlertRelation.class, id);
     }
 
     @Override
@@ -32,7 +25,7 @@ public class RuleAlertRelationDaoImpl extends BasicDaoImpl implements RuleAlertR
 
     @Override
     public List<RuleAlertRelation> findByRuleAndAlert(long ruleId, long alertId) {
-        return super.findAll(RuleAlertRelation.class, "WHERE ruleId == %d && alertId == %d", ruleId, alertId);
+        return super.findAll(RuleAlertRelation.class, String.format("ruleId == %d && alertId == %d", ruleId, alertId), null, true);
     }
 
     @Override
@@ -42,7 +35,7 @@ public class RuleAlertRelationDaoImpl extends BasicDaoImpl implements RuleAlertR
 
     @Override
     public List<RuleAlertRelation> findByRule(long ruleId) {
-        return super.findAll(RuleAlertRelation.class, "WHERE ruleId == %d", ruleId);
+        return super.findAll(RuleAlertRelation.class, String.format("ruleId == %d", ruleId), null, true);
     }
 
     @Override
@@ -52,6 +45,6 @@ public class RuleAlertRelationDaoImpl extends BasicDaoImpl implements RuleAlertR
 
     @Override
     public List<RuleAlertRelation> findByAlert(long alertId) {
-        return super.findAll(RuleAlertRelation.class, "WHERE alertId == %d", alertId);
+        return super.findAll(RuleAlertRelation.class, String.format("alertId == %d", alertId), null, true);
     }
 }

@@ -1,31 +1,60 @@
 package com.codeforces.graygoose.dao.impl;
 
 import com.codeforces.graygoose.dao.AlertDao;
+import com.codeforces.graygoose.dao.AlertTriggerEventDao;
+import com.codeforces.graygoose.dao.RuleAlertRelationDao;
 import com.codeforces.graygoose.model.Alert;
+import com.codeforces.graygoose.model.AbstractEntity;
 import com.google.inject.Inject;
 
 import java.util.List;
+import java.util.Collections;
+import java.util.ArrayList;
+import java.util.LinkedList;
 
-@SuppressWarnings({"unchecked"})
-public class AlertDaoImpl extends BasicDaoImpl implements AlertDao {
-    @Override
-    public void insert(Alert alert) {
-        makePersistent(alert);
-    }
+public class AlertDaoImpl extends BasicDaoImpl<Alert> implements AlertDao {
+
+    @Inject
+    private AlertTriggerEventDao alertTriggerEventDao;
+
+    @Inject
+    private RuleAlertRelationDao ruleAlertRelationDao;
 
     @Override
     public void delete(Alert alert) {
-        alert.setDeleted(true);
-        //TODO: delete linked entities
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<Alert> findAll() {
-        return super.findAll(Alert.class, "ORDER BY name");
+    public void markDeleted(Alert alert) {
+        super.markDeleted(alert);
+
+        for (AbstractEntity dependentEntities : getDependentEntities(alert)) {
+            dependentEntities.setDeleted(true);
+        }
+    }
+
+    @Override
+    public void unmarkDeleted(Alert alert) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Alert find(long id) {
-        return getObjectById(Alert.class, id);
+        return super.find(Alert.class, id);
+    }
+
+    @Override
+    public List<Alert> findAll() {
+        return super.findAll(Alert.class, null, "name", true);
+    }
+
+    private List<AbstractEntity> getDependentEntities(Alert alert) {
+        List<AbstractEntity> dependentEntities = new LinkedList<AbstractEntity>();
+
+        dependentEntities.addAll(alertTriggerEventDao.findByAlert(alert));
+        dependentEntities.addAll(ruleAlertRelationDao.findByAlert(alert));
+
+        return dependentEntities;
     }
 }

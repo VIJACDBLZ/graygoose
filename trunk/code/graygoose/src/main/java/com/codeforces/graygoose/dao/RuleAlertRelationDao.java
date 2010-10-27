@@ -6,13 +6,7 @@ import com.codeforces.graygoose.model.RuleAlertRelation;
 
 import java.util.List;
 
-public interface RuleAlertRelationDao {
-    void insert(RuleAlertRelation ruleAlertRelation);
-
-    void delete(RuleAlertRelation ruleAlertRelation);
-
-    List<RuleAlertRelation> findAll();
-
+public interface RuleAlertRelationDao extends BasicDao<RuleAlertRelation> {
     List<RuleAlertRelation> findByRuleAndAlert(Rule rule, Alert alert);
 
     List<RuleAlertRelation> findByRuleAndAlert(long ruleId, long alertId);
