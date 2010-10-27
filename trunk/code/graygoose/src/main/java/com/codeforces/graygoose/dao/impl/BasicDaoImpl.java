@@ -1,8 +1,14 @@
 package com.codeforces.graygoose.dao.impl;
 
+import com.codeforces.graygoose.model.AbstractEntity;
+
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
+import java.util.List;
 
+import org.nocturne.util.StringUtil;
+
+@SuppressWarnings({"unchecked"})
 public class BasicDaoImpl {
     public static volatile ThreadLocal<PersistenceManager> persistenceManagerByThread =
             new ThreadLocal<PersistenceManager>();
@@ -19,15 +25,15 @@ public class BasicDaoImpl {
         getPersistenceManager().close();
     }
 
-    protected void makePersistent(Object object) {
-        getPersistenceManager().makePersistent(object);
+    protected void makePersistent(AbstractEntity abstractEntity) {
+        getPersistenceManager().makePersistent(abstractEntity);
     }
 
-    protected void deletePersistent(Object object) {
-        getPersistenceManager().deletePersistent(object);
+    private void deletePersistent(AbstractEntity abstractEntity) {
+        getPersistenceManager().deletePersistent(abstractEntity);
     }
 
-    protected <T> T getObjectById(Class<T> clazz, Object id) {
+    protected <T extends AbstractEntity> T getObjectById(Class<T> clazz, Object id) {
         try {
             return getPersistenceManager().getObjectById(clazz, id);
         } catch (JDOObjectNotFoundException e) {
@@ -35,7 +41,22 @@ public class BasicDaoImpl {
         }
     }
 
-    protected Object execute(String query) {
+    private Object execute(String query) {
         return getPersistenceManager().newQuery(query).execute();
+    }
+
+    protected <T extends AbstractEntity> List<T> findAll(Class<T> clazz) {
+        return findAll(clazz, "");
+    }
+
+    protected <T extends AbstractEntity> List<T> findAll(
+            Class<T> clazz, String additionalClause, Object... clauseParameters) {
+
+        String queryText = "SELECT FROM " + clazz.getName();
+        if (!StringUtil.isEmptyOrNull(additionalClause)) {
+            queryText += " " + String.format(additionalClause, clauseParameters);
+        }
+
+        return (List<T>) execute(queryText);
     }
 }

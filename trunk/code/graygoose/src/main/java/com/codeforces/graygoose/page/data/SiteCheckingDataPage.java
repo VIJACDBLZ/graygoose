@@ -27,7 +27,7 @@ public class SiteCheckingDataPage extends DataPage {
 
     @Action("checkSites")
     public void onCheckSites() throws Exception {
-        //
+        //TODO:        
     }
 
     @Action("fetch")
@@ -52,9 +52,7 @@ public class SiteCheckingDataPage extends DataPage {
             ResponseChecker.Response response = new ResponseChecker.Response(
                     getString("url"), getInteger("responseCode"), getString("responseText"));
 
-            String errorMessage = ResponseChecker.getErrorMessage(response, Arrays.asList(
-                    ruleDao.find(getLong("ruleId"))
-            ));
+            String errorMessage = ResponseChecker.getErrorMessage(response, ruleDao.find(getLong("ruleId")));
 
             if (errorMessage == null) {
                 put("success", true);

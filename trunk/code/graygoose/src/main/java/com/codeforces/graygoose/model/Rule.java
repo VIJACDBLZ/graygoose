@@ -4,7 +4,7 @@ import javax.jdo.annotations.*;
 import java.util.*;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class Rule {
+public class Rule extends AbstractEntity {
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
     private Long id;

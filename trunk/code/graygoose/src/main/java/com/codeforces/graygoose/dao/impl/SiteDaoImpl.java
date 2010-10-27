@@ -14,12 +14,13 @@ public class SiteDaoImpl extends BasicDaoImpl implements SiteDao {
 
     @Override
     public void delete(Site site) {
-        deletePersistent(site);
+        site.setDeleted(true);
+        //TODO: delete linked entities
     }
 
     @Override
     public List<Site> findAll() {
-        return (List<Site>) execute("SELECT FROM " + Site.class.getName() + " ORDER BY creationTime DESC");
+        return super.findAll(Site.class, "ORDER BY creationTime DESC");
     }
 
     @Override

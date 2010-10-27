@@ -10,32 +10,41 @@ import java.util.regex.Pattern;
 public class ResponseChecker {
     public static String getErrorMessage(Response response, Collection<Rule> rules) {
         for (Rule rule : rules) {
-            switch (rule.getRuleType()) {
-                case RESPONSE_CODE_RULE_TYPE:
-                    if (!checkResponseCode(response, rule)) {
-                        return getErrorString(response, rule);
-                    }
-                    break;
-                case SUBSTRING_RULE_TYPE:
-                    if (!checkSubstringCount(response, rule)) {
-                        return getErrorString(response, rule);
-                    }
-                    break;
-                case REGEX_RULE_TYPE:
-                    if (!checkRegexMatch(response, rule)) {
-                        return getErrorString(response, rule);
-                    }
-                    break;
-                default:
-                    throw new UnsupportedOperationException("Unsupported rule type.");
+            String errorMessage = getErrorMessage(response, rule);
+            if (errorMessage != null) {
+                return errorMessage;
             }
         }
 
         return null;
     }
 
-    private static String getErrorString(Response response, Rule rule) {
-        return rule.toString() + " " + "fails for site" + " " + response.getSiteUrl() + ".";
+    public static String getErrorMessage(Response response, Rule rule) {
+        switch (rule.getRuleType()) {
+            case RESPONSE_CODE_RULE_TYPE:
+                if (!checkResponseCode(response, rule)) {
+                    return getFormattedErrorString(response, rule);
+                }
+                break;
+            case SUBSTRING_RULE_TYPE:
+                if (!checkSubstringCount(response, rule)) {
+                    return getFormattedErrorString(response, rule);
+                }
+                break;
+            case REGEX_RULE_TYPE:
+                if (!checkRegexMatch(response, rule)) {
+                    return getFormattedErrorString(response, rule);
+                }
+                break;
+            default:
+                throw new UnsupportedOperationException("Unsupported rule type.");
+        }
+
+        return null;
+    }
+
+    private static String getFormattedErrorString(Response response, Rule rule) {
+        return rule.toString() + " " + "has been failed for site" + " " + response.getSiteUrl() + ".";
     }
 
     private static boolean checkResponseCode(Response response, Rule rule) {

@@ -108,8 +108,17 @@
             </td>
             <td>${rule.creationTime?datetime}</td>
             <td>
-                <#list ruleAlertRelations[rule.id] as ruleAlertRelation>
-                    <#--TODO:-->
+                <p>
+                    <a href="#" class="attach-alert-link" rel="alert-attach-dialog" ruleId="${rule.id}">{{Attach
+                        alert}}</a>
+                </p>
+                <#list alertsByRuleId[rule.id?string] as alert>
+                <p id="alert${alert.id}">
+                    ${alert.name} (id=${alert.id})
+                    <a href="#" class="detach-alert-link" alertId="${alert.id}" ruleId="${rule.id}">
+                        <img src="${home}/images/detach_alert.gif">
+                    </a>
+                </p>
                 </#list>
             </td>
             <td>
@@ -139,7 +148,7 @@
                     <td class="field-name">{{Type}}:</td>
                     <td>
                         <select name="ruleType">
-                            <option value="">{{select value}}</option>
+                            <option value="">{{&lt;select value&gt;}}</option>
                             <option value="RESPONSE_CODE_RULE_TYPE">{{Check response code}}</option>
                             <option value="SUBSTRING_RULE_TYPE">{{Check by substring}}</option>
                             <option value="REGEX_RULE_TYPE">{{Check by regex}}</option>
@@ -219,7 +228,7 @@
                 </tr>
                 <tr height="100em">
                     <td colspan="2" height="100%">
-                        <textarea name="responseText" wrap="off" style="overflow:scroll;width:100%;" rows="10">                            
+                        <textarea name="responseText" wrap="off" style="overflow:scroll;width:100%;" rows="10">
                         </textarea>
                     </td>
                 </tr>
@@ -228,6 +237,43 @@
                         <input name="test" type="button" value="{{Test}}" style="padding: 0.25em 1.5em;">
                         <input name="fetch" type="button" value="{{Fetch}}"
                                style="padding: 0.25em 1.5em;margin-left:2em;">
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>
+
+<div class="alert-attach-dialog" style="visibility:hidden;">
+    <div class="vertical-form" style="width:30em;">
+        <form action="" method="post">
+            <table>
+                <tr>
+                    <td class="field-name" style="width:15em;">{{Alert}}:</td>
+                    <td>
+                        <select name="alertId">
+                            <option value="">{{&lt;select value&gt;}}</option>
+                            <#list alerts as alert>
+                            <option value="${alert.id}">${alert.name} (id=${alert.id})</option>
+                            </#list>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td class="error under" errorVar="error__alertId"></td>
+                </tr>
+                <tr>
+                    <td class="field-name">{{Max consecutive fail count}}:</td>
+                    <td><input name="maxConsecutiveFailCount"></td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td class="error under" errorVar="error__maxConsecutiveFailCount"></td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="buttons">
+                        <input type="button" value="{{Attach}}" style="padding: 0.25em 1.5em;">
                     </td>
                 </tr>
             </table>
@@ -380,6 +426,53 @@
                     }, "json");
                 });
             }});
+        });
+
+        $("a.attach-alert-link").each(function() {
+            var a = $(this);
+            var ruleId = a.attr("ruleId");
+
+            a.smart_modal({show: function() {
+                $("#sm_content input[type='button']").click(function() {
+                    $.post("<@link name="RuleAlertRelationsDataPage"/>", {
+                        action: "attachAlert", ruleId: ruleId,
+                        alertId: $("#sm_content select[name='alertId']").val(),
+                        maxConsecutiveFailCount: $("#sm_content input[name='maxConsecutiveFailCount']").val()
+                    }, function(json) {
+                        if (json["success"] == "true") {
+                            document.location = "";
+                        } else {
+                            $("#sm_content td.error").each(function() {
+                                var errorContainer = $(this);
+                                errorContainer.text("");
+                                errorContainer.text(json[$(this).attr("errorVar")]);
+                            });
+
+                            var error = json["error"];
+                            if (error) {
+                                alert(error);
+                            }
+                        }
+                    }, "json");
+                });
+            }});
+        });
+
+        $("a.detach-alert-link").click(function() {
+            var ruleId = $(this).attr("ruleId");
+            var alertId = $(this).attr("alertId");
+
+            if (confirm("{{Are you sure you want to detach alert #}}" + alertId + "?")) {
+                $.post("<@link name="RuleAlertRelationsDataPage"/>", {
+                    action: "detachAlert", ruleId: ruleId, alertId: alertId
+                }, function(json) {
+                    if (json["success"] == "true") {
+                        $("#alert" + alertId).remove();
+                    } else {
+                        alert(json["error"]);
+                    }
+                }, "json");
+            }
         });
     });
 </script>

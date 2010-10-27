@@ -16,12 +16,23 @@ public class RuleAlertRelationDaoImpl extends BasicDaoImpl implements RuleAlertR
 
     @Override
     public void delete(RuleAlertRelation ruleAlertRelation) {
-        deletePersistent(ruleAlertRelation);
+        ruleAlertRelation.setDeleted(true);
+        //TODO: delete linked entities
     }
 
     @Override
     public List<RuleAlertRelation> findAll() {
-        return (List<RuleAlertRelation>) execute("SELECT FROM " + RuleAlertRelation.class.getName());
+        return super.findAll(RuleAlertRelation.class);
+    }
+
+    @Override
+    public List<RuleAlertRelation> findByRuleAndAlert(Rule rule, Alert alert) {
+        return findByRuleAndAlert(rule.getId(), alert.getId());
+    }
+
+    @Override
+    public List<RuleAlertRelation> findByRuleAndAlert(long ruleId, long alertId) {
+        return super.findAll(RuleAlertRelation.class, "WHERE ruleId == %d && alertId == %d", ruleId, alertId);
     }
 
     @Override
@@ -31,8 +42,7 @@ public class RuleAlertRelationDaoImpl extends BasicDaoImpl implements RuleAlertR
 
     @Override
     public List<RuleAlertRelation> findByRule(long ruleId) {
-        return (List<RuleAlertRelation>) execute(String.format(
-                "SELECT FROM " + RuleAlertRelation.class.getName() + " WHERE ruleId = %d", ruleId));
+        return super.findAll(RuleAlertRelation.class, "WHERE ruleId == %d", ruleId);
     }
 
     @Override
@@ -42,7 +52,6 @@ public class RuleAlertRelationDaoImpl extends BasicDaoImpl implements RuleAlertR
 
     @Override
     public List<RuleAlertRelation> findByAlert(long alertId) {
-        return (List<RuleAlertRelation>) execute(String.format(
-                "SELECT FROM " + RuleAlertRelation.class.getName() + " WHERE alertId = %d", alertId));
+        return super.findAll(RuleAlertRelation.class, "WHERE alertId == %d", alertId);
     }
 }

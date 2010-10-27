@@ -6,7 +6,7 @@ import javax.jdo.annotations.*;
 import java.io.Serializable;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class Alert implements Serializable {
+public class Alert extends AbstractEntity implements Serializable {
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
     private Long id;

@@ -13,6 +13,10 @@ public interface RuleAlertRelationDao {
 
     List<RuleAlertRelation> findAll();
 
+    List<RuleAlertRelation> findByRuleAndAlert(Rule rule, Alert alert);
+
+    List<RuleAlertRelation> findByRuleAndAlert(long ruleId, long alertId);
+
     List<RuleAlertRelation> findByRule(Rule rule);
 
     List<RuleAlertRelation> findByRule(long ruleId);

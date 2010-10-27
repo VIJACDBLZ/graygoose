@@ -2,6 +2,7 @@ package com.codeforces.graygoose.dao.impl;
 
 import com.codeforces.graygoose.dao.AlertDao;
 import com.codeforces.graygoose.model.Alert;
+import com.google.inject.Inject;
 
 import java.util.List;
 
@@ -14,12 +15,13 @@ public class AlertDaoImpl extends BasicDaoImpl implements AlertDao {
 
     @Override
     public void delete(Alert alert) {
-        deletePersistent(alert);
+        alert.setDeleted(true);
+        //TODO: delete linked entities
     }
 
     @Override
     public List<Alert> findAll() {
-        return (List<Alert>) execute("SELECT FROM " + Alert.class.getName() + " ORDER BY name");
+        return super.findAll(Alert.class, "ORDER BY name");
     }
 
     @Override

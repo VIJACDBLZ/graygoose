@@ -3,7 +3,7 @@ package com.codeforces.graygoose.model;
 import javax.jdo.annotations.*;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class RuleAlertRelation {
+public class RuleAlertRelation extends AbstractEntity {
 
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)

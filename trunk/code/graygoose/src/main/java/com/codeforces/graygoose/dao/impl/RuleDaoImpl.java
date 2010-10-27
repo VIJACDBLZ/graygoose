@@ -17,12 +17,13 @@ public class RuleDaoImpl extends BasicDaoImpl implements RuleDao {
 
     @Override
     public void delete(Rule rule) {
-        deletePersistent(rule);
+        rule.setDeleted(true);
+        //TODO: delete linked entities
     }
 
     @Override
     public List<Rule> findAll() {
-        return (List<Rule>) execute("SELECT FROM " + Rule.class.getName() + " ORDER BY creationTime DESC");
+        return super.findAll(Rule.class, "ORDER BY creationTime DESC");
     }
 
     @Override

@@ -33,7 +33,7 @@
                 </td>
                 <td>
                     <select name="type">
-                        <#assign typeValues = ["{{select value}}", "{{E-mail}}", "{{Google calendar event}}"]/>
+                        <#assign typeValues = ["{{&lt;select value&gt;}}", "{{E-mail}}", "{{Google calendar event}}"]/>
                         <#list typeValues as typeValue>
                         <#if type?? && typeValue == type>
                         <option selected value="${typeValue}">${typeValue}</option>
