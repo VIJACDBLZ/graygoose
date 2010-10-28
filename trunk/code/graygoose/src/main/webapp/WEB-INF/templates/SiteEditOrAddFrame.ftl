@@ -43,7 +43,7 @@
                 </td>
                 <td>
                     <select name="rescanPeriod">
-                        <#assign values=[30, 60, 120, 300]/>
+                        <#assign values=[60, 120, 300, 600]/>
                         <#list values as value>
                         <#if rescanPeriod?? && value?string==rescanPeriod>
                         <option selected="selected" value="${value}">${value}</option>

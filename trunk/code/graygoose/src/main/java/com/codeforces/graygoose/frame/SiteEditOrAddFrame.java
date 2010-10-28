@@ -17,7 +17,10 @@ import org.nocturne.validation.*;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class SiteEditOrAddFrame extends ApplicationFrame {
     @Parameter
@@ -121,7 +124,7 @@ public class SiteEditOrAddFrame extends ApplicationFrame {
         });
 
         addValidator("rescanPeriod", new RequiredValidator());
-        addValidator("rescanPeriod", new OptionValidator("30", "60", "120", "300"));
+        addValidator("rescanPeriod", new OptionValidator("60", "120", "300", "600"));
 
         return runValidation();
     }

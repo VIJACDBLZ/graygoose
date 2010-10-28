@@ -9,4 +9,8 @@ public interface AlertTriggerEventDao extends BasicDao<AlertTriggerEvent> {
     List<AlertTriggerEvent> findByAlert(Alert alert);
 
     List<AlertTriggerEvent> findByAlert(long alertId);
+
+    List<AlertTriggerEvent> findByAlertForPeriod(Alert alert, long lowerBoundMillis, long upperBoundMillis);
+
+    List<AlertTriggerEvent> findByAlertForPeriod(long alertId, long lowerBoundMillis, long upperBoundMillis);
 }

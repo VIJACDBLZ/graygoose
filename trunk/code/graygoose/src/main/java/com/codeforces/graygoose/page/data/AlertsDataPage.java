@@ -51,7 +51,6 @@ public class AlertsDataPage extends DataPage {
         try {
             if (alert != null) {
                 if ("E-mail".equals(alert.getType())) {
-                    //TODO: check why MailUtil.sendMail returns true while e-mail was not really sent
                     if (!MailUtil.sendMail(alert.getEmail(), "GrayGoose test alert: " + alert.getName(), "")) {
                         throw new RuntimeException($("E-mail was not sent for an unknown reason."));
                     }

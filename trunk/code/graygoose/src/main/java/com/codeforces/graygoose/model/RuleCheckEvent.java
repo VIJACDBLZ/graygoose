@@ -27,7 +27,9 @@ public class RuleCheckEvent extends AbstractEntity {
     @Persistent
     private Date creationTime;
 
-    public RuleCheckEvent() {
+    public RuleCheckEvent(long ruleId) {
+        this.ruleId = ruleId;
+        status = Status.PENDING;
         deleted = false;
         creationTime = new Date();
     }

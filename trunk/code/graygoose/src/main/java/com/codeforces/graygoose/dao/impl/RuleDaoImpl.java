@@ -1,12 +1,11 @@
 package com.codeforces.graygoose.dao.impl;
 
-import com.codeforces.graygoose.dao.RuleDao;
-import com.codeforces.graygoose.dao.RuleCheckEventDao;
 import com.codeforces.graygoose.dao.RuleAlertRelationDao;
+import com.codeforces.graygoose.dao.RuleCheckEventDao;
+import com.codeforces.graygoose.dao.RuleDao;
+import com.codeforces.graygoose.model.AbstractEntity;
 import com.codeforces.graygoose.model.Rule;
 import com.codeforces.graygoose.model.Site;
-import com.codeforces.graygoose.model.AbstractEntity;
-import com.codeforces.graygoose.model.Alert;
 import com.google.inject.Inject;
 
 import java.util.LinkedList;
@@ -56,16 +55,6 @@ public class RuleDaoImpl extends BasicDaoImpl<Rule> implements RuleDao {
 
     @Override
     public List<Rule> findBySite(long siteId) {
-        //TODO: check that rule properties are retrieved
-        /*List<Rule> allRules = findAll();
-        List<Rule> rulesBySite = new LinkedList<Rule>();
-
-        for (Rule rule : allRules) {
-            if (rule.getSiteId() == siteId)
-                rulesBySite.add(rule);
-        }
-
-        return rulesBySite;*/
         return super.findAll(Rule.class, String.format("siteId == %d", siteId), "creationTime DESC", true);
     }
 

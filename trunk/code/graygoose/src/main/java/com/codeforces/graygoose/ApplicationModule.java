@@ -3,7 +3,6 @@ package com.codeforces.graygoose;
 import com.codeforces.graygoose.dao.*;
 import com.codeforces.graygoose.dao.impl.*;
 import com.codeforces.graygoose.misc.PersistenceManagerFactoryInstance;
-import com.codeforces.graygoose.model.RuleCheckEvent;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 import com.google.inject.Binder;

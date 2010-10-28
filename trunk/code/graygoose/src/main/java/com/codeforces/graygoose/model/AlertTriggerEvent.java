@@ -13,7 +13,7 @@ public class AlertTriggerEvent extends AbstractEntity {
     private Long alertId;
 
     @Persistent
-    private Date triggerTime;
+    private Long ruleCheckEventId;
 
     @Persistent
     private boolean deleted;
@@ -21,7 +21,9 @@ public class AlertTriggerEvent extends AbstractEntity {
     @Persistent
     private Date creationTime;
 
-    public AlertTriggerEvent() {
+    public AlertTriggerEvent(long alertId, long ruleCheckEventId) {
+        this.alertId = alertId;
+        this.ruleCheckEventId = ruleCheckEventId;
         deleted = false;
         creationTime = new Date();
     }
@@ -38,12 +40,12 @@ public class AlertTriggerEvent extends AbstractEntity {
         this.alertId = alertId;
     }
 
-    public Date getTriggerTime() {
-        return triggerTime;
+    public Long getRuleCheckEventId() {
+        return ruleCheckEventId;
     }
 
-    public void setTriggerTime(Date triggerTime) {
-        this.triggerTime = triggerTime;
+    public void setRuleCheckEventId(Long ruleCheckEventId) {
+        this.ruleCheckEventId = ruleCheckEventId;
     }
 
     @Override

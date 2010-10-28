@@ -1,14 +1,13 @@
 package com.codeforces.graygoose.dao.impl;
 
-import com.codeforces.graygoose.dao.SiteDao;
 import com.codeforces.graygoose.dao.RuleDao;
-import com.codeforces.graygoose.model.Site;
+import com.codeforces.graygoose.dao.SiteDao;
 import com.codeforces.graygoose.model.AbstractEntity;
-import com.codeforces.graygoose.model.Alert;
+import com.codeforces.graygoose.model.Site;
 import com.google.inject.Inject;
 
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
 
 public class SiteDaoImpl extends BasicDaoImpl<Site> implements SiteDao {
 

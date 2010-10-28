@@ -30,8 +30,13 @@ public abstract class BasicDaoImpl<T extends AbstractEntity> implements BasicDao
     }
 
     protected T find(Class<T> clazz, long id) {
+        return find(clazz, id, true);
+    }
+
+    protected T find(Class<T> clazz, long id, boolean ignoreDeleted) {
         try {
-            return getPersistenceManager().getObjectById(clazz, id);
+            T entity = getPersistenceManager().getObjectById(clazz, id);
+            return entity == null || entity.isDeleted() ? null : entity;
         } catch (JDOObjectNotFoundException e) {
             return null;
         }

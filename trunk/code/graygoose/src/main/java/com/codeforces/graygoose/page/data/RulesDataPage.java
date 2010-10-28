@@ -11,7 +11,6 @@ import org.nocturne.link.Link;
 import org.nocturne.validation.OptionValidator;
 import org.nocturne.validation.RequiredValidator;
 
-import java.util.Date;
 import java.util.Map;
 
 @Link("data/rules")

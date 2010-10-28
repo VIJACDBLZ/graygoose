@@ -3,7 +3,6 @@ package com.codeforces.graygoose.model;
 import com.codeforces.graygoose.util.EncryptUtil;
 
 import javax.jdo.annotations.*;
-import java.io.Serializable;
 import java.util.Date;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)

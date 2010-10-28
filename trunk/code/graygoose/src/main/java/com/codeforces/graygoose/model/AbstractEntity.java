@@ -1,6 +1,5 @@
 package com.codeforces.graygoose.model;
 
-import javax.jdo.annotations.Persistent;
 import java.util.Date;
 
 public abstract class AbstractEntity {
