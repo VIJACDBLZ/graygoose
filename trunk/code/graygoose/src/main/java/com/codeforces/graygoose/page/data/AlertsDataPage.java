@@ -3,11 +3,14 @@ package com.codeforces.graygoose.page.data;
 import com.codeforces.graygoose.dao.AlertDao;
 import com.codeforces.graygoose.model.Alert;
 import com.codeforces.graygoose.util.MailUtil;
+import com.codeforces.graygoose.util.SmsSendException;
 import com.codeforces.graygoose.util.SmsUtil;
 import com.google.inject.Inject;
 import org.nocturne.annotation.Action;
 import org.nocturne.annotation.Parameter;
 import org.nocturne.link.Link;
+
+import javax.mail.MessagingException;
 
 @Link("data/alerts")
 public class AlertsDataPage extends DataPage {
@@ -51,11 +54,18 @@ public class AlertsDataPage extends DataPage {
         try {
             if (alert != null) {
                 if ("E-mail".equals(alert.getType())) {
-                    if (!MailUtil.sendMail(alert.getEmail(), "GrayGoose test alert: " + alert.getName(), "")) {
-                        throw new RuntimeException($("E-mail was not sent for an unknown reason."));
+                    try {
+                        MailUtil.sendMail(alert.getEmail(), "GrayGoose test alert: " + alert.getName(), "...");
+                    } catch (MessagingException e) {
+                        throw new RuntimeException("E-mail was not sent: " + e.getMessage());
                     }
                 } else if ("Google calendar event".equals(alert.getType())) {
-                    SmsUtil.send("GrayGoose test alert: " + alert.getName(), "", alert.getEmail(), alert.getPassword());
+                    try {
+                        SmsUtil.send("GrayGoose test alert: " + alert.getName(), "",
+                                alert.getEmail(), alert.getPassword());
+                    } catch (SmsSendException e) {
+                        throw new RuntimeException("Can't add Google calendar event: " + e.getMessage());
+                    }
                 } else {
                     throw new UnsupportedOperationException($("Unsupported alert type."));
                 }
@@ -64,7 +74,7 @@ public class AlertsDataPage extends DataPage {
             } else {
                 put("error", $("No such alert."));
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             put("error", e.getMessage());
         }
 

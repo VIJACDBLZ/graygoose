@@ -3,6 +3,7 @@ package com.codeforces.graygoose.util;
 import com.codeforces.graygoose.dao.*;
 import com.codeforces.graygoose.model.*;
 
+import javax.mail.MessagingException;
 import java.io.IOException;
 import java.util.*;
 
@@ -113,20 +114,28 @@ public class SiteCheckingUtil {
             for (Alert alert : alerts) {
                 try {
                     if ("E-mail".equals(alert.getType())) {
-                        if (!MailUtil.sendMail(alert.getEmail(), "GrayGoose alert: " + alert.getName(), "")) {
-                            throw new RuntimeException("E-mail was not sent for an unknown reason.");
+                        try {
+                            MailUtil.sendMail(alert.getEmail(), "GrayGoose alert: " + alert.getName(),
+                                    ruleCheckEvent.getDesription());
+                        } catch (MessagingException e) {
+                            throw new RuntimeException("E-mail was not sent: " + e.getMessage());
                         }
                     } else if ("Google calendar event".equals(alert.getType())) {
-                        SmsUtil.send("GrayGoose alert: " + ruleCheckEvent.getDesription(), "",
-                                alert.getEmail(), alert.getPassword());
+                        try {
+                            SmsUtil.send("GrayGoose alert: " + ruleCheckEvent.getDesription(), "",
+                                    alert.getEmail(), alert.getPassword());
+                        } catch (SmsSendException e) {
+                            throw new RuntimeException("Can't add Google calendar event: " + e.getMessage());
+                        }
                     } else {
                         throw new UnsupportedOperationException("Unsupported alert type.");
                     }
 
                     alertTriggerEventDao.insert(new AlertTriggerEvent(alert.getId(), ruleCheckEvent.getId()));
-                } catch (Exception e) {
+                } catch (RuntimeException e) {
                     //No actions needed. In case of exception alert trigger event has not been created
                     //and alert shall be executed next time.
+                    //TODO: log e.getMessage()
                 }
             }
         }

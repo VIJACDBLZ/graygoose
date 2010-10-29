@@ -20,6 +20,23 @@ public class RuleCheckEventDaoImpl extends BasicDaoImpl<RuleCheckEvent> implemen
     }
 
     @Override
+    public List<RuleCheckEvent> findAllForPeriod(long lowerBoundMillis, long upperBoundMillis) {
+        List<RuleCheckEvent> ruleCheckEvents = super.findAll(RuleCheckEvent.class);
+        List<RuleCheckEvent> result = new ArrayList<RuleCheckEvent>();
+
+        for (RuleCheckEvent ruleCheckEvent : ruleCheckEvents) {
+            Date checkTime = ruleCheckEvent.getCheckTime();
+            if (checkTime != null
+                    && checkTime.getTime() >= lowerBoundMillis
+                    && checkTime.getTime() <= upperBoundMillis) {
+                result.add(ruleCheckEvent);
+            }
+        }
+
+        return result;
+    }
+
+    @Override
     public List<RuleCheckEvent> findByRule(Rule rule) {
         return findByRule(rule.getId());
     }
@@ -36,6 +53,7 @@ public class RuleCheckEventDaoImpl extends BasicDaoImpl<RuleCheckEvent> implemen
 
     @Override
     public List<RuleCheckEvent> findByRuleForPeriod(long ruleId, long lowerBoundMillis, long upperBoundMillis) {
+        //TODO: DATETIME is not supported for now
         /*Date upperBound = new Date(upperBoundMillis);
         Date lowerBound = new Date(lowerBoundMillis);
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -46,14 +64,10 @@ public class RuleCheckEventDaoImpl extends BasicDaoImpl<RuleCheckEvent> implemen
 
         return super.findAll(RuleCheckEvent.class, whereClause.toString(), null, true);*/
 
-        List<RuleCheckEvent> ruleCheckEvents = super.findAll(RuleCheckEvent.class);
         List<RuleCheckEvent> result = new ArrayList<RuleCheckEvent>();
 
-        for (RuleCheckEvent ruleCheckEvent : ruleCheckEvents) {
-            Date checkTime = ruleCheckEvent.getCheckTime();
-            if (checkTime != null
-                    && checkTime.getTime() >= lowerBoundMillis
-                    && checkTime.getTime() <= upperBoundMillis) {
+        for (RuleCheckEvent ruleCheckEvent : findAllForPeriod(lowerBoundMillis, upperBoundMillis)) {
+            if (ruleCheckEvent.getRuleId() == ruleId) {
                 result.add(ruleCheckEvent);
             }
         }

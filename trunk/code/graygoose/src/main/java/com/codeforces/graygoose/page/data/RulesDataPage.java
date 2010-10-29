@@ -2,6 +2,8 @@ package com.codeforces.graygoose.page.data;
 
 import com.codeforces.graygoose.dao.RuleDao;
 import com.codeforces.graygoose.model.Rule;
+import com.codeforces.graygoose.util.FetchUtil;
+import com.codeforces.graygoose.util.ResponseChecker;
 import com.codeforces.graygoose.util.RuleTypeUtil;
 import com.google.inject.Inject;
 import org.nocturne.annotation.Action;
@@ -11,6 +13,7 @@ import org.nocturne.link.Link;
 import org.nocturne.validation.OptionValidator;
 import org.nocturne.validation.RequiredValidator;
 
+import java.io.IOException;
 import java.util.Map;
 
 @Link("data/rules")
@@ -135,6 +138,42 @@ public class RulesDataPage extends DataPage {
         }
 
         printTemplateMapAsStringsUsingJson("success", "error");
+    }
+
+    @Action("checkRule")
+    public void onCheckRule() {
+        try {
+            ResponseChecker.Response response = new ResponseChecker.Response(
+                    getString("url"), getInteger("responseCode"), getString("responseText"));
+
+            String errorMessage = ResponseChecker.getErrorMessage(response, ruleDao.find(getLong("ruleId")));
+
+            if (errorMessage == null) {
+                put("success", true);
+            } else {
+                put("error", errorMessage);
+            }
+        } catch (Exception e) {
+            put("error", e.getMessage());
+        }
+
+        printTemplateMapAsStringsUsingJson("success", "error");
+    }
+
+    @Action("fetch")
+    public void onFetch() {
+        try {
+            ResponseChecker.Response response = FetchUtil.fetchUrl(getString("url"));
+
+            put("responseCode", response.getCode());
+            put("responseText", response.getText());
+
+            put("success", true);
+        } catch (IOException e) {
+            put("error", e.getMessage());
+        }
+
+        printTemplateMapAsStringsUsingJson("success", "error", "responseCode", "responseText");
     }
 
     private void setupRuleProperties(Rule rule) {

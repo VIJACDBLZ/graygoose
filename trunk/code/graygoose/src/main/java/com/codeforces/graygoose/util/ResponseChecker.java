@@ -44,7 +44,7 @@ public class ResponseChecker {
     }
 
     private static String getFormattedErrorString(Response response, Rule rule) {
-        return rule.toString() + " " + "has been failed for site" + " " + response.getSiteUrl() + ".";
+        return "site:" + response.getSiteUrl() + "; rule: " + rule.toString() + ".";
     }
 
     private static boolean checkResponseCode(Response response, Rule rule) {

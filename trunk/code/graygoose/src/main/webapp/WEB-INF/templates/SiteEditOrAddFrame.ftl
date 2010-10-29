@@ -402,7 +402,7 @@
 
             a.smart_modal({show: function() {
                 $("#sm_content input[name='test']").click(function() {
-                    $.post("<@link name="SiteCheckingDataPage"/>", {
+                    $.post("<@link name="RulesDataPage"/>", {
                         action: "checkRule", ruleId: ruleId, url: url,
                         responseCode: $("#sm_content input[name='responseCode']").val(),
                         responseText: $("#sm_content textarea[name='responseText']").val()
@@ -416,7 +416,7 @@
                 });
 
                 $("#sm_content input[name='fetch']").click(function() {
-                    $.post("<@link name="SiteCheckingDataPage"/>", {action: "fetch", url: url}, function(json) {
+                    $.post("<@link name="RulesDataPage"/>", {action: "fetch", url: url}, function(json) {
                         if (json["success"] == "true") {
                             $("#sm_content input[name='responseCode']").val(json["responseCode"]);
                             $("#sm_content textarea[name='responseText']").val(json["responseText"]);

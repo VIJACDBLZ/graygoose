@@ -80,7 +80,7 @@ public class Rule extends AbstractEntity {
         StringBuilder result = new StringBuilder();
 
         result.append("Rule {")
-                .append("ruleType=").append(ruleType)
+                .append("ruleType=").append(ruleType.getShortName())
                 .append(", parameters=").append(data)
                 .append('}');
 
@@ -88,18 +88,25 @@ public class Rule extends AbstractEntity {
     }
 
     public static enum RuleType {
-        RESPONSE_CODE_RULE_TYPE("expectedCodes"),
-        SUBSTRING_RULE_TYPE("expectedSubstring", "expectedSubstringMinimalCount", "expectedSubstringMaximalCount"),
-        REGEX_RULE_TYPE("expectedRegex");
+        RESPONSE_CODE_RULE_TYPE("RESP_CODE", "expectedCodes"),
+        SUBSTRING_RULE_TYPE("SUBSTR", "expectedSubstring", "expectedSubstringMinimalCount", "expectedSubstringMaximalCount"),
+        REGEX_RULE_TYPE("REGEX", "expectedRegex");
 
         private final SortedSet<String> propertyNames = new TreeSet<String>();
 
-        private RuleType(String... propertyNames) {
+        private final String shortName;
+
+        private RuleType(String shortName, String... propertyNames) {
+            this.shortName = shortName;
             this.propertyNames.addAll(Arrays.asList(propertyNames));
         }
 
         public Set<String> getPropertyNames() {
             return Collections.unmodifiableSortedSet(propertyNames);
+        }
+
+        public String getShortName() {
+            return shortName;
         }
     }
 

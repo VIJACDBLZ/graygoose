@@ -2,6 +2,8 @@ package com.codeforces.graygoose;
 
 import com.codeforces.graygoose.page.data.*;
 import com.codeforces.graygoose.page.web.*;
+import com.codeforces.graygoose.page.cron.SitesCronPage;
+import com.codeforces.graygoose.page.cron.EventsCronPage;
 import org.nocturne.link.Links;
 import org.nocturne.main.LinkedRequestRouter;
 
@@ -20,7 +22,10 @@ public class ApplicationRequestRouter extends LinkedRequestRouter {
         Links.add(SitesDataPage.class);
         Links.add(AlertsDataPage.class);
         Links.add(RulesDataPage.class);
-        Links.add(SiteCheckingDataPage.class);
         Links.add(RuleAlertRelationsDataPage.class);
+
+        //Cron pages:
+        Links.add(SitesCronPage.class);
+        Links.add(EventsCronPage.class);
     }
 }

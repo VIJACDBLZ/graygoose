@@ -4,9 +4,10 @@ import com.codeforces.graygoose.frame.MainMenuFrame;
 import com.codeforces.graygoose.frame.MessageBoxFrame;
 import com.codeforces.graygoose.frame.TopMenuFrame;
 import com.codeforces.graygoose.page.ApplicationPage;
+import com.codeforces.graygoose.page.UserPage;
 import com.google.inject.Inject;
 
-public abstract class WebPage extends ApplicationPage {
+public abstract class WebPage extends UserPage {
     @Inject
     private TopMenuFrame topMenuFrame;
 

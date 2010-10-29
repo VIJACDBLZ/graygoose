@@ -6,6 +6,8 @@ import com.codeforces.graygoose.model.RuleCheckEvent;
 import java.util.List;
 
 public interface RuleCheckEventDao extends BasicDao<RuleCheckEvent> {
+    List<RuleCheckEvent> findAllForPeriod(long lowerBoundMillis, long upperBoundMilli);
+
     List<RuleCheckEvent> findByRule(Rule rule);
 
     List<RuleCheckEvent> findByRule(long ruleId);

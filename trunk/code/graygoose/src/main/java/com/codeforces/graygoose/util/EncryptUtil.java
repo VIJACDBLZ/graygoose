@@ -1,97 +1,74 @@
 package com.codeforces.graygoose.util;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.DecoderException;
+
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 
 public class EncryptUtil {
-    private static final int[] ENCRYPT_PERMUTATION = new int[32];
-    private static final int[] DECRYPT_PERMUTATION = new int[32];
 
-    private static char decryptChar(String code) {
-        if (code.length() != 8) {
-            throw new IllegalArgumentException("code.length should be 8, but " + code.length() + " has been found.");
-        }
+    private static final byte[] RANDOM_SEED = {0x1a, 0x03, 0x52, 0x63, 0x04, 0x1b, 0x0c, 0x0d};
+    private static final String XFORM = "DES/ECB/PKCS5Padding";
 
-        if (code.startsWith("???????")) {
-            return code.charAt(7);
-        } else {
-            int[] vals = new int[8];
+    private static final SecretKey SECRET_KEY;
 
-            for (int i = 0; i < 8; i++) {
-                vals[i] = DECRYPT_PERMUTATION[code.charAt(i) - (' ' + 1)];
-            }
-
-            int num = 0;
-            for (int i = 0; i < 8; i++) {
-                num = num * 32 + vals[7 - i];
-            }
-
-            return (char) (num);
+    private static byte[] encrypt(byte[] input) {
+        try {
+            Cipher cipher = Cipher.getInstance(XFORM);
+            cipher.init(Cipher.ENCRYPT_MODE, SECRET_KEY);
+            return cipher.doFinal(input);
+        } catch (Exception e) {
+            throw new RuntimeException("Encryption exception.", e);
         }
     }
 
-    private static String encrypt(char c) {
-        int num = (int) c;
-
-        if (num <= 0) {
-            return "???????" + c;
-        } else {
-            int[] vals = new int[8];
-
-            for (int i = 0; i < 8; i++) {
-                vals[i] = num & 31;
-                num /= 32;
-            }
-
-            StringBuilder result = new StringBuilder(8);
-            for (int i = 0; i < 8; i++) {
-                result.append((char) (' ' + 1 + ENCRYPT_PERMUTATION[vals[i]]));
-            }
-
-            return result.toString();
+    private static byte[] decrypt(byte[] input) {
+        try {
+            Cipher cipher = Cipher.getInstance(XFORM);
+            cipher.init(Cipher.DECRYPT_MODE, SECRET_KEY);
+            return cipher.doFinal(input);
+        } catch (Exception e) {
+            throw new RuntimeException("Decryption exception.", e);
         }
     }
 
-    public static String decrypt(String message) {
-        if (message.length() % 8 != 0) {
-            throw new IllegalArgumentException("Encypted message length expected to be divisible by 8, " +
-                    "but " + message.length() + " found.");
+    public static String encrypt(String plainText) {
+        try {
+            byte[] input = IOUtils.toByteArray(IOUtils.toInputStream(plainText));
+            byte[] output = encrypt(input);
+            return Hex.encodeHexString(output);
+        } catch (IOException e) {
+            return null;
         }
-
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < message.length(); i += 8) {
-            result.append(decryptChar(message.substring(i, i + 8)));
-        }
-
-        return result.toString();
     }
 
-    public static String encrypt(String message) {
-        StringBuilder result = new StringBuilder(message.length() * 8);
-        for (int i = 0; i < message.length(); i++) {
-            result.append(encrypt(message.charAt(i)));
+    public static String decrypt(String cypherText) {
+        try {
+            byte[] input = Hex.decodeHex(cypherText.toCharArray());
+            byte[] output = decrypt(input);
+            return new String(output);
+        } catch (DecoderException e) {
+            return null;
         }
-        return result.toString();
     }
 
     protected EncryptUtil() {
     }
 
     static {
-        List<Integer> perm = new ArrayList<Integer>();
-
-        for (int i = 0; i < 32; i++) {
-            perm.add(i);
+        KeyGenerator keyGenerator;
+        try {
+            keyGenerator = KeyGenerator.getInstance("DES");
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Can't nitialize a secret key generator.", e);
         }
-
-        Random random = new Random("EncryptUtil".hashCode());
-        Collections.shuffle(perm, random);
-
-        for (int i = 0; i < 32; i++) {
-            ENCRYPT_PERMUTATION[i] = perm.get(i);
-            DECRYPT_PERMUTATION[ENCRYPT_PERMUTATION[i]] = i;
-        }
+        keyGenerator.init(56, new SecureRandom(RANDOM_SEED));   // 56 is the keysize. Fixed for DES.
+        SECRET_KEY = keyGenerator.generateKey();
     }
 }

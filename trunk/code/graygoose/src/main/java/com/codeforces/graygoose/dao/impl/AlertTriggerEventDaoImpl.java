@@ -38,6 +38,7 @@ public class AlertTriggerEventDaoImpl extends BasicDaoImpl<AlertTriggerEvent> im
     @Override
     public List<AlertTriggerEvent> findByAlertForPeriod(
             long alertId, long lowerBoundMillis, long upperBoundMillis) {
+        //TODO: DATETIME is not supported for now
         /*Date upperBound = new Date(upperBoundMillis);
         Date lowerBound = new Date(lowerBoundMillis);
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -52,7 +53,8 @@ public class AlertTriggerEventDaoImpl extends BasicDaoImpl<AlertTriggerEvent> im
         List<AlertTriggerEvent> result = new ArrayList<AlertTriggerEvent>();
 
         for (AlertTriggerEvent alertTriggerEvent : alertTriggerEvents) {
-            if (alertTriggerEvent.getCreationTime().getTime() >= lowerBoundMillis
+            if (alertTriggerEvent.getAlertId() == alertId
+                    && alertTriggerEvent.getCreationTime().getTime() >= lowerBoundMillis
                     && alertTriggerEvent.getCreationTime().getTime() <= upperBoundMillis) {
                 result.add(alertTriggerEvent);
             }
