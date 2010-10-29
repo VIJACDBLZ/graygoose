@@ -13,7 +13,7 @@ import java.util.Date;
 import java.util.Properties;
 
 public class MailUtil {
-    private final static Properties properties;
+    private static final Properties properties;
 
     public static boolean sendMail(String to, String subject, String text) {
         Session session = Session.getDefaultInstance(new Properties(), null);
@@ -33,18 +33,15 @@ public class MailUtil {
 
     static {
         properties = new Properties();
+
         try {
             properties.load(MailUtil.class.getResourceAsStream("/mail.properties"));
-
-            if (StringUtil.isEmptyOrNull(properties.getProperty("mail.smtp.host"))) {
-                throw new IOException("Can't find mail.smtp.host.");
-            }
 
             if (StringUtil.isEmptyOrNull(properties.getProperty("mail.from"))) {
                 throw new IOException("Can't find mail.from.");
             }
         } catch (IOException e) {
-            throw new RuntimeException("Error: can't read from properties file", e);
+            throw new RuntimeException("Can't read from properties file.", e);
         }
     }
 
