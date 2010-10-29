@@ -6,6 +6,8 @@
             <properties>
                 <!-- Directory to the root of the project. -->
                 <development.home>P:\graygoose\code/graygoose</development.home>
+                
+                <application.name>cc-graygoose</application.name>
 
                 <!-- True iff you want to use the debug mode. -->
                 <nocturne.debug>true</nocturne.debug>

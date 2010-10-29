@@ -7,7 +7,6 @@
                 <!-- Not used in the production mode. -->
                 <development.home/>
 
-                <!-- Not used in the production mode. -->
                 <application.name>cc-graygoose</application.name>
 
                 <!-- Do not use debug mode. -->
