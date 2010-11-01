@@ -6,6 +6,9 @@ import com.codeforces.graygoose.model.AlertTriggerEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 public class AlertTriggerEventDaoImpl extends BasicDaoImpl<AlertTriggerEvent> implements AlertTriggerEventDao {
 
@@ -44,8 +47,10 @@ public class AlertTriggerEventDaoImpl extends BasicDaoImpl<AlertTriggerEvent> im
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         StringBuilder whereClause = new StringBuilder();
-        whereClause.append("creationTime >= DATETIME('").append(dateFormat.format(lowerBound))
-                .append("') && creationTime <= DATETIME('").append(dateFormat.format(upperBound)).append("')");
+        whereClause
+                .append("creationTime >= DATETIME('").append(dateFormat.format(lowerBound))
+                .append("') && creationTime <= DATETIME('").append(dateFormat.format(upperBound))
+                .append("') && alertId == ").append(alertId);
 
         return super.findAll(AlertTriggerEvent.class, whereClause.toString(), null, true);*/
 

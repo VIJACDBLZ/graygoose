@@ -27,8 +27,8 @@ public class AlertDaoImpl extends BasicDaoImpl<Alert> implements AlertDao {
     public void markDeleted(Alert alert) {
         super.markDeleted(alert);
 
-        for (AbstractEntity dependentEntities : getDependentEntities(alert)) {
-            dependentEntities.setDeleted(true);
+        for (AbstractEntity dependentEntity : getDependentEntities(alert)) {
+            dependentEntity.setDeleted(true);
         }
     }
 

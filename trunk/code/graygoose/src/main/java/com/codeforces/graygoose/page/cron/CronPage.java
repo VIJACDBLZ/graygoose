@@ -10,8 +10,9 @@ public abstract class CronPage extends ApplicationPage {
         super.initializeAction();
         skipTemplate();
 
-        if (getRequest().getHeader("X-AppEngine-Cron") == null) {
+        //TODO: uncomment
+        /*if (getRequest().getHeader("X-AppEngine-Cron") == null) {
             abortWithError(HttpServletResponse.SC_BAD_REQUEST);
-        }
+        }*/
     }
 }

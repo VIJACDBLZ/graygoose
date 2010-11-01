@@ -28,8 +28,8 @@ public class RuleDaoImpl extends BasicDaoImpl<Rule> implements RuleDao {
     public void markDeleted(Rule rule) {
         super.markDeleted(rule);
 
-        for (AbstractEntity dependentEntities : getDependentEntities(rule)) {
-            dependentEntities.setDeleted(true);
+        for (AbstractEntity dependentEntity : getDependentEntities(rule)) {
+            dependentEntity.setDeleted(true);
         }
     }
 

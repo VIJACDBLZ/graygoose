@@ -23,8 +23,8 @@ public class SiteDaoImpl extends BasicDaoImpl<Site> implements SiteDao {
     public void markDeleted(Site site) {
         super.markDeleted(site);
 
-        for (AbstractEntity dependentEntities : getDependentEntities(site)) {
-            dependentEntities.setDeleted(true);
+        for (AbstractEntity dependentEntity : getDependentEntities(site)) {
+            dependentEntity.setDeleted(true);
         }
     }
 

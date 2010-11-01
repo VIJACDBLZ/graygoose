@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF8"?>
+<datastore-indexes autoGenerate="true">
+
+    <datastore-index kind="Alert" ancestor="false" source="manual">
+        <property name="deleted" direction="asc"/>
+        <property name="name" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="Rule" ancestor="false" source="manual">
+        <property name="deleted" direction="asc"/>
+        <property name="siteId" direction="asc"/>
+        <property name="creationTime" direction="desc"/>
+    </datastore-index>
+
+    <datastore-index kind="Site" ancestor="false" source="manual">
+        <property name="deleted" direction="asc"/>
+        <property name="creationTime" direction="desc"/>
+    </datastore-index>
+
+</datastore-indexes>

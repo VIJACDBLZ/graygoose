@@ -7,6 +7,8 @@ import com.codeforces.graygoose.model.RuleCheckEvent;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.text.SimpleDateFormat;
+import java.text.DateFormat;
 
 public class RuleCheckEventDaoImpl extends BasicDaoImpl<RuleCheckEvent> implements RuleCheckEventDao {
     @Override
@@ -59,15 +61,22 @@ public class RuleCheckEventDaoImpl extends BasicDaoImpl<RuleCheckEvent> implemen
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         StringBuilder whereClause = new StringBuilder();
-        whereClause.append("checkTime >= DATETIME('").append(dateFormat.format(lowerBound))
-                .append("') && checkTime <= DATETIME('").append(dateFormat.format(upperBound)).append("')");
+        whereClause
+                .append("checkTime >= DATETIME('").append(dateFormat.format(lowerBound))
+                .append("') && checkTime <= DATETIME('").append(dateFormat.format(upperBound))
+                .append("') && ruleId == ").append(ruleId);
 
         return super.findAll(RuleCheckEvent.class, whereClause.toString(), null, true);*/
 
+        List<RuleCheckEvent> ruleCheckEvents = super.findAll(RuleCheckEvent.class);
         List<RuleCheckEvent> result = new ArrayList<RuleCheckEvent>();
 
-        for (RuleCheckEvent ruleCheckEvent : findAllForPeriod(lowerBoundMillis, upperBoundMillis)) {
-            if (ruleCheckEvent.getRuleId() == ruleId) {
+        for (RuleCheckEvent ruleCheckEvent : ruleCheckEvents) {
+            Date checkTime = ruleCheckEvent.getCheckTime();
+            if (ruleCheckEvent.getRuleId() == ruleId
+                    && checkTime != null
+                    && checkTime.getTime() >= lowerBoundMillis
+                    && checkTime.getTime() <= upperBoundMillis) {
                 result.add(ruleCheckEvent);
             }
         }
