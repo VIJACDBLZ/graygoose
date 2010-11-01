@@ -3,7 +3,6 @@ package com.codeforces.graygoose.page.web;
 import com.codeforces.graygoose.frame.MainMenuFrame;
 import com.codeforces.graygoose.frame.MessageBoxFrame;
 import com.codeforces.graygoose.frame.TopMenuFrame;
-import com.codeforces.graygoose.page.ApplicationPage;
 import com.codeforces.graygoose.page.UserPage;
 import com.google.inject.Inject;
 

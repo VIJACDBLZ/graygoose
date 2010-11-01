@@ -31,6 +31,7 @@
     </tr>
     </thead>
     <tbody>
+    <#if alerts?? && (alerts?size > 0)>
     <#list alerts as alert>
     <tr>
         <td>${alert.id}</td>
@@ -46,7 +47,7 @@
         </td>
     </tr>
     </#list>
-    <#if alerts?size==0>
+    <#else>
     <tr>
         <td colspan="7">
             {{No alerts}}

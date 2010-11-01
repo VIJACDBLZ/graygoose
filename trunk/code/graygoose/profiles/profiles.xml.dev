@@ -14,6 +14,9 @@
 
                 <!-- Path to write log file. -->
                 <logging.path>${development.home}/graygoose.log</logging.path>
+
+                <!-- Sender email address. -->
+                <mail.from>test@gmail.com</mail.from>
             </properties>
         </profile>
     </profiles>

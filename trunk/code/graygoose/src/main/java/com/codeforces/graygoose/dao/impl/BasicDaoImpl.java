@@ -36,7 +36,7 @@ public abstract class BasicDaoImpl<T extends AbstractEntity> implements BasicDao
     protected T find(Class<T> clazz, long id, boolean ignoreDeleted) {
         try {
             T entity = getPersistenceManager().getObjectById(clazz, id);
-            return entity == null || entity.isDeleted() ? null : entity;
+            return entity == null || (entity.isDeleted() && ignoreDeleted) ? null : entity;
         } catch (JDOObjectNotFoundException e) {
             return null;
         }
@@ -48,8 +48,8 @@ public abstract class BasicDaoImpl<T extends AbstractEntity> implements BasicDao
     }
 
     @SuppressWarnings({"unchecked"})
-    protected List<T> findAll(Class<T> clazz, String whereClause, String orderByClause, boolean ignoreDeleted) {
-
+    protected List<T> findAll(
+            Class<T> clazz, String whereClause, String orderByClause, boolean ignoreDeleted) {
         StringBuilder queryText = new StringBuilder();
         queryText.append("SELECT FROM ").append(clazz.getName());
 

@@ -1,15 +1,10 @@
 package com.codeforces.graygoose.page.cron;
 
 import com.codeforces.graygoose.dao.*;
-import com.codeforces.graygoose.util.FetchUtil;
-import com.codeforces.graygoose.util.ResponseChecker;
 import com.codeforces.graygoose.util.SiteCheckingUtil;
-import com.codeforces.graygoose.page.data.DataPage;
 import com.google.inject.Inject;
 import org.nocturne.annotation.Action;
 import org.nocturne.link.Link;
-
-import java.io.IOException;
 
 @Link("cron/sites")
 public class SitesCronPage extends CronPage {

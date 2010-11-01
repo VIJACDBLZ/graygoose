@@ -1,6 +1,7 @@
 package com.codeforces.graygoose.page.web;
 
 import com.codeforces.graygoose.dao.SiteDao;
+import com.codeforces.graygoose.model.Site;
 import com.google.inject.Inject;
 import org.nocturne.link.Link;
 

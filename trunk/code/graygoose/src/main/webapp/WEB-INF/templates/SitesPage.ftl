@@ -28,6 +28,7 @@
     </tr>
     </thead>
     <tbody>
+    <#if sites?? && (sites?size > 0)>
     <#list sites as site>
     <tr>
         <td>${site.id}</td>
@@ -41,7 +42,7 @@
         </td>
     </tr>
     </#list>
-    <#if sites?size==0>
+    <#else>
     <tr>
         <td colspan="6">
             {{No sites}}

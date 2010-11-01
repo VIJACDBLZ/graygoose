@@ -1,9 +1,9 @@
 package com.codeforces.graygoose.page;
 
+import com.codeforces.graygoose.frame.MessageBoxFrame;
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
 import com.google.inject.Inject;
-import com.codeforces.graygoose.frame.MessageBoxFrame;
 
 public abstract class UserPage extends ApplicationPage {
     @Inject
