@@ -54,6 +54,6 @@ public class SiteDaoImpl extends BasicDaoImpl<Site> implements SiteDao {
     @Cacheable
     @Override
     public List<Site> findAll() {
-        return super.findAll(Site.class, null, "creationTime DESC", true);
+        return super.findAll(Site.class, null, "this.creationTime DESC", null, true);
     }
 }

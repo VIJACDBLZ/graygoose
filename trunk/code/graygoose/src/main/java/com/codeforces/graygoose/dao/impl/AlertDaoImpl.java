@@ -60,6 +60,6 @@ public class AlertDaoImpl extends BasicDaoImpl<Alert> implements AlertDao {
     @Cacheable
     @Override
     public List<Alert> findAll() {
-        return super.findAll(Alert.class, null, "name", true);
+        return super.findAll(Alert.class, null, "this.name", null, true);
     }
 }

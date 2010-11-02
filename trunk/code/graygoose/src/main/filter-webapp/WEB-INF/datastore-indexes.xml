@@ -17,4 +17,16 @@
         <property name="creationTime" direction="desc"/>
     </datastore-index>
 
+    <datastore-index kind="AlertTriggerEvent" ancestor="false" source="manual">
+        <property name="alertId" direction="asc"/>
+        <property name="deleted" direction="asc"/>
+        <property name="creationTime" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="RuleCheckEvent" ancestor="false" source="manual">
+        <property name="deleted" direction="asc"/>
+        <property name="ruleId" direction="asc"/>
+        <property name="checkTime" direction="asc"/>
+    </datastore-index>
+
 </datastore-indexes>

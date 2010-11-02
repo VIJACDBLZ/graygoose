@@ -61,7 +61,7 @@ public class RuleDaoImpl extends BasicDaoImpl<Rule> implements RuleDao {
     @Cacheable
     @Override
     public List<Rule> findAll() {
-        return super.findAll(Rule.class, null, "creationTime DESC", true);
+        return super.findAll(Rule.class, null, "this.creationTime DESC", null, true);
     }
 
     @Cacheable
@@ -73,6 +73,7 @@ public class RuleDaoImpl extends BasicDaoImpl<Rule> implements RuleDao {
     @Cacheable
     @Override
     public List<Rule> findBySite(long siteId) {
-        return super.findAll(Rule.class, String.format("siteId == %d", siteId), "creationTime DESC", true);
+        return super.findAll(
+                Rule.class, String.format("this.siteId == %d", siteId), "this.creationTime DESC", null, true);
     }
 }

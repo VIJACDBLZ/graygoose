@@ -31,7 +31,8 @@ public class RuleAlertRelationDaoImpl extends BasicDaoImpl<RuleAlertRelation> im
     @Cacheable
     @Override
     public List<RuleAlertRelation> findByRuleAndAlert(long ruleId, long alertId) {
-        return super.findAll(RuleAlertRelation.class, String.format("ruleId == %d && alertId == %d", ruleId, alertId), null, true);
+        return super.findAll(RuleAlertRelation.class,
+                String.format("this.ruleId == %d && this.alertId == %d", ruleId, alertId), null, null, true);
     }
 
     @Cacheable
@@ -43,7 +44,7 @@ public class RuleAlertRelationDaoImpl extends BasicDaoImpl<RuleAlertRelation> im
     @Cacheable
     @Override
     public List<RuleAlertRelation> findByRule(long ruleId) {
-        return super.findAll(RuleAlertRelation.class, String.format("ruleId == %d", ruleId), null, true);
+        return super.findAll(RuleAlertRelation.class, String.format("this.ruleId == %d", ruleId), null, null, true);
     }
 
     @Cacheable
@@ -55,7 +56,7 @@ public class RuleAlertRelationDaoImpl extends BasicDaoImpl<RuleAlertRelation> im
     @Cacheable
     @Override
     public List<RuleAlertRelation> findByAlert(long alertId) {
-        return super.findAll(RuleAlertRelation.class, String.format("alertId == %d", alertId), null, true);
+        return super.findAll(RuleAlertRelation.class, String.format("this.alertId == %d", alertId), null, null, true);
     }
 
     @InvalidateCache

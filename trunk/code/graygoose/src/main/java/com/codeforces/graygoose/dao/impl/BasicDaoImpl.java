@@ -2,15 +2,15 @@ package com.codeforces.graygoose.dao.impl;
 
 import com.codeforces.graygoose.dao.BasicDao;
 import com.codeforces.graygoose.model.AbstractEntity;
-import com.codeforces.graygoose.misc.ApplicationPageRequestListener;
 import org.apache.commons.beanutils.PropertyUtilsBean;
-import org.nocturne.util.StringUtil;
 import org.nocturne.main.ApplicationContext;
+import org.nocturne.util.StringUtil;
 
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
 import java.util.List;
+import java.util.Map;
 
 public abstract class BasicDaoImpl<T extends AbstractEntity> implements BasicDao<T> {
     public static volatile ThreadLocal<PersistenceManager> persistenceManagerByThread =
@@ -48,8 +48,8 @@ public abstract class BasicDaoImpl<T extends AbstractEntity> implements BasicDao
         openPersistenceManager();
     }
 
-    private Object executeQuery(String query) {
-        return getPersistenceManager().newQuery(query).execute();
+    private Object executeQueryWithMap(String query, Map<String, Object> parameters) {
+        return getPersistenceManager().newQuery(query).executeWithMap(parameters);
     }
 
     protected T find(Class<T> clazz, long id) {
@@ -67,17 +67,17 @@ public abstract class BasicDaoImpl<T extends AbstractEntity> implements BasicDao
 
     @SuppressWarnings({"unchecked"})
     protected List<T> findAll(Class<T> clazz) {
-        return findAll(clazz, null, null, true);
+        return findAll(clazz, null, null, null, true);
     }
 
     @SuppressWarnings({"unchecked"})
-    protected List<T> findAll(
-            Class<T> clazz, String whereClause, String orderByClause, boolean ignoreDeleted) {
+    protected List<T> findAll(Class<T> clazz, String whereClause, String orderByClause,
+                              Map<String, Object> parameters, boolean ignoreDeleted) {
         StringBuilder queryText = new StringBuilder();
         queryText.append("SELECT FROM ").append(clazz.getName());
 
         if (ignoreDeleted) {
-            queryText.append(" WHERE (deleted == false)");
+            queryText.append(" WHERE this.deleted == false");
         }
 
         if (!StringUtil.isEmptyOrNull(whereClause)) {
@@ -87,14 +87,14 @@ public abstract class BasicDaoImpl<T extends AbstractEntity> implements BasicDao
                 queryText.append(" WHERE ");
             }
 
-            queryText.append("(").append(whereClause).append(")");
+            queryText.append(whereClause);
         }
 
         if (!StringUtil.isEmptyOrNull(orderByClause)) {
             queryText.append(" ORDER BY ").append(orderByClause);
         }
 
-        return (List<T>) executeQuery(queryText.toString());
+        return (List<T>) executeQueryWithMap(queryText.toString(), parameters);
     }
 
 

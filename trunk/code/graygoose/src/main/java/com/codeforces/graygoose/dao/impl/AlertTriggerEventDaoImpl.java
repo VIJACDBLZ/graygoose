@@ -4,10 +4,17 @@ import com.codeforces.graygoose.dao.AlertTriggerEventDao;
 import com.codeforces.graygoose.model.Alert;
 import com.codeforces.graygoose.model.AlertTriggerEvent;
 
-import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AlertTriggerEventDaoImpl extends BasicDaoImpl<AlertTriggerEvent> implements AlertTriggerEventDao {
+    @Override
+    public void insert(AlertTriggerEvent alertTriggerEvent) {
+        super.insert(alertTriggerEvent);
+    }
+
     @Override
     public AlertTriggerEvent find(long id) {
         return super.find(AlertTriggerEvent.class, id);
@@ -25,7 +32,7 @@ public class AlertTriggerEventDaoImpl extends BasicDaoImpl<AlertTriggerEvent> im
 
     @Override
     public List<AlertTriggerEvent> findByAlert(long alertId) {
-        return super.findAll(AlertTriggerEvent.class, String.format("alertId == %d", alertId), null, true);
+        return super.findAll(AlertTriggerEvent.class, String.format("this.alertId == %d", alertId), null, null, true);
     }
 
     @Override
@@ -35,38 +42,17 @@ public class AlertTriggerEventDaoImpl extends BasicDaoImpl<AlertTriggerEvent> im
     }
 
     @Override
-    public List<AlertTriggerEvent> findByAlertForPeriod(
-            long alertId, long lowerBoundMillis, long upperBoundMillis) {
-        // TODO: DATETIME is not supported for now
-        // TODO: Use long as datetime if it is impossible to filter by datetime range
-        /*Date upperBound = new Date(upperBoundMillis);
-        Date lowerBound = new Date(lowerBoundMillis);
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public List<AlertTriggerEvent> findByAlertForPeriod(long alertId, long lowerBoundMillis, long upperBoundMillis) {
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("lowerBound", new Date(lowerBoundMillis));
+        parameters.put("upperBound", new Date(upperBoundMillis));
 
-        StringBuilder whereClause = new StringBuilder();
-        whereClause
-                .append("creationTime >= DATETIME('").append(dateFormat.format(lowerBound))
-                .append("') && creationTime <= DATETIME('").append(dateFormat.format(upperBound))
-                .append("') && alertId == ").append(alertId);
-
-        return super.findAll(AlertTriggerEvent.class, whereClause.toString(), null, true);*/
-
-        List<AlertTriggerEvent> alertTriggerEvents = super.findAll(
-                AlertTriggerEvent.class, String.format("alertId == %d", alertId), null, true);
-        List<AlertTriggerEvent> result = new ArrayList<AlertTriggerEvent>();
-
-        for (AlertTriggerEvent alertTriggerEvent : alertTriggerEvents) {
-            if (alertTriggerEvent.getCreationTime().getTime() >= lowerBoundMillis
-                    && alertTriggerEvent.getCreationTime().getTime() <= upperBoundMillis) {
-                result.add(alertTriggerEvent);
-            }
-        }
-
-        return result;
-    }
-
-    @Override
-    public void insert(AlertTriggerEvent alertTriggerEvent) {
-        super.insert(alertTriggerEvent);
+        return super.findAll(AlertTriggerEvent.class,
+                String.format("this.alertId == %d"
+                        + " && this.creationTime >= lowerBound"
+                        + " && this.creationTime <= upperBound"
+                        + " PARAMETERS java.util.Date lowerBound,"
+                        + " java.util.Date upperBound", alertId),
+                null, parameters, true);
     }
 }

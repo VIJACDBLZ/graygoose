@@ -2,7 +2,6 @@ package com.codeforces.graygoose.dao;
 
 import com.codeforces.graygoose.model.Rule;
 import com.codeforces.graygoose.model.RuleCheckEvent;
-import com.codeforces.graygoose.model.Alert;
 
 import java.util.List;
 

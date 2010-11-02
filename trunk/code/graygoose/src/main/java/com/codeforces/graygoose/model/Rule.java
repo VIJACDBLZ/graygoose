@@ -81,8 +81,8 @@ public class Rule extends AbstractEntity {
         StringBuilder result = new StringBuilder();
 
         result.append("Rule {")
-                .append("ruleType=").append(ruleType.getShortName())
-                .append(", parameters=").append(data)
+                .append("TYPE=").append(ruleType.getShortName())
+                .append(", ").append(data)
                 .append('}');
 
         return result.toString();

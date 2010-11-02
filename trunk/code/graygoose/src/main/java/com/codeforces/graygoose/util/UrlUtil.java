@@ -43,6 +43,6 @@ public class UrlUtil {
         return response;
     }
 
-    private UrlUtil() {
+    protected UrlUtil() {
     }
 }

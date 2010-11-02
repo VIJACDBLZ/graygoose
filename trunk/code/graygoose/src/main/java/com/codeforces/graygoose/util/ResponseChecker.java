@@ -2,16 +2,15 @@ package com.codeforces.graygoose.util;
 
 import com.codeforces.graygoose.model.Rule;
 
-import java.util.Collection;
-import java.util.StringTokenizer;
-import java.util.Map;
-import java.util.Hashtable;
-import java.util.regex.Matcher;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public class ResponseChecker {
     private static final Map<String, Pattern> compiledPatternByRegexString =
             new Hashtable<String, Pattern>();
+
+    private static final Map<String, Set<Integer>> responseCodesByCodesString =
+            new Hashtable<String, Set<Integer>>();
 
     public static String getErrorMessage(Response response, Collection<Rule> rules) {
         for (Rule rule : rules) {
@@ -49,14 +48,24 @@ public class ResponseChecker {
     }
 
     private static String getFormattedErrorString(Response response, Rule rule) {
-        return "site:" + response.getSiteUrl() + "; rule: " + rule.toString() + ".";
+        return "site: " + response.getSiteUrl() + "; rule: " + rule.toString() + ".";
     }
 
-    // TODO: Store ranges as Map<String, Set<Integer>>.
     private static boolean checkResponseCode(Response response, Rule rule) {
-        //TODO: Why to parse each time?
-        int code = response.getCode();
-        StringTokenizer tokenizer = new StringTokenizer(rule.getProperty("expectedCodes"), ",", false);
+        String codesString = rule.getProperty("expectedCodes");
+        Set<Integer> responseCodes = responseCodesByCodesString.get(codesString);
+
+        if (responseCodes == null) {
+            responseCodes = getResponseCodesByCodesString(codesString);
+            responseCodesByCodesString.put(codesString, responseCodes);
+        }
+
+        return responseCodes.contains(response.getCode());
+    }
+
+    private static Set<Integer> getResponseCodesByCodesString(String codesString) {
+        Set<Integer> responseCodes = new HashSet<Integer>();
+        StringTokenizer tokenizer = new StringTokenizer(codesString, ",", false);
 
         while (tokenizer.hasMoreTokens()) {
             String codeOrRange = tokenizer.nextToken().replace(" ", "");
@@ -64,20 +73,18 @@ public class ResponseChecker {
             int hyphenPositon = codeOrRange.indexOf('-');
 
             if (hyphenPositon == -1) {
-                if (code == Integer.parseInt(codeOrRange)) {
-                    return true;
-                }
+                responseCodes.add(Integer.parseInt(codeOrRange));
             } else {
                 int lowerRange = Integer.parseInt(codeOrRange.substring(0, hyphenPositon));
                 int upperRange = Integer.parseInt(codeOrRange.substring(hyphenPositon + 1, codeOrRange.length()));
 
-                if (lowerRange <= code && code <= upperRange) {
-                    return true;
+                for (int currentCode = lowerRange; currentCode <= upperRange; ++currentCode) {
+                    responseCodes.add(currentCode);
                 }
             }
         }
 
-        return false;
+        return responseCodes;
     }
 
     private static boolean checkSubstringCount(Response response, Rule rule) {

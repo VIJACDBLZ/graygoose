@@ -4,11 +4,22 @@ import com.codeforces.graygoose.dao.RuleCheckEventDao;
 import com.codeforces.graygoose.model.Rule;
 import com.codeforces.graygoose.model.RuleCheckEvent;
 
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class RuleCheckEventDaoImpl extends BasicDaoImpl<RuleCheckEvent> implements RuleCheckEventDao {
+    @Override
+    public void insert(RuleCheckEvent ruleCheckEvent) {
+        super.insert(ruleCheckEvent);
+    }
+
+    @Override
+    public void delete(RuleCheckEvent ruleCheckEvent) {
+        super.delete(ruleCheckEvent);
+    }
+
     @Override
     public RuleCheckEvent find(long id) {
         return super.find(RuleCheckEvent.class, id);
@@ -20,30 +31,27 @@ public class RuleCheckEventDaoImpl extends BasicDaoImpl<RuleCheckEvent> implemen
     }
 
     @Override
-    public List<RuleCheckEvent> findAllForPeriod(long lowerBoundMillis, long upperBoundMillis) {
-        List<RuleCheckEvent> ruleCheckEvents = super.findAll(RuleCheckEvent.class);
-        List<RuleCheckEvent> result = new ArrayList<RuleCheckEvent>();
-
-        for (RuleCheckEvent ruleCheckEvent : ruleCheckEvents) {
-            Date checkTime = ruleCheckEvent.getCheckTime();
-            if (checkTime != null
-                    && checkTime.getTime() >= lowerBoundMillis
-                    && checkTime.getTime() <= upperBoundMillis) {
-                result.add(ruleCheckEvent);
-            }
-        }
-
-        return result;
-    }
-
-    @Override
     public List<RuleCheckEvent> findByRule(Rule rule) {
         return findByRule(rule.getId());
     }
 
     @Override
     public List<RuleCheckEvent> findByRule(long ruleId) {
-        return super.findAll(RuleCheckEvent.class, String.format("ruleId == %d", ruleId), null, true);
+        return super.findAll(RuleCheckEvent.class, String.format("this.ruleId == %d", ruleId), null, null, true);
+    }
+
+    @Override
+    public List<RuleCheckEvent> findAllForPeriod(long lowerBoundMillis, long upperBoundMillis) {
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("lowerBound", new Date(lowerBoundMillis));
+        parameters.put("upperBound", new Date(upperBoundMillis));
+
+        return super.findAll(RuleCheckEvent.class,
+                "this.checkTime >= lowerBound"
+                        + " && this.checkTime <= upperBound"
+                        + " PARAMETERS java.util.Date lowerBound,"
+                        + " java.util.Date upperBound",
+                null, parameters, true);
     }
 
     @Override
@@ -53,42 +61,16 @@ public class RuleCheckEventDaoImpl extends BasicDaoImpl<RuleCheckEvent> implemen
 
     @Override
     public List<RuleCheckEvent> findByRuleForPeriod(long ruleId, long lowerBoundMillis, long upperBoundMillis) {
-        //TODO: DATETIME is not supported for now
-        /*Date upperBound = new Date(upperBoundMillis);
-        Date lowerBound = new Date(lowerBoundMillis);
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("lowerBound", new Date(lowerBoundMillis));
+        parameters.put("upperBound", new Date(upperBoundMillis));
 
-        StringBuilder whereClause = new StringBuilder();
-        whereClause
-                .append("checkTime >= DATETIME('").append(dateFormat.format(lowerBound))
-                .append("') && checkTime <= DATETIME('").append(dateFormat.format(upperBound))
-                .append("') && ruleId == ").append(ruleId);
-
-        return super.findAll(RuleCheckEvent.class, whereClause.toString(), null, true);*/
-
-        List<RuleCheckEvent> ruleCheckEvents = super.findAll(
-                RuleCheckEvent.class, String.format("ruleId == %d", ruleId), null, true);
-        List<RuleCheckEvent> result = new ArrayList<RuleCheckEvent>();
-
-        for (RuleCheckEvent ruleCheckEvent : ruleCheckEvents) {
-            Date checkTime = ruleCheckEvent.getCheckTime();
-            if (checkTime != null
-                    && checkTime.getTime() >= lowerBoundMillis
-                    && checkTime.getTime() <= upperBoundMillis) {
-                result.add(ruleCheckEvent);
-            }
-        }
-
-        return result;
-    }
-
-    @Override
-    public void insert(RuleCheckEvent ruleCheckEvent) {
-        super.insert(ruleCheckEvent);
-    }
-
-    @Override
-    public void delete(RuleCheckEvent ruleCheckEvent) {
-        super.delete(ruleCheckEvent);
+        return super.findAll(RuleCheckEvent.class,
+                String.format("this.ruleId == %d"
+                        + " && this.checkTime >= lowerBound"
+                        + " && this.checkTime <= upperBound"
+                        + " PARAMETERS java.util.Date lowerBound,"
+                        + " java.util.Date upperBound", ruleId),
+                null, parameters, true);
     }
 }

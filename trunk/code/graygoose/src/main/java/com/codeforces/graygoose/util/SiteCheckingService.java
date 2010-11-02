@@ -35,10 +35,20 @@ public class SiteCheckingService {
         long currentTimeMillis = System.currentTimeMillis();
 
         List<Site> allSites = siteDao.findAll();
+
         List<Site> sitesToRescan = new ArrayList<Site>();
         Map<Long, List<Rule>> rulesBySiteId = new HashMap<Long, List<Rule>>();
         Map<Long, RuleCheckEvent> ruleCheckEventByRuleId = new HashMap<Long, RuleCheckEvent>();
 
+        fillSitesToRescan(currentTimeMillis, allSites, sitesToRescan, rulesBySiteId);
+
+        if (sitesToRescan.size() != 0) {
+            processSitesToRescan(sitesToRescan, rulesBySiteId, ruleCheckEventByRuleId);
+        }
+    }
+
+    private void fillSitesToRescan(long currentTimeMillis, List<Site> allSites,
+                                   List<Site> sitesToRescan, Map<Long, List<Rule>> rulesBySiteId) {
         //Finding sites to rescan and initializing data structures
         for (Site site : allSites) {
             long siteId = site.getId();
@@ -50,7 +60,6 @@ public class SiteCheckingService {
             boolean rescanNeeded = true;
             for (Rule rule : rules) {
                 //Finding check events for current rule
-                // TODO: Make it faster!
                 List<RuleCheckEvent> ruleCheckEventsForRescanInterval =
                         ruleCheckEventDao.findByRuleForPeriod(
                                 rule,
@@ -70,13 +79,10 @@ public class SiteCheckingService {
                 rulesBySiteId.put(siteId, rules);
             }
         }
-
-        if (sitesToRescan.size() != 0) {
-            processSitesToRescan(sitesToRescan, rulesBySiteId, ruleCheckEventByRuleId);
-        }
     }
 
-    private void processSitesToRescan(List<Site> sitesToRescan, Map<Long, List<Rule>> rulesBySiteId, Map<Long, RuleCheckEvent> ruleCheckEventByRuleId) {
+    private void processSitesToRescan(List<Site> sitesToRescan, Map<Long, List<Rule>> rulesBySiteId,
+                                      Map<Long, RuleCheckEvent> ruleCheckEventByRuleId) {
         enqueuePendingRules(sitesToRescan, rulesBySiteId, ruleCheckEventByRuleId, ruleCheckEventDao);
 
         //Scanning sites and committing rule check events by setting check time,
