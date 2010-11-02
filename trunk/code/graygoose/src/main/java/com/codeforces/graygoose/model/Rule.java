@@ -35,6 +35,7 @@ public class Rule extends AbstractEntity {
         creationTime = new Date();
     }
 
+    @Override
     public Long getId() {
         return id;
     }

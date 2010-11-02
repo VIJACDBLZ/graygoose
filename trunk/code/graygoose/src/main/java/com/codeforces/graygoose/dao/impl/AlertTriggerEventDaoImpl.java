@@ -6,12 +6,8 @@ import com.codeforces.graygoose.model.AlertTriggerEvent;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Date;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 
 public class AlertTriggerEventDaoImpl extends BasicDaoImpl<AlertTriggerEvent> implements AlertTriggerEventDao {
-
     @Override
     public AlertTriggerEvent find(long id) {
         return super.find(AlertTriggerEvent.class, id);
@@ -41,7 +37,8 @@ public class AlertTriggerEventDaoImpl extends BasicDaoImpl<AlertTriggerEvent> im
     @Override
     public List<AlertTriggerEvent> findByAlertForPeriod(
             long alertId, long lowerBoundMillis, long upperBoundMillis) {
-        //TODO: DATETIME is not supported for now
+        // TODO: DATETIME is not supported for now
+        // TODO: Use long as datetime if it is impossible to filter by datetime range
         /*Date upperBound = new Date(upperBoundMillis);
         Date lowerBound = new Date(lowerBoundMillis);
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -54,17 +51,22 @@ public class AlertTriggerEventDaoImpl extends BasicDaoImpl<AlertTriggerEvent> im
 
         return super.findAll(AlertTriggerEvent.class, whereClause.toString(), null, true);*/
 
-        List<AlertTriggerEvent> alertTriggerEvents = super.findAll(AlertTriggerEvent.class);
+        List<AlertTriggerEvent> alertTriggerEvents = super.findAll(
+                AlertTriggerEvent.class, String.format("alertId == %d", alertId), null, true);
         List<AlertTriggerEvent> result = new ArrayList<AlertTriggerEvent>();
 
         for (AlertTriggerEvent alertTriggerEvent : alertTriggerEvents) {
-            if (alertTriggerEvent.getAlertId() == alertId
-                    && alertTriggerEvent.getCreationTime().getTime() >= lowerBoundMillis
+            if (alertTriggerEvent.getCreationTime().getTime() >= lowerBoundMillis
                     && alertTriggerEvent.getCreationTime().getTime() <= upperBoundMillis) {
                 result.add(alertTriggerEvent);
             }
         }
 
         return result;
+    }
+
+    @Override
+    public void insert(AlertTriggerEvent alertTriggerEvent) {
+        super.insert(alertTriggerEvent);
     }
 }

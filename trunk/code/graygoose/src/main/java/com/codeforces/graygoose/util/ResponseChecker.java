@@ -4,10 +4,15 @@ import com.codeforces.graygoose.model.Rule;
 
 import java.util.Collection;
 import java.util.StringTokenizer;
+import java.util.Map;
+import java.util.Hashtable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ResponseChecker {
+    private static final Map<String, Pattern> compiledPatternByRegexString =
+            new Hashtable<String, Pattern>();
+
     public static String getErrorMessage(Response response, Collection<Rule> rules) {
         for (Rule rule : rules) {
             String errorMessage = getErrorMessage(response, rule);
@@ -47,7 +52,9 @@ public class ResponseChecker {
         return "site:" + response.getSiteUrl() + "; rule: " + rule.toString() + ".";
     }
 
+    // TODO: Store ranges as Map<String, Set<Integer>>.
     private static boolean checkResponseCode(Response response, Rule rule) {
+        //TODO: Why to parse each time?
         int code = response.getCode();
         StringTokenizer tokenizer = new StringTokenizer(rule.getProperty("expectedCodes"), ",", false);
 
@@ -64,7 +71,7 @@ public class ResponseChecker {
                 int lowerRange = Integer.parseInt(codeOrRange.substring(0, hyphenPositon));
                 int upperRange = Integer.parseInt(codeOrRange.substring(hyphenPositon + 1, codeOrRange.length()));
 
-                if (code >= lowerRange && code <= upperRange) {
+                if (lowerRange <= code && code <= upperRange) {
                     return true;
                 }
             }
@@ -74,27 +81,34 @@ public class ResponseChecker {
     }
 
     private static boolean checkSubstringCount(Response response, Rule rule) {
-        Pattern pattern = Pattern.compile(rule.getProperty("expectedSubstring"));
-        Matcher matcher = pattern.matcher(response.getText());
-        int count = 0;
+        String text = response.getText();
+        String substring = rule.getProperty("expectedSubstring");
 
-        while (matcher.find()) {
-            ++count;
+        int matchCount = 0;
+        int position = 0;
+
+        while ((position = text.indexOf(substring, position)) >= 0) {
+            ++matchCount;
+            position += substring.length();
         }
 
-        return count >= rule.getPropertyAsInteger("expectedSubstringMinimalCount")
-                && count <= rule.getPropertyAsInteger("expectedSubstringMaximalCount");
+        return rule.getPropertyAsInteger("expectedSubstringMinimalCount") <= matchCount
+                && matchCount <= rule.getPropertyAsInteger("expectedSubstringMaximalCount");
     }
 
     private static boolean checkRegexMatch(Response response, Rule rule) {
-        return Pattern
-                .compile(rule.getProperty("expectedRegex"))
-                .matcher(response.getText())
-                .matches();
+        String regexString = rule.getProperty("expectedRegex");
+        Pattern pattern = compiledPatternByRegexString.get(regexString);
+
+        if (pattern == null) {
+            pattern = Pattern.compile(regexString);
+            compiledPatternByRegexString.put(regexString, pattern);
+        }
+
+        return pattern.matcher(response.getText()).matches();
     }
 
     public static class Response {
-
         private final String siteUrl;
         private final int code;
         private final String text;

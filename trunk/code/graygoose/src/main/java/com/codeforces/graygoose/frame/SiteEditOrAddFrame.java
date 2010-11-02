@@ -146,6 +146,7 @@ public class SiteEditOrAddFrame extends ApplicationFrame {
             site.setRescanPeriodSeconds(rescanPeriod);
             site.setUrl(url);
 
+            siteDao.update(site);
             setMessage($("Site has been updated."));
         } else {
             setMessage($("Can't find site to update."));
@@ -156,8 +157,7 @@ public class SiteEditOrAddFrame extends ApplicationFrame {
 
     @Action("add")
     public void onAdd() {
-        Site site = new Site(name, url, rescanPeriod);
-        siteDao.insert(site);
+        siteDao.insert(new Site(name, url, rescanPeriod));
         setMessage($("Site has been added."));
         abortWithRedirect(redirectPageClass);
     }

@@ -1,7 +1,6 @@
 package com.codeforces.graygoose.page.cron;
 
-import com.codeforces.graygoose.dao.*;
-import com.codeforces.graygoose.util.SiteCheckingUtil;
+import com.codeforces.graygoose.util.SiteCheckingService;
 import com.google.inject.Inject;
 import org.nocturne.annotation.Action;
 import org.nocturne.link.Link;
@@ -9,22 +8,7 @@ import org.nocturne.link.Link;
 @Link("cron/sites")
 public class SitesCronPage extends CronPage {
     @Inject
-    private SiteDao siteDao;
-
-    @Inject
-    private RuleDao ruleDao;
-
-    @Inject
-    private AlertDao alertDao;
-
-    @Inject
-    private RuleAlertRelationDao ruleAlertRelationDao;
-
-    @Inject
-    private RuleCheckEventDao ruleCheckEventDao;
-
-    @Inject
-    private AlertTriggerEventDao alertTriggerEventDao;
+    private SiteCheckingService siteCheckingService;
 
     @Override
     public void initializeAction() {
@@ -33,8 +17,7 @@ public class SitesCronPage extends CronPage {
 
     @Action("checkSites")
     public void onCheckSites() {
-        SiteCheckingUtil.checkSites(siteDao, ruleDao, alertDao,
-                ruleAlertRelationDao, ruleCheckEventDao, alertTriggerEventDao);
+        siteCheckingService.checkSites();
     }
 
     @Override

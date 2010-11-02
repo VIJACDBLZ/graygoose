@@ -5,7 +5,6 @@ import java.util.Date;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class RuleAlertRelation extends AbstractEntity {
-
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
     private Long id;
@@ -31,6 +30,11 @@ public class RuleAlertRelation extends AbstractEntity {
         this.maxConsecutiveFailCount = maxConsecutiveFailCount;
         deleted = false;
         creationTime = new Date();
+    }
+
+    @Override
+    public Long getId() {
+        return id;
     }
 
     public long getRuleId() {

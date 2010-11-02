@@ -28,6 +28,7 @@ public class AlertTriggerEvent extends AbstractEntity {
         creationTime = new Date();
     }
 
+    @Override
     public Long getId() {
         return id;
     }

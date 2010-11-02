@@ -7,8 +7,6 @@ import com.codeforces.graygoose.model.RuleCheckEvent;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.text.SimpleDateFormat;
-import java.text.DateFormat;
 
 public class RuleCheckEventDaoImpl extends BasicDaoImpl<RuleCheckEvent> implements RuleCheckEventDao {
     @Override
@@ -68,13 +66,13 @@ public class RuleCheckEventDaoImpl extends BasicDaoImpl<RuleCheckEvent> implemen
 
         return super.findAll(RuleCheckEvent.class, whereClause.toString(), null, true);*/
 
-        List<RuleCheckEvent> ruleCheckEvents = super.findAll(RuleCheckEvent.class);
+        List<RuleCheckEvent> ruleCheckEvents = super.findAll(
+                RuleCheckEvent.class, String.format("ruleId == %d", ruleId), null, true);
         List<RuleCheckEvent> result = new ArrayList<RuleCheckEvent>();
 
         for (RuleCheckEvent ruleCheckEvent : ruleCheckEvents) {
             Date checkTime = ruleCheckEvent.getCheckTime();
-            if (ruleCheckEvent.getRuleId() == ruleId
-                    && checkTime != null
+            if (checkTime != null
                     && checkTime.getTime() >= lowerBoundMillis
                     && checkTime.getTime() <= upperBoundMillis) {
                 result.add(ruleCheckEvent);
@@ -82,5 +80,15 @@ public class RuleCheckEventDaoImpl extends BasicDaoImpl<RuleCheckEvent> implemen
         }
 
         return result;
+    }
+
+    @Override
+    public void insert(RuleCheckEvent ruleCheckEvent) {
+        super.insert(ruleCheckEvent);
+    }
+
+    @Override
+    public void delete(RuleCheckEvent ruleCheckEvent) {
+        super.delete(ruleCheckEvent);
     }
 }

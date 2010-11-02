@@ -13,18 +13,17 @@ import java.util.List;
 import java.util.Map;
 
 public class RuleFailStatistics {
+    private static final long MILLIS_PER_HOUR = 60 * 60 * 1000L;
 
-    private static final long MILLIS_PER_HOUR = 60 * 60 * 1000;
+    private static final Map<Long, Long> consecutiveFailCountByRuleId = new HashMap<Long, Long>();
 
-    private static final Map<Long, Long> failCountByRuleId = new HashMap<Long, Long>();
-
-    public static synchronized void increaseRuleFailCount(long ruleId) {
-        Long currentFailCount = failCountByRuleId.get(ruleId);
-        failCountByRuleId.put(ruleId, currentFailCount == null ? 1L : currentFailCount + 1L);
+    public static synchronized void increaseConsecutiveFailCountByRuleId(long ruleId) {
+        Long currentFailCount = consecutiveFailCountByRuleId.get(ruleId);
+        consecutiveFailCountByRuleId.put(ruleId, currentFailCount == null ? 1L : currentFailCount + 1L);
     }
 
-    public static synchronized void resetFailCount(long ruleId) {
-        failCountByRuleId.put(ruleId, 0L);
+    public static synchronized void resetConsecutiveFailCountByRuleId(long ruleId) {
+        consecutiveFailCountByRuleId.put(ruleId, 0L);
     }
 
     public static synchronized List<Alert> getNeededAlerts(long ruleId,
@@ -32,9 +31,9 @@ public class RuleFailStatistics {
                                                            AlertDao alertDao,
                                                            AlertTriggerEventDao alertTriggerEventDao) {
         List<Alert> neededAlerts = new ArrayList<Alert>();
-        Long currentFailCount = failCountByRuleId.get(ruleId);
+        Long currentConsecutiveFailCount = consecutiveFailCountByRuleId.get(ruleId);
 
-        if (currentFailCount == null || currentFailCount == 0) {
+        if (currentConsecutiveFailCount == null || currentConsecutiveFailCount == 0) {
             return neededAlerts;
         }
 
@@ -42,7 +41,7 @@ public class RuleFailStatistics {
         long currentTimeMillis = System.currentTimeMillis();
 
         for (RuleAlertRelation ruleAlertRelation : ruleAlertRelations) {
-            if (ruleAlertRelation.getMaxConsecutiveFailCount() <= currentFailCount) {
+            if (ruleAlertRelation.getMaxConsecutiveFailCount() <= currentConsecutiveFailCount) {
                 Alert alert = alertDao.find(ruleAlertRelation.getAlertId());
 
                 if (alert != null) {

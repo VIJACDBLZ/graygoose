@@ -112,6 +112,8 @@ public class AlertEditOrAddFrame extends ApplicationFrame {
             alert.setPassword(password);
             alert.setMaxAlertCountPerHour(maxAlertCountPerHour);
 
+            alertDao.update(alert);
+
             setMessage($("Alert has been updated."));
         } else {
             setMessage($("Can't find alert to update."));

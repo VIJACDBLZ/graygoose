@@ -12,7 +12,6 @@ import java.util.List;
 public class EventsCronPage extends CronPage {
 
     private static final long MILLIS_PER_DAY = 24L /*h*/ * 60L /*m*/ * 60L /*s*/ * 1000L /*ms*/;
-    //private static final long MILLIS_PER_MONTH = 30L /*d*/ * MILLIS_PER_DAY;
 
     @Inject
     private RuleCheckEventDao ruleCheckEventDao;

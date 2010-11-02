@@ -2,9 +2,9 @@ package com.codeforces.graygoose.page.data;
 
 import com.codeforces.graygoose.dao.RuleDao;
 import com.codeforces.graygoose.model.Rule;
-import com.codeforces.graygoose.util.FetchUtil;
 import com.codeforces.graygoose.util.ResponseChecker;
 import com.codeforces.graygoose.util.RuleTypeUtil;
+import com.codeforces.graygoose.util.UrlUtil;
 import com.google.inject.Inject;
 import org.nocturne.annotation.Action;
 import org.nocturne.annotation.Parameter;
@@ -13,7 +13,6 @@ import org.nocturne.link.Link;
 import org.nocturne.validation.OptionValidator;
 import org.nocturne.validation.RequiredValidator;
 
-import java.io.IOException;
 import java.util.Map;
 
 @Link("data/rules")
@@ -116,6 +115,8 @@ public class RulesDataPage extends DataPage {
             rule.setRuleType(Rule.RuleType.valueOf(ruleType));
             setupRuleProperties(rule);
 
+            ruleDao.update(rule);
+
             put("success", true);
         } else {
             put("error", $("Can't find rule to update."));
@@ -129,6 +130,7 @@ public class RulesDataPage extends DataPage {
         try {
             Rule rule = new Rule(siteId, Rule.RuleType.valueOf(ruleType));
             setupRuleProperties(rule);
+
             ruleDao.insert(rule);
 
             put("success", true);
@@ -162,16 +164,11 @@ public class RulesDataPage extends DataPage {
 
     @Action("fetch")
     public void onFetch() {
-        try {
-            ResponseChecker.Response response = FetchUtil.fetchUrl(getString("url"));
+        ResponseChecker.Response response = UrlUtil.fetchUrl(getString("url"));
 
-            put("responseCode", response.getCode());
-            put("responseText", response.getText());
-
-            put("success", true);
-        } catch (IOException e) {
-            put("error", e.getMessage());
-        }
+        put("responseCode", response.getCode());
+        put("responseText", response.getText());
+        put("success", true);
 
         printTemplateMapAsStringsUsingJson("success", "error", "responseCode", "responseText");
     }

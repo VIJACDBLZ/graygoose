@@ -2,15 +2,30 @@ package com.codeforces.graygoose.dao.impl;
 
 import com.codeforces.graygoose.dao.BasicDao;
 import com.codeforces.graygoose.model.AbstractEntity;
+import com.codeforces.graygoose.misc.ApplicationPageRequestListener;
+import org.apache.commons.beanutils.PropertyUtilsBean;
 import org.nocturne.util.StringUtil;
+import org.nocturne.main.ApplicationContext;
 
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
+import javax.jdo.PersistenceManagerFactory;
 import java.util.List;
 
 public abstract class BasicDaoImpl<T extends AbstractEntity> implements BasicDao<T> {
     public static volatile ThreadLocal<PersistenceManager> persistenceManagerByThread =
             new ThreadLocal<PersistenceManager>();
+
+    private static volatile PersistenceManagerFactory persistenceManagerFactory;
+
+    public static PersistenceManagerFactory getPersistenceManagerFactory() {
+        if (persistenceManagerFactory == null) {
+            persistenceManagerFactory =
+                    ApplicationContext.getInstance().getInjector().getInstance(PersistenceManagerFactory.class);
+        }
+
+        return persistenceManagerFactory;
+    }
 
     public static void setPersistenceManager(PersistenceManager manager) {
         persistenceManagerByThread.set(manager);
@@ -24,6 +39,14 @@ public abstract class BasicDaoImpl<T extends AbstractEntity> implements BasicDao
         getPersistenceManager().close();
     }
 
+    public static void openPersistenceManager() {
+        setPersistenceManager(getPersistenceManagerFactory().getPersistenceManager());
+    }
+
+    private void reopenPersistenceManager() {
+        closePersistenceManager();
+        openPersistenceManager();
+    }
 
     private Object executeQuery(String query) {
         return getPersistenceManager().newQuery(query).execute();
@@ -75,23 +98,35 @@ public abstract class BasicDaoImpl<T extends AbstractEntity> implements BasicDao
     }
 
 
-    @Override
-    public void insert(T entity) {
+    protected void insert(T entity) {
         getPersistenceManager().makePersistent(entity);
     }
 
-    @Override
-    public void delete(T entity) {
+    protected void delete(T entity) {
         getPersistenceManager().deletePersistent(entity);
     }
 
-    @Override
-    public void markDeleted(T entity) {
+    protected void markDeleted(T entity) {
         entity.setDeleted(true);
     }
 
-    @Override
-    public void unmarkDeleted(T entity) {
+    protected void unmarkDeleted(T entity) {
         entity.setDeleted(false);
+    }
+
+    @SuppressWarnings({"unchecked"})
+    protected void update(T entity) {
+        if (entity.getId() == null) {
+            throw new IllegalArgumentException("Can't update non-persistent entity.");
+        }
+
+        T instance = find((Class<T>) entity.getClass(), entity.getId());
+
+        try {
+            new PropertyUtilsBean().copyProperties(instance, entity);
+            reopenPersistenceManager();
+        } catch (Exception e) {
+            throw new RuntimeException("Can't update entity [" + entity + "].", e);
+        }
     }
 }
