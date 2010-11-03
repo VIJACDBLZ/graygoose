@@ -56,14 +56,15 @@ public class SiteCheckingService {
             //Finding rules for current site
             List<Rule> rules = ruleDao.findBySite(siteId);
 
+            boolean rescanNeeded = rules.size() > 0;
+
             //Checking if no rescan needed for site
-            boolean rescanNeeded = true;
             for (Rule rule : rules) {
                 //Finding check events for current rule
                 List<RuleCheckEvent> ruleCheckEventsForRescanInterval =
                         ruleCheckEventDao.findByRuleForPeriod(
                                 rule,
-                                currentTimeMillis - site.getRescanPeriodSeconds() * 1000,
+                                currentTimeMillis - site.getRescanPeriodSeconds() * 1000L,
                                 currentTimeMillis);
                 if (ruleCheckEventsForRescanInterval.size() > 0) {
                     rescanNeeded = false;
@@ -114,15 +115,15 @@ public class SiteCheckingService {
                 continue;
             }
 
-            List<Alert> alerts = RuleFailStatistics.getNeededAlerts(ruleCheckEvent.getRuleId(),
-                    ruleAlertRelationDao, alertDao, alertTriggerEventDao);
+            List<Alert> triggeredAlerts = RuleFailStatistics.getTriggeredAlerts(
+                    ruleCheckEvent.getRuleId(), ruleAlertRelationDao, alertDao, alertTriggerEventDao);
 
-            for (Alert alert : alerts) {
+            for (Alert triggeredAlert : triggeredAlerts) {
                 try {
-                    triggerAlert(ruleCheckEvent, alert);
-                    alertTriggerEventDao.insert(new AlertTriggerEvent(alert.getId(), ruleCheckEvent.getId()));
+                    triggerAlert(ruleCheckEvent, triggeredAlert);
+                    alertTriggerEventDao.insert(new AlertTriggerEvent(triggeredAlert.getId(), ruleCheckEvent.getId()));
                 } catch (RuntimeException e) {
-                    logger.error("Fail to trigger alert or to save it [alert=" + alert.getName() + "].", e);
+                    logger.error("Fail to trigger or to save alert [" + triggeredAlert.getName() + "].", e);
                 }
             }
         }

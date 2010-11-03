@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 public class RuleFailStatistics {
-    private static final long MILLIS_PER_HOUR = 60 * 60 * 1000L;
+    private static final long MILLIS_PER_HOUR = 60L * 60L * 1000L;
 
     private static final Map<Long, Long> consecutiveFailCountByRuleId = new HashMap<Long, Long>();
 
@@ -26,7 +26,7 @@ public class RuleFailStatistics {
         consecutiveFailCountByRuleId.put(ruleId, 0L);
     }
 
-    public static synchronized List<Alert> getNeededAlerts(long ruleId,
+    public static synchronized List<Alert> getTriggeredAlerts(long ruleId,
                                                            RuleAlertRelationDao ruleAlertRelationDao,
                                                            AlertDao alertDao,
                                                            AlertTriggerEventDao alertTriggerEventDao) {

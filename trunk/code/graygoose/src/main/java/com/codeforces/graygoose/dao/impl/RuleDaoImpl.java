@@ -12,6 +12,8 @@ import com.google.inject.Inject;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 public class RuleDaoImpl extends BasicDaoImpl<Rule> implements RuleDao {
     @Inject
@@ -73,7 +75,11 @@ public class RuleDaoImpl extends BasicDaoImpl<Rule> implements RuleDao {
     @Cacheable
     @Override
     public List<Rule> findBySite(long siteId) {
-        return super.findAll(
-                Rule.class, String.format("this.siteId == %d", siteId), "this.creationTime DESC", null, true);
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("siteId", siteId);
+
+        return super.findAll(Rule.class,
+                "this.siteId == siteId PARAMETERS long siteId",
+                "this.creationTime DESC", parameters, true);
     }
 }

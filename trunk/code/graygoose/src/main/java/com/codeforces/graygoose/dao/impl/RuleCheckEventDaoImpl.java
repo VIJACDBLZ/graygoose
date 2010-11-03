@@ -37,7 +37,12 @@ public class RuleCheckEventDaoImpl extends BasicDaoImpl<RuleCheckEvent> implemen
 
     @Override
     public List<RuleCheckEvent> findByRule(long ruleId) {
-        return super.findAll(RuleCheckEvent.class, String.format("this.ruleId == %d", ruleId), null, null, true);
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("ruleId", ruleId);
+
+        return super.findAll(RuleCheckEvent.class,
+                "this.ruleId == ruleId PARAMETERS long ruleId",
+                null, parameters, true);
     }
 
     @Override

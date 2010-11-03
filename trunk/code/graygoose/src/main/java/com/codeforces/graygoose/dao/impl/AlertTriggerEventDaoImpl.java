@@ -32,7 +32,12 @@ public class AlertTriggerEventDaoImpl extends BasicDaoImpl<AlertTriggerEvent> im
 
     @Override
     public List<AlertTriggerEvent> findByAlert(long alertId) {
-        return super.findAll(AlertTriggerEvent.class, String.format("this.alertId == %d", alertId), null, null, true);
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("alertId", alertId);
+
+        return super.findAll(AlertTriggerEvent.class,
+                "this.alertId == alertId PARAMETERS long alertId",
+                null, parameters, true);
     }
 
     @Override

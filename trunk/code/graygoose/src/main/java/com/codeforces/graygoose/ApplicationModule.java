@@ -35,19 +35,5 @@ public class ApplicationModule implements Module {
                 new InvalidateCache.Interceptor());
         binder.bindInterceptor(Matchers.any(), Matchers.annotatedWith(Cacheable.class),
                 new Cacheable.Interceptor());
-
-//        binder.bindInterceptor(new AbstractMatcher<Class<?>>() {
-//            @Override
-//            public boolean matches(Class<?> aClass) {
-//                return aClass.equals(Site.class)
-//                        || aClass.equals(Alert.class)
-//                        || aClass.equals(Rule.class);
-//            }
-//        }, new AbstractMatcher<Method>() {
-//            @Override
-//            public boolean matches(Method method) {
-//                return method.getName().startsWith("set");
-//            }
-//        }, new InvalidateCache.Interceptor());
     }
 }

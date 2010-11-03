@@ -8,6 +8,8 @@ import com.codeforces.graygoose.model.Rule;
 import com.codeforces.graygoose.model.RuleAlertRelation;
 
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 public class RuleAlertRelationDaoImpl extends BasicDaoImpl<RuleAlertRelation> implements RuleAlertRelationDao {
     @Cacheable
@@ -31,8 +33,14 @@ public class RuleAlertRelationDaoImpl extends BasicDaoImpl<RuleAlertRelation> im
     @Cacheable
     @Override
     public List<RuleAlertRelation> findByRuleAndAlert(long ruleId, long alertId) {
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("ruleId", ruleId);
+        parameters.put("alertId", alertId);
+
         return super.findAll(RuleAlertRelation.class,
-                String.format("this.ruleId == %d && this.alertId == %d", ruleId, alertId), null, null, true);
+                "this.ruleId == ruleId && this.alertId == alertId"
+                        + " PARAMETERS long ruleId, long alertId",
+                null, parameters, true);
     }
 
     @Cacheable
@@ -44,7 +52,12 @@ public class RuleAlertRelationDaoImpl extends BasicDaoImpl<RuleAlertRelation> im
     @Cacheable
     @Override
     public List<RuleAlertRelation> findByRule(long ruleId) {
-        return super.findAll(RuleAlertRelation.class, String.format("this.ruleId == %d", ruleId), null, null, true);
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("ruleId", ruleId);
+
+        return super.findAll(RuleAlertRelation.class,
+                "this.ruleId == ruleId PARAMETERS long ruleId",
+                null, parameters, true);
     }
 
     @Cacheable
@@ -56,7 +69,12 @@ public class RuleAlertRelationDaoImpl extends BasicDaoImpl<RuleAlertRelation> im
     @Cacheable
     @Override
     public List<RuleAlertRelation> findByAlert(long alertId) {
-        return super.findAll(RuleAlertRelation.class, String.format("this.alertId == %d", alertId), null, null, true);
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("alertId", alertId);
+
+        return super.findAll(RuleAlertRelation.class,
+                "this.alertId == alertId PARAMETERS long alertId",
+                null, parameters, true);
     }
 
     @InvalidateCache

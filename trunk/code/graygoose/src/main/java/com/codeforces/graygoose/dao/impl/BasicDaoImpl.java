@@ -9,10 +9,14 @@ import org.nocturne.util.StringUtil;
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
+import javax.jdo.Query;
 import java.util.List;
 import java.util.Map;
+import java.util.Hashtable;
 
 public abstract class BasicDaoImpl<T extends AbstractEntity> implements BasicDao<T> {
+    private static final Map<String, Query> compiledQueryByQueryString = new Hashtable<String, Query>();
+
     public static volatile ThreadLocal<PersistenceManager> persistenceManagerByThread =
             new ThreadLocal<PersistenceManager>();
 
@@ -48,8 +52,19 @@ public abstract class BasicDaoImpl<T extends AbstractEntity> implements BasicDao
         openPersistenceManager();
     }
 
-    private Object executeQueryWithMap(String query, Map<String, Object> parameters) {
-        return getPersistenceManager().newQuery(query).executeWithMap(parameters);
+    private Object executeQueryWithMap(String queryString, Map<String, Object> parameters) {
+        Query query = compiledQueryByQueryString.get(queryString);
+
+        if (query == null) {
+            //Compile new query from the query string and cache it
+            query = getPersistenceManager().newQuery(queryString);
+            compiledQueryByQueryString.put(queryString, query);
+        } else {
+            //Create new query using cached compiled query
+            query = getPersistenceManager().newQuery(query);
+        }
+
+        return query.executeWithMap(parameters);
     }
 
     protected T find(Class<T> clazz, long id) {
