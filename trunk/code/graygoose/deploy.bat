@@ -1,7 +1,7 @@
 @echo off
 
 IF "%1"=="" (
-	echo Usage: deploy ^<gae-application-name^> [^<command (default=update)^>]
+	echo Usage: deploy ^<gae-application-name^> [^<command^>]
 ) ELSE (
     IF "%2"=="" (
         ..\..\lib\gae-sdk\bin\appcfg.cmd update target/%1/
