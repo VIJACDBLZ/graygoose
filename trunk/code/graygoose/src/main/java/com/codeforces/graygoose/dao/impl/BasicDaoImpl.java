@@ -113,7 +113,7 @@ public abstract class BasicDaoImpl<T extends AbstractEntity> implements BasicDao
         T persistentEntity = find((Class<T>) entity.getClass(), entity.getId(), false);
         assertPersistentEntityNotNull(persistentEntity);
 
-        getPersistenceManager().deletePersistent(entity);
+        getPersistenceManager().deletePersistent(persistentEntity);
     }
 
     protected void markDeleted(T entity) {
