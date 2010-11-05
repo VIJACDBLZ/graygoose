@@ -10,6 +10,7 @@
 
     <build>
         <finalName>${application.name}</finalName>
+
         <plugins>
             <plugin>
                 <groupId>org.mortbay.jetty</groupId>
@@ -21,6 +22,7 @@
                     </requestLog>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -30,6 +32,7 @@
                     <target>1.6</target>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
@@ -44,6 +47,7 @@
                 </configuration>
             </plugin>
         </plugins>
+
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -78,11 +82,13 @@
             <groupId>org.datanucleus</groupId>
             <artifactId>datanucleus-core</artifactId>
             <version>1.1.5</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.datanucleus</groupId>
             <artifactId>datanucleus-enhancer</artifactId>
             <version>1.1.4</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.datanucleus</groupId>

@@ -27,12 +27,6 @@ public class AlertDaoImpl extends BasicDaoImpl<Alert> implements AlertDao {
 
     @InvalidateCache
     @Override
-    public void update(Alert alert) {
-        super.update(alert);
-    }
-
-    @InvalidateCache
-    @Override
     public void markDeleted(Alert alert) {
         super.markDeleted(alert);
 
@@ -41,12 +35,17 @@ public class AlertDaoImpl extends BasicDaoImpl<Alert> implements AlertDao {
         }
     }
 
-    //NOT @Cacheable
+    @InvalidateCache
+    @Override
+    public void update(Alert alert) {
+        super.update(alert);
+    }
+
     private List<AbstractEntity> getDependentEntities(Alert alert) {
         List<AbstractEntity> dependentEntities = new LinkedList<AbstractEntity>();
 
-        dependentEntities.addAll(alertTriggerEventDao.findByAlert(alert));
-        dependentEntities.addAll(ruleAlertRelationDao.findByAlert(alert));
+        dependentEntities.addAll(alertTriggerEventDao.findByAlert(alert.getId()));
+        dependentEntities.addAll(ruleAlertRelationDao.findByAlert(alert.getId()));
 
         return dependentEntities;
     }

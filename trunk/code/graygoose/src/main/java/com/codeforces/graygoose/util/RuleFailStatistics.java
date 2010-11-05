@@ -27,9 +27,9 @@ public class RuleFailStatistics {
     }
 
     public static synchronized List<Alert> getTriggeredAlerts(long ruleId,
-                                                           RuleAlertRelationDao ruleAlertRelationDao,
-                                                           AlertDao alertDao,
-                                                           AlertTriggerEventDao alertTriggerEventDao) {
+                                                              RuleAlertRelationDao ruleAlertRelationDao,
+                                                              AlertDao alertDao,
+                                                              AlertTriggerEventDao alertTriggerEventDao) {
         List<Alert> neededAlerts = new ArrayList<Alert>();
         Long currentConsecutiveFailCount = consecutiveFailCountByRuleId.get(ruleId);
 
@@ -47,7 +47,7 @@ public class RuleFailStatistics {
                 if (alert != null) {
                     List<AlertTriggerEvent> alertTriggersForLastHour =
                             alertTriggerEventDao.findByAlertForPeriod(
-                                    alert, currentTimeMillis - MILLIS_PER_HOUR, currentTimeMillis);
+                                    alert.getId(), currentTimeMillis - MILLIS_PER_HOUR, currentTimeMillis);
                     if (alertTriggersForLastHour.size() < alert.getMaxAlertCountPerHour()) {
                         neededAlerts.add(alert);
                     }
@@ -58,6 +58,6 @@ public class RuleFailStatistics {
         return neededAlerts;
     }
 
-    protected RuleFailStatistics() {
+    private RuleFailStatistics() {
     }
 }

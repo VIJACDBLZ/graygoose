@@ -9,14 +9,11 @@ import org.nocturne.util.StringUtil;
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
-import javax.jdo.Query;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Hashtable;
 
 public abstract class BasicDaoImpl<T extends AbstractEntity> implements BasicDao<T> {
-    private static final Map<String, Query> compiledQueryByQueryString = new Hashtable<String, Query>();
-
     public static volatile ThreadLocal<PersistenceManager> persistenceManagerByThread =
             new ThreadLocal<PersistenceManager>();
 
@@ -31,7 +28,7 @@ public abstract class BasicDaoImpl<T extends AbstractEntity> implements BasicDao
         return persistenceManagerFactory;
     }
 
-    public static void setPersistenceManager(PersistenceManager manager) {
+    private static void setPersistenceManager(PersistenceManager manager) {
         persistenceManagerByThread.set(manager);
     }
 
@@ -47,24 +44,16 @@ public abstract class BasicDaoImpl<T extends AbstractEntity> implements BasicDao
         setPersistenceManager(getPersistenceManagerFactory().getPersistenceManager());
     }
 
-    private void reopenPersistenceManager() {
+    private static void reopenPersistenceManager() {
         closePersistenceManager();
         openPersistenceManager();
     }
 
     private Object executeQueryWithMap(String queryString, Map<String, Object> parameters) {
-        Query query = compiledQueryByQueryString.get(queryString);
-
-        if (query == null) {
-            //Compile new query from the query string and cache it
-            query = getPersistenceManager().newQuery(queryString);
-            compiledQueryByQueryString.put(queryString, query);
-        } else {
-            //Create new query using cached compiled query
-            query = getPersistenceManager().newQuery(query);
-        }
-
-        return query.executeWithMap(parameters);
+        PersistenceManager persistenceManager = getPersistenceManager();
+        Object result = persistenceManager.newQuery(queryString).executeWithMap(parameters);
+        persistenceManager.retrieveAll((Collection) result);
+        return result;
     }
 
     protected T find(Class<T> clazz, long id) {
@@ -73,14 +62,15 @@ public abstract class BasicDaoImpl<T extends AbstractEntity> implements BasicDao
 
     protected T find(Class<T> clazz, long id, boolean ignoreDeleted) {
         try {
-            T entity = getPersistenceManager().getObjectById(clazz, id);
+            PersistenceManager persistenceManager = getPersistenceManager();
+            T entity = persistenceManager.getObjectById(clazz, id);
+            persistenceManager.retrieve(entity);
             return entity == null || (entity.isDeleted() && ignoreDeleted) ? null : entity;
         } catch (JDOObjectNotFoundException e) {
             return null;
         }
     }
 
-    @SuppressWarnings({"unchecked"})
     protected List<T> findAll(Class<T> clazz) {
         return findAll(clazz, null, null, null, true);
     }
@@ -117,31 +107,49 @@ public abstract class BasicDaoImpl<T extends AbstractEntity> implements BasicDao
         getPersistenceManager().makePersistent(entity);
     }
 
+    @SuppressWarnings({"unchecked"})
     protected void delete(T entity) {
+        assertEntityIdNotNull(entity);
+        T persistentEntity = find((Class<T>) entity.getClass(), entity.getId(), false);
+        assertPersistentEntityNotNull(persistentEntity);
+
         getPersistenceManager().deletePersistent(entity);
     }
 
     protected void markDeleted(T entity) {
         entity.setDeleted(true);
+        update(entity);
     }
 
     protected void unmarkDeleted(T entity) {
         entity.setDeleted(false);
+        update(entity);
     }
 
     @SuppressWarnings({"unchecked"})
     protected void update(T entity) {
-        if (entity.getId() == null) {
-            throw new IllegalArgumentException("Can't update non-persistent entity.");
-        }
-
-        T instance = find((Class<T>) entity.getClass(), entity.getId());
+        assertEntityIdNotNull(entity);
+        T persistentEntity = find((Class<T>) entity.getClass(), entity.getId(), false);
+        assertPersistentEntityNotNull(persistentEntity);
 
         try {
-            new PropertyUtilsBean().copyProperties(instance, entity);
+            new PropertyUtilsBean().copyProperties(persistentEntity, entity);
             reopenPersistenceManager();
         } catch (Exception e) {
             throw new RuntimeException("Can't update entity [" + entity + "].", e);
+        }
+    }
+
+    private void assertEntityIdNotNull(T entity) {
+        if (entity.getId() == null) {
+            throw new IllegalArgumentException("Can't operate with non-persistent entity [" + entity + "].");
+        }
+    }
+
+    private void assertPersistentEntityNotNull(T persistentEntity) {
+        if (persistentEntity == null) {
+            throw new JDOObjectNotFoundException("Persistent entity [" + persistentEntity
+                    + "] is not found in the DataStorage.");
         }
     }
 }

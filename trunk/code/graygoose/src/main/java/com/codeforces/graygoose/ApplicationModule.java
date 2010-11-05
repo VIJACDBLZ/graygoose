@@ -29,11 +29,11 @@ public class ApplicationModule implements Module {
         binder.bind(RuleCheckEventDao.class).to(RuleCheckEventDaoImpl.class).in(Singleton.class);
         binder.bind(AlertTriggerEventDao.class).to(AlertTriggerEventDaoImpl.class).in(Singleton.class);
 
-        binder.bind(Cache.class).to(InMemoryCache.class);
+        binder.bind(Cache.class).to(InMemoryCache.class).in(Singleton.class);
 
-        binder.bindInterceptor(Matchers.any(), Matchers.annotatedWith(InvalidateCache.class),
-                new InvalidateCache.Interceptor());
-        binder.bindInterceptor(Matchers.any(), Matchers.annotatedWith(Cacheable.class),
-                new Cacheable.Interceptor());
+        binder.bindInterceptor(
+                Matchers.any(), Matchers.annotatedWith(InvalidateCache.class), new InvalidateCache.Interceptor());
+        binder.bindInterceptor(
+                Matchers.any(), Matchers.annotatedWith(Cacheable.class), new Cacheable.Interceptor());
     }
 }

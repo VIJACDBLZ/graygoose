@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface Cacheable {
     public static class Interceptor implements MethodInterceptor {
-        private static final char SEPARATOR = 1;
+        private static final String CACHE_KEY_SEPARATOR = "###";
 
         public Cache getCache() {
             return Internal.cache;
@@ -45,22 +45,21 @@ public @interface Cacheable {
         private String ensureArgumentsAreSupportedAndReturnHashKey(MethodInvocation invocation) {
             StringBuilder result = new StringBuilder();
 
-            result.append(invocation.getMethod().getDeclaringClass().getName()).append(SEPARATOR);
-            result.append(invocation.getMethod().getName()).append(SEPARATOR);
+            result.append(CACHE_KEY_SEPARATOR).append(invocation.getMethod().toString()).append(CACHE_KEY_SEPARATOR);
 
             for (Object o : invocation.getArguments()) {
                 if (o == null) {
-                    result.append("@null").append(SEPARATOR);
+                    result.append("@null").append(CACHE_KEY_SEPARATOR);
                 } else {
                     if (!supportsArgumentClass(o.getClass())) {
-                        throw new IllegalArgumentException("Type " + o.getClass() + " is not supported by cache.");
+                        throw new IllegalArgumentException("Type " + o.getClass() + " is not supported by the cache.");
                     }
 
-                    result.append(o).append(SEPARATOR);
+                    result.append(o).append(CACHE_KEY_SEPARATOR);
                 }
             }
 
-            return result.append(SEPARATOR).toString();
+            return result.toString();
         }
 
         private boolean supportsArgumentClass(Class<?> argumentClass) {

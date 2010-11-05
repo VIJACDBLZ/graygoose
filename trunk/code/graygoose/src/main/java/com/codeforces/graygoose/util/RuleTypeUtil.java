@@ -51,6 +51,6 @@ public class RuleTypeUtil {
         }
     }
 
-    protected RuleTypeUtil() {
+    private RuleTypeUtil() {
     }
 }

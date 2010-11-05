@@ -13,6 +13,6 @@ public abstract class AbstractEntity {
 
     @Override
     public String toString() {
-        return getClass().getName() + "#" + getId();
+        return getClass().getCanonicalName() + '#' + getId();
     }
 }

@@ -23,12 +23,6 @@ public class SiteDaoImpl extends BasicDaoImpl<Site> implements SiteDao {
 
     @InvalidateCache
     @Override
-    public void update(Site site) {
-        super.update(site);
-    }
-
-    @InvalidateCache
-    @Override
     public void markDeleted(Site site) {
         super.markDeleted(site);
 
@@ -37,10 +31,16 @@ public class SiteDaoImpl extends BasicDaoImpl<Site> implements SiteDao {
         }
     }
 
+    @InvalidateCache
+    @Override
+    public void update(Site site) {
+        super.update(site);
+    }
+
     private List<AbstractEntity> getDependentEntities(Site site) {
         List<AbstractEntity> dependentEntities = new LinkedList<AbstractEntity>();
 
-        dependentEntities.addAll(ruleDao.findBySite(site));
+        dependentEntities.addAll(ruleDao.findBySite(site.getId()));
 
         return dependentEntities;
     }

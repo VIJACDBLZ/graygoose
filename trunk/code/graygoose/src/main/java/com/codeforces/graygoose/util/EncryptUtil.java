@@ -58,7 +58,7 @@ public class EncryptUtil {
         }
     }
 
-    protected EncryptUtil() {
+    private EncryptUtil() {
     }
 
     static {

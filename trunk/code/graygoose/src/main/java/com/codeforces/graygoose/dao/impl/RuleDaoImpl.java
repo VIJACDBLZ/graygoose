@@ -7,13 +7,12 @@ import com.codeforces.graygoose.dao.cache.Cacheable;
 import com.codeforces.graygoose.dao.cache.InvalidateCache;
 import com.codeforces.graygoose.model.AbstractEntity;
 import com.codeforces.graygoose.model.Rule;
-import com.codeforces.graygoose.model.Site;
 import com.google.inject.Inject;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 
 public class RuleDaoImpl extends BasicDaoImpl<Rule> implements RuleDao {
     @Inject
@@ -30,12 +29,6 @@ public class RuleDaoImpl extends BasicDaoImpl<Rule> implements RuleDao {
 
     @InvalidateCache
     @Override
-    public void update(Rule rule) {
-        super.update(rule);
-    }
-
-    @InvalidateCache
-    @Override
     public void markDeleted(Rule rule) {
         super.markDeleted(rule);
 
@@ -44,12 +37,17 @@ public class RuleDaoImpl extends BasicDaoImpl<Rule> implements RuleDao {
         }
     }
 
-    //NOT @Cacheable
+    @InvalidateCache
+    @Override
+    public void update(Rule rule) {
+        super.update(rule);
+    }
+
     private List<AbstractEntity> getDependentEntities(Rule rule) {
         List<AbstractEntity> dependentEntities = new LinkedList<AbstractEntity>();
 
-        dependentEntities.addAll(ruleCheckEventDao.findByRule(rule));
-        dependentEntities.addAll(ruleAlertRelationDao.findByRule(rule));
+        dependentEntities.addAll(ruleCheckEventDao.findByRule(rule.getId()));
+        dependentEntities.addAll(ruleAlertRelationDao.findByRule(rule.getId()));
 
         return dependentEntities;
     }
@@ -64,12 +62,6 @@ public class RuleDaoImpl extends BasicDaoImpl<Rule> implements RuleDao {
     @Override
     public List<Rule> findAll() {
         return super.findAll(Rule.class, null, "this.creationTime DESC", null, true);
-    }
-
-    @Cacheable
-    @Override
-    public List<Rule> findBySite(Site site) {
-        return findBySite(site.getId());
     }
 
     @Cacheable

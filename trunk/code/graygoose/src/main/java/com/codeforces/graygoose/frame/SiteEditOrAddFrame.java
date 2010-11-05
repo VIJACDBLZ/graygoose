@@ -79,7 +79,7 @@ public class SiteEditOrAddFrame extends ApplicationFrame {
             Map<String, List<Alert>> alertsByRuleId = new TreeMap<String, List<Alert>>();
 
             for (Rule rule : rules) {
-                List<RuleAlertRelation> ruleAlertRelations = ruleAlertRelationDao.findByRule(rule);
+                List<RuleAlertRelation> ruleAlertRelations = ruleAlertRelationDao.findByRule(rule.getId());
                 List<Alert> alerts = new ArrayList<Alert>(ruleAlertRelations.size());
 
                 for (RuleAlertRelation ruleAlertRelation : ruleAlertRelations) {

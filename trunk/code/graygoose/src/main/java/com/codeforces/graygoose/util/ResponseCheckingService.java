@@ -1,29 +1,24 @@
 package com.codeforces.graygoose.util;
 
 import com.codeforces.graygoose.model.Rule;
+import org.apache.log4j.Logger;
 
 import java.util.*;
 import java.util.regex.Pattern;
 
-public class ResponseChecker {
+public class ResponseCheckingService {
+    private static final Logger logger = Logger.getLogger(ResponseCheckingService.class);
+
     private static final Map<String, Pattern> compiledPatternByRegexString =
             new Hashtable<String, Pattern>();
 
     private static final Map<String, Set<Integer>> responseCodesByCodesString =
             new Hashtable<String, Set<Integer>>();
 
-    public static String getErrorMessage(Response response, Collection<Rule> rules) {
-        for (Rule rule : rules) {
-            String errorMessage = getErrorMessage(response, rule);
-            if (errorMessage != null) {
-                return errorMessage;
-            }
-        }
-
-        return null;
-    }
-
     public static String getErrorMessage(Response response, Rule rule) {
+        logger.info("Check response from URL [" + response.getSiteUrl()
+                + "] for matching the rule [" + rule.toShortString() + "].");
+
         switch (rule.getRuleType()) {
             case RESPONSE_CODE_RULE_TYPE:
                 if (!checkResponseCode(response, rule)) {
@@ -48,7 +43,7 @@ public class ResponseChecker {
     }
 
     private static String getFormattedErrorString(Response response, Rule rule) {
-        return "Site " + response.getSiteUrl() + "; " + rule.toString();
+        return "Site " + response.getSiteUrl() + "; " + rule.toShortString();
     }
 
     private static boolean checkResponseCode(Response response, Rule rule) {
@@ -120,6 +115,15 @@ public class ResponseChecker {
         private final int code;
         private final String text;
 
+        /**
+         * Constructs a <code>ResponseCheckingService.Response</code> with specified parameters.
+         *
+         * @param siteUrl URL of the site from which came the HTTP-response
+         * @param code    response code or <code>-1</code> if no HTTP-response came within specified timeout
+         *                or any other exception has been thrown during URL fetching
+         * @param text    body of the HTTP-response in case of success,
+         *                empty string or <code>exception.getMessage()</code>, in case of failure
+         */
         public Response(String siteUrl, int code, String text) {
             this.siteUrl = siteUrl;
             this.code = code;

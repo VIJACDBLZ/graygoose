@@ -2,7 +2,7 @@ package com.codeforces.graygoose.page.data;
 
 import com.codeforces.graygoose.dao.RuleDao;
 import com.codeforces.graygoose.model.Rule;
-import com.codeforces.graygoose.util.ResponseChecker;
+import com.codeforces.graygoose.util.ResponseCheckingService;
 import com.codeforces.graygoose.util.RuleTypeUtil;
 import com.codeforces.graygoose.util.UrlUtil;
 import com.google.inject.Inject;
@@ -116,7 +116,6 @@ public class RulesDataPage extends DataPage {
             setupRuleProperties(rule);
 
             ruleDao.update(rule);
-
             put("success", true);
         } else {
             put("error", $("Can't find rule to update."));
@@ -145,10 +144,10 @@ public class RulesDataPage extends DataPage {
     @Action("checkRule")
     public void onCheckRule() {
         try {
-            ResponseChecker.Response response = new ResponseChecker.Response(
+            ResponseCheckingService.Response response = new ResponseCheckingService.Response(
                     getString("url"), getInteger("responseCode"), getString("responseText"));
 
-            String errorMessage = ResponseChecker.getErrorMessage(response, ruleDao.find(getLong("ruleId")));
+            String errorMessage = ResponseCheckingService.getErrorMessage(response, ruleDao.find(getLong("ruleId")));
 
             if (errorMessage == null) {
                 put("success", true);
@@ -164,7 +163,7 @@ public class RulesDataPage extends DataPage {
 
     @Action("fetch")
     public void onFetch() {
-        ResponseChecker.Response response = UrlUtil.fetchUrl(getString("url"));
+        ResponseCheckingService.Response response = UrlUtil.fetchUrl(getString("url"));
 
         put("responseCode", response.getCode());
         put("responseText", response.getText());

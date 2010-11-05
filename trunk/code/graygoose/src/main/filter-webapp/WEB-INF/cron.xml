@@ -2,12 +2,12 @@
 <cronentries>
     <cron>
         <url>/cron/sites?action=checkSites</url>
-        <description>Checking sites</description>
+        <description>Check sites</description>
         <schedule>every 1 minutes</schedule>
     </cron>
     <cron>
         <url>/cron/events?action=removeOld</url>
-        <description>Removing old events from the data storage</description>
-        <schedule>every day 00:00</schedule>
+        <description>Remove old events with 'SUCCESS' status from the data storage</description>
+        <schedule>every 30 minutes</schedule>
     </cron>
 </cronentries>

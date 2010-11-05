@@ -1,7 +1,6 @@
 package com.codeforces.graygoose.dao.impl;
 
 import com.codeforces.graygoose.dao.AlertTriggerEventDao;
-import com.codeforces.graygoose.model.Alert;
 import com.codeforces.graygoose.model.AlertTriggerEvent;
 
 import java.util.Date;
@@ -26,11 +25,6 @@ public class AlertTriggerEventDaoImpl extends BasicDaoImpl<AlertTriggerEvent> im
     }
 
     @Override
-    public List<AlertTriggerEvent> findByAlert(Alert alert) {
-        return findByAlert(alert.getId());
-    }
-
-    @Override
     public List<AlertTriggerEvent> findByAlert(long alertId) {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("alertId", alertId);
@@ -41,23 +35,19 @@ public class AlertTriggerEventDaoImpl extends BasicDaoImpl<AlertTriggerEvent> im
     }
 
     @Override
-    public List<AlertTriggerEvent> findByAlertForPeriod(
-            Alert alert, long lowerBoundMillis, long upperBoundMillis) {
-        return findByAlertForPeriod(alert.getId(), lowerBoundMillis, upperBoundMillis);
-    }
-
-    @Override
     public List<AlertTriggerEvent> findByAlertForPeriod(long alertId, long lowerBoundMillis, long upperBoundMillis) {
         Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("alertId", alertId);
         parameters.put("lowerBound", new Date(lowerBoundMillis));
         parameters.put("upperBound", new Date(upperBoundMillis));
 
         return super.findAll(AlertTriggerEvent.class,
-                String.format("this.alertId == %d"
+                "this.alertId == alertId"
                         + " && this.creationTime >= lowerBound"
                         + " && this.creationTime <= upperBound"
-                        + " PARAMETERS java.util.Date lowerBound,"
-                        + " java.util.Date upperBound", alertId),
+                        + " PARAMETERS long alertId,"
+                        + " java.util.Date lowerBound,"
+                        + " java.util.Date upperBound",
                 null, parameters, true);
     }
 }

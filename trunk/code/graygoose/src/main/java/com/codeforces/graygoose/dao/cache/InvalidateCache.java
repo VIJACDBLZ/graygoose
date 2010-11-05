@@ -18,7 +18,7 @@ public @interface InvalidateCache {
         }
 
         private static class Internal {
-            private static Cache cache = ApplicationContext.getInstance().getInjector().getInstance(Cache.class);
+            private static final Cache cache = ApplicationContext.getInstance().getInjector().getInstance(Cache.class);
         }
 
         @Override

@@ -18,13 +18,11 @@ public class EventsCronPage extends CronPage {
 
     @Action("removeOld")
     public void onRemoveold() {
-        List<RuleCheckEvent> oldEvents =
-                ruleCheckEventDao.findAllForPeriod(0, System.currentTimeMillis() - MILLIS_PER_DAY);
+        List<RuleCheckEvent> oldEvents = ruleCheckEventDao.findByStatusForPeriod(
+                RuleCheckEvent.Status.SUCCEEDED, 0, System.currentTimeMillis() - MILLIS_PER_DAY);
 
         for (RuleCheckEvent oldEvent : oldEvents) {
-            if (oldEvent.getStatus() == RuleCheckEvent.Status.SUCCEEDED) {
-                ruleCheckEventDao.delete(oldEvent);
-            }
+            ruleCheckEventDao.delete(oldEvent);
         }
     }
 

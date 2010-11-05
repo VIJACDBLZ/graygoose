@@ -76,8 +76,7 @@ public class Rule extends AbstractEntity {
         data.put(key, value);
     }
 
-    @Override
-    public String toString() {
+    public String toShortString() {
         StringBuilder result = new StringBuilder();
 
         result.append("Rule {")
