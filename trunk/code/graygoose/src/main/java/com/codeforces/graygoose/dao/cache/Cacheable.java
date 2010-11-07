@@ -1,5 +1,6 @@
 package com.codeforces.graygoose.dao.cache;
 
+import com.codeforces.graygoose.dao.impl.BasicDaoImpl;
 import com.codeforces.graygoose.model.AbstractEntity;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
@@ -17,11 +18,7 @@ public @interface Cacheable {
         private static final String CACHE_KEY_SEPARATOR = "###";
 
         public Cache getCache() {
-            return Internal.cache;
-        }
-
-        private static class Internal {
-            private static Cache cache = ApplicationContext.getInstance().getInjector().getInstance(Cache.class);
+            return CacheHolder.getCache();
         }
 
         @Override
@@ -38,6 +35,7 @@ public @interface Cacheable {
 
         private Object invokeAndCache(MethodInvocation invocation, String hashKey) throws Throwable {
             Object result = invocation.proceed();
+            BasicDaoImpl.makeTransient(result);
             getCache().put(hashKey, result);
             return result;
         }
@@ -68,6 +66,14 @@ public @interface Cacheable {
                     || argumentClass.isEnum()
                     || Number.class.isAssignableFrom(argumentClass)
                     || AbstractEntity.class.isAssignableFrom(argumentClass);
+        }
+
+        private static class CacheHolder {
+            private static final Cache cache = ApplicationContext.getInstance().getInjector().getInstance(Cache.class);
+
+            public static Cache getCache() {
+                return cache;
+            }
         }
     }
 }

@@ -1,10 +1,12 @@
 package com.codeforces.graygoose.dao.cache;
 
+import com.google.inject.Singleton;
 import org.apache.log4j.Logger;
 
 import java.util.Hashtable;
 import java.util.Map;
 
+@Singleton
 public class InMemoryCache implements Cache {
     private static final Logger logger = Logger.getLogger(InMemoryCache.class);
 

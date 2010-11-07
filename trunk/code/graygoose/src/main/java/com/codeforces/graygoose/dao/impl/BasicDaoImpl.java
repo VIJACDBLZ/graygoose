@@ -9,23 +9,26 @@ import org.nocturne.util.StringUtil;
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
+import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 public abstract class BasicDaoImpl<T extends AbstractEntity> implements BasicDao<T> {
-    public static volatile ThreadLocal<PersistenceManager> persistenceManagerByThread =
+    private static final ThreadLocal<PersistenceManager> persistenceManagerByThread =
             new ThreadLocal<PersistenceManager>();
 
-    private static volatile PersistenceManagerFactory persistenceManagerFactory;
-
     public static PersistenceManagerFactory getPersistenceManagerFactory() {
-        if (persistenceManagerFactory == null) {
-            persistenceManagerFactory =
-                    ApplicationContext.getInstance().getInjector().getInstance(PersistenceManagerFactory.class);
-        }
+        return PersistenceManagerFactoryHolder.getPersistenceManagerFactory();
+    }
 
-        return persistenceManagerFactory;
+    private static class PersistenceManagerFactoryHolder {
+        private static final PersistenceManagerFactory persistenceManagerFactory =
+                ApplicationContext.getInstance().getInjector().getInstance(PersistenceManagerFactory.class);
+
+        public static PersistenceManagerFactory getPersistenceManagerFactory() {
+            return persistenceManagerFactory;
+        }
     }
 
     private static void setPersistenceManager(PersistenceManager manager) {
@@ -47,6 +50,45 @@ public abstract class BasicDaoImpl<T extends AbstractEntity> implements BasicDao
     private static void reopenPersistenceManager() {
         closePersistenceManager();
         openPersistenceManager();
+    }
+
+    public static void makeTransient(Object result) {
+        PersistenceManager persistenceManager = getPersistenceManager();
+
+        if (result instanceof Iterable) {
+            makeIterableTransient(persistenceManager, (Iterable) result);
+        } else if (result instanceof Map) {
+            makeMapTransient(persistenceManager, (Map) result);
+        } else if (result instanceof Array) {
+            makeArrayTransient(persistenceManager, (Array) result);
+        } else {
+            makeEntityTransient(persistenceManager, result);
+        }
+    }
+
+    private static void makeIterableTransient(PersistenceManager persistenceManager, Iterable iterable) {
+        for (Object o : iterable) {
+            makeEntityTransient(persistenceManager, o);
+        }
+    }
+
+    private static void makeMapTransient(PersistenceManager persistenceManager, Map map) {
+        for (Object o : map.values()) {
+            makeEntityTransient(persistenceManager, o);
+        }
+    }
+
+    private static void makeArrayTransient(PersistenceManager persistenceManager, Array array) {
+        int arrayLength = Array.getLength(array);
+        for (int arrayIndex = 0; arrayIndex < arrayLength; ++arrayIndex) {
+            makeEntityTransient(persistenceManager, Array.get(array, arrayIndex));
+        }
+    }
+
+    private static void makeEntityTransient(PersistenceManager persistenceManager, Object persistentEntity) {
+        if (persistentEntity instanceof AbstractEntity) {
+            persistenceManager.makeTransient(persistentEntity);
+        }
     }
 
     private Object executeQueryWithMap(String queryString, Map<String, Object> parameters) {
