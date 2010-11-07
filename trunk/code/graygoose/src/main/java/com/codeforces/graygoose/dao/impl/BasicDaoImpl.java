@@ -52,45 +52,6 @@ public abstract class BasicDaoImpl<T extends AbstractEntity> implements BasicDao
         openPersistenceManager();
     }
 
-    public static void makeTransient(Object result) {
-        PersistenceManager persistenceManager = getPersistenceManager();
-
-        if (result instanceof Iterable) {
-            makeIterableTransient(persistenceManager, (Iterable) result);
-        } else if (result instanceof Map) {
-            makeMapTransient(persistenceManager, (Map) result);
-        } else if (result instanceof Array) {
-            makeArrayTransient(persistenceManager, (Array) result);
-        } else {
-            makeEntityTransient(persistenceManager, result);
-        }
-    }
-
-    private static void makeIterableTransient(PersistenceManager persistenceManager, Iterable iterable) {
-        for (Object o : iterable) {
-            makeEntityTransient(persistenceManager, o);
-        }
-    }
-
-    private static void makeMapTransient(PersistenceManager persistenceManager, Map map) {
-        for (Object o : map.values()) {
-            makeEntityTransient(persistenceManager, o);
-        }
-    }
-
-    private static void makeArrayTransient(PersistenceManager persistenceManager, Array array) {
-        int arrayLength = Array.getLength(array);
-        for (int arrayIndex = 0; arrayIndex < arrayLength; ++arrayIndex) {
-            makeEntityTransient(persistenceManager, Array.get(array, arrayIndex));
-        }
-    }
-
-    private static void makeEntityTransient(PersistenceManager persistenceManager, Object persistentEntity) {
-        if (persistentEntity instanceof AbstractEntity) {
-            persistenceManager.makeTransient(persistentEntity);
-        }
-    }
-
     private Object executeQueryWithMap(String queryString, Map<String, Object> parameters) {
         PersistenceManager persistenceManager = getPersistenceManager();
         Object result = persistenceManager.newQuery(queryString).executeWithMap(parameters);

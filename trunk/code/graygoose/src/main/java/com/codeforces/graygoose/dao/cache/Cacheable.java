@@ -35,7 +35,6 @@ public @interface Cacheable {
 
         private Object invokeAndCache(MethodInvocation invocation, String hashKey) throws Throwable {
             Object result = invocation.proceed();
-            BasicDaoImpl.makeTransient(result);
             getCache().put(hashKey, result);
             return result;
         }
