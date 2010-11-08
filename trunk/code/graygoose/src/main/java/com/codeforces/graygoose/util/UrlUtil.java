@@ -1,9 +1,6 @@
 package com.codeforces.graygoose.util;
 
-import com.google.appengine.api.urlfetch.HTTPHeader;
-import com.google.appengine.api.urlfetch.HTTPResponse;
-import com.google.appengine.api.urlfetch.URLFetchService;
-import com.google.appengine.api.urlfetch.URLFetchServiceFactory;
+import com.google.appengine.api.urlfetch.*;
 import org.apache.log4j.Logger;
 
 import java.net.MalformedURLException;
@@ -17,7 +14,7 @@ import java.util.concurrent.Future;
 public class UrlUtil {
     private static final Logger logger = Logger.getLogger(UrlUtil.class);
 
-    private static final String CONTENT_TYPE_HTTP_HEADER = "Content-Type";
+    private static final String CONTENT_TYPE_HTTP_HEADER = "content-type";
     private static final String CHARSET_EQ = "charset=";
     private static final int CHARSET_EQ_LENGTH = CHARSET_EQ.length();
 
@@ -40,7 +37,9 @@ public class UrlUtil {
             logger.info("Start to fetch URL [" + urlString + "] ...");
 
             try {
-                futureResponses.add(urlFetchService.fetchAsync(new URL(urlString)));
+                HTTPRequest httpRequest = new HTTPRequest(new URL(urlString));
+                httpRequest.setHeader(new HTTPHeader("X-User-Agent", "Graygoose"));
+                futureResponses.add(urlFetchService.fetchAsync(httpRequest));
             } catch (MalformedURLException e) {
                 logger.error("Fetch error: " + e.getMessage() + ".");
                 futureResponses.add(null);
@@ -55,18 +54,25 @@ public class UrlUtil {
                 final String urlString = urlStringsInternal[i];
 
                 try {
-                    final HTTPResponse httpResponse = futureResponse.get();
+                    HTTPResponse httpResponse = futureResponse.get();
                     logger.info("URL [" + urlString + "] has been successfully fetched.");
 
-                    final int responsecode = httpResponse.getResponseCode();
-                    final Charset responseCharset = getHttpResponseCharset(httpResponse);
+                    int responseCode = httpResponse.getResponseCode();
+                    Charset responseCharset = getHttpResponseCharset(httpResponse);
                     final byte[] responseContent = httpResponse.getContent();
 
-                    final String responseText = responseCharset == null ?
+                    String responseText = responseCharset == null ?
                             new String(responseContent) :
                             new String(responseContent, responseCharset);
 
-                    responses[i] = new ResponseCheckingService.Response(urlString, responsecode, responseText);
+                    if (responseCharset == null) {
+                        responseCharset = getCharsetByHtml(responseText);
+                        if (responseCharset != null) {
+                            responseText = new String(responseContent, responseCharset);
+                        }
+                    }
+
+                    responses[i] = new ResponseCheckingService.Response(urlString, responseCode, responseText);
                 } catch (Exception e) {
                     logger.error("Fetch error: " + e.getMessage() + ".");
                     responses[i] = new ResponseCheckingService.Response(urlString, -1, e.getMessage());
@@ -85,17 +91,56 @@ public class UrlUtil {
             final String headerValue = header.getValue();
 
             if (CONTENT_TYPE_HTTP_HEADER.equalsIgnoreCase(headerName)) {
-                final int charsetEqPos = headerValue.indexOf(CHARSET_EQ);
+                return extractCharset(headerValue);
+            }
+        }
 
-                if (charsetEqPos >= 0) {
-                    final int charsetNamePos = charsetEqPos + CHARSET_EQ_LENGTH;
-                    final int semicolonPos = headerValue.indexOf(';', charsetNamePos);
+        return null;
+    }
 
-                    final String charsetName = (semicolonPos == -1 ?
-                            headerValue.substring(charsetNamePos) :
-                            headerValue.substring(charsetNamePos, semicolonPos)).trim();
+    private static Charset extractCharset(String s) {
+        s = s.replaceAll("[\\r\\n\\s]+", "");
+        final int sLength = s.length();
+        final int charsetEqPos = s.indexOf(CHARSET_EQ);
 
-                    return Charset.isSupported(charsetName) ? Charset.forName(charsetName) : null;
+        if (charsetEqPos >= 0) {
+            final int charsetNamePos = charsetEqPos + CHARSET_EQ_LENGTH;
+
+            int endPos = charsetNamePos;
+            while (endPos < sLength && isCharsetCharacter(s.charAt(endPos))) {
+                ++endPos;
+            }
+
+            final String charsetName = (endPos == -1 ?
+                    s.substring(charsetNamePos) :
+                    s.substring(charsetNamePos, endPos)).trim();
+
+            return Charset.isSupported(charsetName) ? Charset.forName(charsetName) : null;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * @param c Character to analyze.
+     * @return {@code true} iff character is a part of charset or whitespace.
+     */
+    private static boolean isCharsetCharacter(char c) {
+        return Character.isWhitespace(c)
+                || Character.isLetterOrDigit(c)
+                || c == '-';
+    }
+
+    private static Charset getCharsetByHtml(String html) {
+        html = html.toLowerCase();
+        int headEnd = html.indexOf("</head>");
+
+        if (headEnd > 0) {
+            String head = html.substring(0, headEnd);
+            String[] tokens = head.split("[<>]");
+            for (String token : tokens) {
+                if (token.contains(CONTENT_TYPE_HTTP_HEADER)) {
+                    return extractCharset(token);
                 }
             }
         }

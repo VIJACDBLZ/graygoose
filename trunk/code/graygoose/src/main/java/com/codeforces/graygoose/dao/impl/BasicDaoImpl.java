@@ -9,7 +9,6 @@ import org.nocturne.util.StringUtil;
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
-import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -130,7 +129,7 @@ public abstract class BasicDaoImpl<T extends AbstractEntity> implements BasicDao
     }
 
     @SuppressWarnings({"unchecked"})
-    protected void update(T entity) {
+    protected void update(T entity) {        
         assertEntityIdNotNull(entity);
         T persistentEntity = find((Class<T>) entity.getClass(), entity.getId(), false);
         assertPersistentEntityNotNull(persistentEntity);
