@@ -1,7 +1,6 @@
 package com.codeforces.graygoose.dao;
 
 import com.codeforces.graygoose.model.AlertTriggerEvent;
-import com.codeforces.graygoose.model.RuleCheckEvent;
 
 import java.util.List;
 

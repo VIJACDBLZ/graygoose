@@ -32,8 +32,8 @@
     <#list sites as site>
     <tr>
         <td>${site.id}</td>
-        <td>${site.name?html}</td>
-        <td>${site.url?html}</td>
+        <td style="text-align:left;">${site.name?html}</td>
+        <td style="text-align:left;">${site.url?html}</td>
         <td>${site.rescanPeriodSeconds?int}</td>
         <td>${site.creationTime?datetime}</td>
         <td>

@@ -1,6 +1,7 @@
 package com.codeforces.graygoose.page.cron;
 
 import com.codeforces.graygoose.dao.RuleCheckEventDao;
+import com.codeforces.graygoose.misc.TimeConstants;
 import com.codeforces.graygoose.model.RuleCheckEvent;
 import com.google.inject.Inject;
 import org.apache.log4j.Logger;
@@ -14,7 +15,6 @@ import java.util.List;
 public class EventsCronPage extends CronPage {
     private static final Logger logger = Logger.getLogger(EventsCronPage.class);
 
-    private static final long MILLIS_PER_DAY = 24L /*h*/ * 60L /*m*/ * 60L /*s*/ * 1000L /*ms*/;
     private static final int MAX_EVENT_COUNT_TO_REMOVE = 100;
 
     @Inject
@@ -25,7 +25,7 @@ public class EventsCronPage extends CronPage {
         logger.info("Retrieve old rule check events with \'SUCCESS\' status from the data storage.");
 
         List<RuleCheckEvent> oldEvents = ruleCheckEventDao.findByStatusForPeriod(
-                RuleCheckEvent.Status.SUCCEEDED, 0, System.currentTimeMillis() - MILLIS_PER_DAY);
+                RuleCheckEvent.Status.SUCCEEDED, 0, System.currentTimeMillis() - TimeConstants.MILLIS_PER_DAY);
 
         final int oldEventCount = oldEvents.size();
         logger.info(String.format("%d events was found.", oldEventCount));

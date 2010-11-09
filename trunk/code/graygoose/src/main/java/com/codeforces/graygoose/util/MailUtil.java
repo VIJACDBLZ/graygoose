@@ -40,4 +40,7 @@ public class MailUtil {
             throw new RuntimeException("Can't read from properties file.", e);
         }
     }
+
+    private MailUtil() {
+    }
 }

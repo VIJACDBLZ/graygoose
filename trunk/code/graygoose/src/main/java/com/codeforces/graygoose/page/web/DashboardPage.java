@@ -4,6 +4,9 @@ import com.codeforces.graygoose.dao.AlertTriggerEventDao;
 import com.codeforces.graygoose.dao.RuleCheckEventDao;
 import com.codeforces.graygoose.dao.RuleDao;
 import com.codeforces.graygoose.dao.SiteDao;
+import com.codeforces.graygoose.dao.cache.Cacheable;
+import com.codeforces.graygoose.misc.TimeConstants;
+import com.codeforces.graygoose.misc.TimeInterval;
 import com.codeforces.graygoose.model.AlertTriggerEvent;
 import com.codeforces.graygoose.model.Rule;
 import com.codeforces.graygoose.model.RuleCheckEvent;
@@ -16,8 +19,7 @@ import java.util.*;
 
 @Link("")
 public class DashboardPage extends WebPage {
-    private static final long MILLIS_PER_HOUR = 60L /*m*/ * 60L /*s*/ * 1000L /*ms*/;
-    private static final long MILLIS_PER_DAY = 24L /*h*/ * MILLIS_PER_HOUR;
+    private static final long STATISTICS_REFRESH_INTERVAL_MILLIS = 10L * TimeConstants.MILLIS_PER_MINUTE;
 
     @Inject
     private SiteDao siteDao;
@@ -50,16 +52,12 @@ public class DashboardPage extends WebPage {
         }
 
         put("currentTimeInterval", currentTimeInterval);
-
-        final long intervalEnd = System.currentTimeMillis();
-        final long intervalBegin = intervalEnd - currentTimeInterval.getValueMillis();
-
         put("timeIntervals", getTimeIntervalsOrderedByValueDesc());
 
         final List<Site> sites = siteDao.findAll();
 
         put("sites", sites);
-        put("siteInfoBySiteId", getSiteInfoBySiteIdMap(sites, intervalBegin, intervalEnd));
+        put("siteInfoBySiteId", getSiteInfoBySiteIdMap(sites, currentTimeInterval));
     }
 
     private static TimeInterval[] getTimeIntervalsOrderedByValueDesc() {
@@ -83,8 +81,12 @@ public class DashboardPage extends WebPage {
         return timeIntervals;
     }
 
-    private Map<String, SiteInfo> getSiteInfoBySiteIdMap(List<Site> sites, long intervalBegin, long intervalEnd) {
-        final Map<String, SiteInfo> siteInfoBySiteId = new HashMap<String, SiteInfo>();
+    //TODO: cache for STATISTICS_REFRESH_INTERVAL_MILLIS
+    private Map<String, SiteInfo> getSiteInfoBySiteIdMap(List<Site> sites, TimeInterval currentTimeInterval) {
+        final long intervalEnd = System.currentTimeMillis();
+        final long intervalBegin = intervalEnd - currentTimeInterval.getValueMillis();
+
+        final Hashtable<String, SiteInfo> siteInfoBySiteId = new Hashtable<String, SiteInfo>();
 
         final Map<Long, Long> alertTriggerCountByRuleCheckId =
                 getAlertTriggerCountByRuleCheckIdMap(intervalBegin, intervalEnd);
@@ -93,7 +95,7 @@ public class DashboardPage extends WebPage {
             final long siteId = site.getId();
             final List<Rule> rules = ruleDao.findBySite(siteId);
 
-            long siteCheckCount = 0;
+            long maxTotalRuleCheckCount = 0;
             long totalRuleCheckCount = 0;
             long succeededRuleCheckCount = 0;
             long pendingRuleCheckCount = 0;
@@ -109,13 +111,6 @@ public class DashboardPage extends WebPage {
                 final List<RuleCheckEvent> pendingChecks = ruleCheckEventDao.findByRuleAndStatusForPeriod(
                         ruleId, RuleCheckEvent.Status.PENDING, intervalBegin, intervalEnd);
 
-                for (RuleCheckEvent pendingCheck : pendingChecks) {
-                    final Long alertCount = alertTriggerCountByRuleCheckId.get(pendingCheck.getId());
-                    if (alertCount != null) {
-                        alertTriggerCount += alertCount;
-                    }
-                }
-
                 final List<RuleCheckEvent> failedChecks = ruleCheckEventDao.findByRuleAndStatusForPeriod(
                         ruleId, RuleCheckEvent.Status.FAILED, intervalBegin, intervalEnd);
 
@@ -130,17 +125,18 @@ public class DashboardPage extends WebPage {
                 pendingRuleCheckCount += pendingChecks.size();
                 failedRuleCheckCount += failedChecks.size();
 
-                final long currentRuleCheckCount = succeededChecks.size() + pendingChecks.size() + failedChecks.size();
+                final long currentRuleCheckCount =
+                        succeededChecks.size() + pendingChecks.size() + failedChecks.size();
 
-                if (currentRuleCheckCount > siteCheckCount) {
-                    siteCheckCount = currentRuleCheckCount;
+                if (currentRuleCheckCount > maxTotalRuleCheckCount) {
+                    maxTotalRuleCheckCount = currentRuleCheckCount;
                 }
 
                 totalRuleCheckCount += currentRuleCheckCount;
             }
 
             siteInfoBySiteId.put("" + siteId,
-                    new SiteInfo(siteId, rules.size(), siteCheckCount, totalRuleCheckCount,
+                    new SiteInfo(siteId, rules.size(), maxTotalRuleCheckCount, totalRuleCheckCount,
                             succeededRuleCheckCount, pendingRuleCheckCount, failedRuleCheckCount, alertTriggerCount));
         }
 
@@ -163,19 +159,19 @@ public class DashboardPage extends WebPage {
     public static class SiteInfo {
         private final long siteId;
         private final long ruleCount;
-        private final long siteCheckCount;
+        private final long maxTotalRuleCheckCount;
         private final long totalRuleCheckCount;
         private final long succeededRuleCheckCount;
         private final long pendingRuleCheckCount;
         private final long failedRuleCheckCount;
         private final long alertTriggerCount;
 
-        public SiteInfo(long siteId, long ruleCount, long siteCheckCount, long totalRuleCheckCount,
+        public SiteInfo(long siteId, long ruleCount, long maxTotalRuleCheckCount, long totalRuleCheckCount,
                         long succeededRuleCheckCount, long pendingRuleCheckCount, long failedRuleCheckCount,
                         long alertTriggerCount) {
             this.siteId = siteId;
             this.ruleCount = ruleCount;
-            this.siteCheckCount = siteCheckCount;
+            this.maxTotalRuleCheckCount = maxTotalRuleCheckCount;
             this.totalRuleCheckCount = totalRuleCheckCount;
             this.succeededRuleCheckCount = succeededRuleCheckCount;
             this.pendingRuleCheckCount = pendingRuleCheckCount;
@@ -191,8 +187,8 @@ public class DashboardPage extends WebPage {
             return ruleCount;
         }
 
-        public long getSiteCheckCount() {
-            return siteCheckCount;
+        public long getMaxTotalRuleCheckCount() {
+            return maxTotalRuleCheckCount;
         }
 
         public long getTotalRuleCheckCount() {
@@ -213,37 +209,6 @@ public class DashboardPage extends WebPage {
 
         public long getAlertTriggerCount() {
             return alertTriggerCount;
-        }
-    }
-
-    public enum TimeInterval {
-        SIX_HOURS("6 hours", 6L * DashboardPage.MILLIS_PER_HOUR),
-        TWELVE_HOURS("12 hours", 12L * DashboardPage.MILLIS_PER_HOUR),
-        TWENTY_FOUR_HOURS("24 hours", 24L * DashboardPage.MILLIS_PER_HOUR),
-        TWO_DAYS("2 days", 2L * DashboardPage.MILLIS_PER_DAY),
-        FOUR_DAYS("4 days", 4L * DashboardPage.MILLIS_PER_DAY),
-        SEVEN_DAYS("7 days", 7L * DashboardPage.MILLIS_PER_DAY),
-        FOURTEEN_DAYS("14 days", 14L * DashboardPage.MILLIS_PER_DAY),
-        THIRTY_DAYS("30 days", 30L * DashboardPage.MILLIS_PER_DAY);
-
-        private final String synonym;
-        private final long valueMillis;
-
-        private TimeInterval(String synonym, Long valueMillis) {
-            this.synonym = synonym;
-            this.valueMillis = valueMillis;
-        }
-
-        public String getSynonym() {
-            return synonym;
-        }
-
-        public long getValueMillis() {
-            return valueMillis;
-        }
-
-        public static TimeInterval getDefaultValue() {
-            return TWENTY_FOUR_HOURS;
         }
     }
 }

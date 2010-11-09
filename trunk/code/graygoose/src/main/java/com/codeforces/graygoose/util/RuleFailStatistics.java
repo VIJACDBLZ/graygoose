@@ -3,6 +3,7 @@ package com.codeforces.graygoose.util;
 import com.codeforces.graygoose.dao.AlertDao;
 import com.codeforces.graygoose.dao.AlertTriggerEventDao;
 import com.codeforces.graygoose.dao.RuleAlertRelationDao;
+import com.codeforces.graygoose.misc.TimeConstants;
 import com.codeforces.graygoose.model.Alert;
 import com.codeforces.graygoose.model.AlertTriggerEvent;
 import com.codeforces.graygoose.model.RuleAlertRelation;
@@ -13,8 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 public class RuleFailStatistics {
-    private static final long MILLIS_PER_HOUR = 60L * 60L * 1000L;
-
     private static final Map<Long, Long> consecutiveFailCountByRuleId = new HashMap<Long, Long>();
 
     public static synchronized void increaseConsecutiveFailCountByRuleId(long ruleId) {
@@ -47,7 +46,7 @@ public class RuleFailStatistics {
                 if (alert != null) {
                     List<AlertTriggerEvent> alertTriggersForLastHour =
                             alertTriggerEventDao.findByAlertForPeriod(
-                                    alert.getId(), currentTimeMillis - MILLIS_PER_HOUR, currentTimeMillis);
+                                    alert.getId(), currentTimeMillis - TimeConstants.MILLIS_PER_HOUR, currentTimeMillis);
                     if (alertTriggersForLastHour.size() < alert.getMaxAlertCountPerHour()) {
                         neededAlerts.add(alert);
                     }
