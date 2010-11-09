@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF8"?>
+<profilesXml>
+    <profiles>
+        <profile>
+            <id>settings</id>
+            <properties>
+                <!-- 
+                    Not used in the production mode. Example for development:
+                        <development.home>P:\graygoose\code/graygoose</development.home>
+                -->
+                <development.home/>
+
+                <application.name>graygoose</application.name>
+
+                <!-- 
+                    Do not use debug mode. If you want to enable debug mode:
+                        <nocturne.debug>true</nocturne.debug>
+                -->
+                <nocturne.debug>false</nocturne.debug>
+
+                <!-- 
+                    Path to write log file. Doesn't use on GAE, but can be usefull during
+                    the development. GAE handles stdout/stderr logging.
+                -->
+                <logging.path>graygoose.log</logging.path>
+
+                <!--
+                    Application administrator email (user which has rights to the installation
+                    GAE project), used as "from" for emails from Graygoose.
+                -->
+                <mail.from>sample@gmail.com</mail.from>
+            </properties>
+        </profile>
+    </profiles>
+    <activeProfiles>
+        <activeProfile>settings</activeProfile>
+    </activeProfiles>
+</profilesXml>

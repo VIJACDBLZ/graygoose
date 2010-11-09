@@ -1,6 +1,5 @@
 package com.codeforces.graygoose.dao.cache;
 
-import com.codeforces.graygoose.dao.impl.BasicDaoImpl;
 import com.codeforces.graygoose.model.AbstractEntity;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;

@@ -17,7 +17,7 @@ public abstract class BasicDaoImpl<T extends AbstractEntity> implements BasicDao
     private static final ThreadLocal<PersistenceManager> persistenceManagerByThread =
             new ThreadLocal<PersistenceManager>();
 
-    public static PersistenceManagerFactory getPersistenceManagerFactory() {
+    private static PersistenceManagerFactory getPersistenceManagerFactory() {
         return PersistenceManagerFactoryHolder.getPersistenceManagerFactory();
     }
 
@@ -104,7 +104,6 @@ public abstract class BasicDaoImpl<T extends AbstractEntity> implements BasicDao
         return (List<T>) executeQueryWithMap(queryText.toString(), parameters);
     }
 
-
     protected void insert(T entity) {
         getPersistenceManager().makePersistent(entity);
     }
@@ -129,7 +128,7 @@ public abstract class BasicDaoImpl<T extends AbstractEntity> implements BasicDao
     }
 
     @SuppressWarnings({"unchecked"})
-    protected void update(T entity) {        
+    protected void update(T entity) {
         assertEntityIdNotNull(entity);
         T persistentEntity = find((Class<T>) entity.getClass(), entity.getId(), false);
         assertPersistentEntityNotNull(persistentEntity);
