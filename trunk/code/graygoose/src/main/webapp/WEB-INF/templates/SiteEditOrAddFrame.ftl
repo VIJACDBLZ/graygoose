@@ -115,6 +115,7 @@
                 <#list alertsByRuleId[rule.id?string] as alert>
                 <p id="alert${alert.id}">
                     ${alert.name} (id=${alert.id})
+                    on ${failCountByAlertIdAndRuleIdConcatenation[alert.id?string + "#" + rule.id?string]} fail(s)
                     <a href="#" class="detach-alert-link" alertId="${alert.id}" ruleId="${rule.id}">
                         <img src="${home}/images/detach_alert.gif">
                     </a>

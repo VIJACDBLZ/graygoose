@@ -25,6 +25,20 @@ public class AlertTriggerEventDaoImpl extends BasicDaoImpl<AlertTriggerEvent> im
     }
 
     @Override
+    public List<AlertTriggerEvent> findAllForPeriod(long lowerBoundMillis, long upperBoundMillis) {
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("lowerBound", new Date(lowerBoundMillis));
+        parameters.put("upperBound", new Date(upperBoundMillis));
+
+        return super.findAll(AlertTriggerEvent.class,
+                "this.creationTime >= lowerBound"
+                        + " && this.creationTime <= upperBound"
+                        + " PARAMETERS java.util.Date lowerBound,"
+                        + " java.util.Date upperBound",
+                null, parameters, true);
+    }
+
+    @Override
     public List<AlertTriggerEvent> findByAlert(long alertId) {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("alertId", alertId);
@@ -46,6 +60,24 @@ public class AlertTriggerEventDaoImpl extends BasicDaoImpl<AlertTriggerEvent> im
                         + " && this.creationTime >= lowerBound"
                         + " && this.creationTime <= upperBound"
                         + " PARAMETERS long alertId,"
+                        + " java.util.Date lowerBound,"
+                        + " java.util.Date upperBound",
+                null, parameters, true);
+    }
+
+    @Override
+    public List<AlertTriggerEvent> findByRuleCheckForPeriod(
+            long ruleCheckEventId, long lowerBoundMillis, long upperBoundMillis) {
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("ruleCheckEventId", ruleCheckEventId);
+        parameters.put("lowerBound", new Date(lowerBoundMillis));
+        parameters.put("upperBound", new Date(upperBoundMillis));
+
+        return super.findAll(AlertTriggerEvent.class,
+                "this.ruleCheckEventId == ruleCheckEventId"
+                        + " && this.creationTime >= lowerBound"
+                        + " && this.creationTime <= upperBound"
+                        + " PARAMETERS long ruleCheckEventId,"
                         + " java.util.Date lowerBound,"
                         + " java.util.Date upperBound",
                 null, parameters, true);

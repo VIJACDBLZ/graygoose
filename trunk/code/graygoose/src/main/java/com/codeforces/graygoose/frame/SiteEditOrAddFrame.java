@@ -17,10 +17,7 @@ import org.nocturne.validation.*;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class SiteEditOrAddFrame extends ApplicationFrame {
     @Parameter
@@ -77,13 +74,18 @@ public class SiteEditOrAddFrame extends ApplicationFrame {
             put("rules", rules);
 
             Map<String, List<Alert>> alertsByRuleId = new TreeMap<String, List<Alert>>();
+            Map<String, String> failCountByAlertIdAndRuleIdConcatenation = new HashMap<String, String>();
 
             for (Rule rule : rules) {
                 List<RuleAlertRelation> ruleAlertRelations = ruleAlertRelationDao.findByRule(rule.getId());
                 List<Alert> alerts = new ArrayList<Alert>(ruleAlertRelations.size());
 
                 for (RuleAlertRelation ruleAlertRelation : ruleAlertRelations) {
-                    alerts.add(alertDao.find(ruleAlertRelation.getAlertId()));
+                    Alert alert = alertDao.find(ruleAlertRelation.getAlertId());
+                    alerts.add(alert);
+                    failCountByAlertIdAndRuleIdConcatenation.put(
+                            "" + alert.getId() + "#" + rule.getId(),
+                            "" + ruleAlertRelation.getMaxConsecutiveFailCount());
                 }
 
                 alertsByRuleId.put("" + rule.getId(), alerts);
@@ -91,6 +93,7 @@ public class SiteEditOrAddFrame extends ApplicationFrame {
 
             put("alertsByRuleId", alertsByRuleId);
             put("alerts", alertDao.findAll());
+            put("failCountByAlertIdAndRuleIdConcatenation", failCountByAlertIdAndRuleIdConcatenation);
 
             put("edit", true);
         } else {

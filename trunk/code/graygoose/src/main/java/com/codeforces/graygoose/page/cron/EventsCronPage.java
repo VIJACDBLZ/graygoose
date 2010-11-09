@@ -3,12 +3,12 @@ package com.codeforces.graygoose.page.cron;
 import com.codeforces.graygoose.dao.RuleCheckEventDao;
 import com.codeforces.graygoose.model.RuleCheckEvent;
 import com.google.inject.Inject;
+import org.apache.log4j.Logger;
 import org.nocturne.annotation.Action;
 import org.nocturne.link.Link;
-import org.apache.log4j.Logger;
 
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
 
 @Link("cron/events")
 public class EventsCronPage extends CronPage {

@@ -1,10 +1,9 @@
 package com.codeforces.graygoose.page.cron;
 
 import com.codeforces.graygoose.page.ApplicationPage;
+import org.apache.log4j.Logger;
 
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.log4j.Logger;
 
 public abstract class CronPage extends ApplicationPage {
     private static final Logger logger = Logger.getLogger(CronPage.class);

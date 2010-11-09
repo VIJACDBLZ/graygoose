@@ -27,6 +27,17 @@
         <property name="creationTime" direction="asc"/>
     </datastore-index>
 
+    <datastore-index kind="AlertTriggerEvent" ancestor="false" source="manual">
+        <property name="deleted" direction="asc"/>
+        <property name="ruleCheckEventId" direction="asc"/>
+        <property name="creationTime" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="AlertTriggerEvent" ancestor="false" source="manual">
+        <property name="deleted" direction="asc"/>
+        <property name="creationTime" direction="asc"/>
+    </datastore-index>
+
     <!--RuleCheckEvent-->
     <datastore-index kind="RuleCheckEvent" ancestor="false" source="manual">
         <property name="deleted" direction="asc"/>
@@ -41,6 +52,13 @@
 
     <datastore-index kind="RuleCheckEvent" ancestor="false" source="manual">
         <property name="deleted" direction="asc"/>
+        <property name="status" direction="asc"/>
+        <property name="checkTime" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="RuleCheckEvent" ancestor="false" source="manual">
+        <property name="deleted" direction="asc"/>
+        <property name="ruleId" direction="asc"/>
         <property name="status" direction="asc"/>
         <property name="checkTime" direction="asc"/>
     </datastore-index>

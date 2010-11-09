@@ -86,4 +86,25 @@ public class RuleCheckEventDaoImpl extends BasicDaoImpl<RuleCheckEvent> implemen
                         + " java.util.Date upperBound",
                 null, parameters, true);
     }
+
+    @Override
+    public List<RuleCheckEvent> findByRuleAndStatusForPeriod(
+            long ruleId, RuleCheckEvent.Status status, long lowerBoundMillis, long upperBoundMillis) {
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("ruleId", ruleId);
+        parameters.put("status", status.toString());
+        parameters.put("lowerBound", new Date(lowerBoundMillis));
+        parameters.put("upperBound", new Date(upperBoundMillis));
+
+        return super.findAll(RuleCheckEvent.class,
+                "this.ruleId == ruleId"
+                        + " && this.status == status"
+                        + " && this.checkTime >= lowerBound"
+                        + " && this.checkTime <= upperBound"
+                        + " PARAMETERS long ruleId,"
+                        + " String status,"
+                        + " java.util.Date lowerBound,"
+                        + " java.util.Date upperBound",
+                null, parameters, true);
+    }
 }

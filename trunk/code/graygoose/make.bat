@@ -2,7 +2,7 @@
 
 IF "%1"=="" (
     echo Usage: make ^<profile-name^>
-    echo Sample profile names: dev, prod
+    echo Example: make sample
 ) ELSE (
     mvn clean
     if not exist profiles\profiles.xml.%1 (

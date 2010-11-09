@@ -224,3 +224,11 @@ ul.menu li {
 div.rulesHeaderContainer {
     margin-top: 5em;
 }
+
+.grid caption {
+    border: 1px solid #c5d7ef;
+    background: #e5ecf9;
+    -moz-margin-start: -1px;
+    padding: 3px 5px;
+    text-align: left
+}
