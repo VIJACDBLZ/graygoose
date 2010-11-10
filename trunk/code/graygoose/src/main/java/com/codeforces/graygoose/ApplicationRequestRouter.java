@@ -12,16 +12,17 @@ import org.nocturne.main.LinkedRequestRouter;
 
 public class ApplicationRequestRouter extends LinkedRequestRouter {
     static {
-        //Web pages
-        Links.add(DashboardPage.class);
-        Links.add(SitesPage.class);
-        Links.add(SiteAddPage.class);
-        Links.add(SiteEditPage.class);
-        Links.add(AlertsPage.class);
+        //Web pages:
         Links.add(AlertAddPage.class);
         Links.add(AlertEditPage.class);
+        Links.add(AlertsPage.class);
+        Links.add(DashboardPage.class);
+        Links.add(LogsPage.class);
+        Links.add(SiteAddPage.class);
+        Links.add(SiteEditPage.class);
+        Links.add(SitesPage.class);
 
-        //Data pages
+        //Data pages:
         Links.add(SitesDataPage.class);
         Links.add(AlertsDataPage.class);
         Links.add(RulesDataPage.class);

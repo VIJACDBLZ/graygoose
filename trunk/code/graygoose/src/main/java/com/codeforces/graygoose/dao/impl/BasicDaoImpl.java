@@ -58,6 +58,10 @@ public abstract class BasicDaoImpl<T extends AbstractEntity> implements BasicDao
         return result;
     }
 
+    private Object executeKeyQueryWithMap(String queryString, Map<String, Object> parameters) {
+        return getPersistenceManager().newQuery(queryString).executeWithMap(parameters);
+    }
+
     protected T find(Class<T> clazz, long id) {
         return find(clazz, id, true);
     }
@@ -102,6 +106,37 @@ public abstract class BasicDaoImpl<T extends AbstractEntity> implements BasicDao
         }
 
         return (List<T>) executeQueryWithMap(queryText.toString(), parameters);
+    }
+
+    protected List<Long> findKeys(Class<T> clazz) {
+        return findKeys(clazz, null, null, null, true);
+    }
+
+    @SuppressWarnings({"unchecked"})
+    protected List<Long> findKeys(Class<T> clazz, String whereClause, String orderByClause,
+                                  Map<String, Object> parameters, boolean ignoreDeleted) {
+        StringBuilder queryText = new StringBuilder();
+        queryText.append("SELECT id FROM ").append(clazz.getName());
+
+        if (ignoreDeleted) {
+            queryText.append(" WHERE this.deleted == false");
+        }
+
+        if (!StringUtil.isEmptyOrNull(whereClause)) {
+            if (ignoreDeleted) {
+                queryText.append(" && ");
+            } else {
+                queryText.append(" WHERE ");
+            }
+
+            queryText.append(whereClause);
+        }
+
+        if (!StringUtil.isEmptyOrNull(orderByClause)) {
+            queryText.append(" ORDER BY ").append(orderByClause);
+        }
+
+        return (List<Long>) executeKeyQueryWithMap(queryText.toString(), parameters);
     }
 
     protected void insert(T entity) {

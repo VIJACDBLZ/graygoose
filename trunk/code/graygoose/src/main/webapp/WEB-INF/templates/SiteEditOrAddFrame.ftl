@@ -99,11 +99,11 @@
         <#if rules?? && (rules?size > 0)>
         <#list rules as rule>
         <tr id="rule${rule.id}">
-            <td>${rule.id}</td>
+            <td style="text-align:right;">${rule.id}</td>
             <td>${rule.ruleType?html}</td>
             <td>
                 <#list rule.ruleType.propertyNames as propertyName>
-                <div><label>${propertyName}: </label>${(rule.data[propertyName])!?html}</div>
+                <div style="text-align:left;"><label>${propertyName}: </label>${(rule.data[propertyName])!?html}</div>
                 </#list>
             </td>
             <td>${rule.creationTime?datetime}</td>

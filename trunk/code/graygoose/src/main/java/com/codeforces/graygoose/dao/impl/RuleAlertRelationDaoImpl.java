@@ -24,7 +24,7 @@ public class RuleAlertRelationDaoImpl extends BasicDaoImpl<RuleAlertRelation> im
 
     @Cacheable
     @Override
-    public List<RuleAlertRelation> findByRuleAndAlert(long ruleId, long alertId) {
+    public List<RuleAlertRelation> findAllByRuleAndAlert(long ruleId, long alertId) {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("ruleId", ruleId);
         parameters.put("alertId", alertId);
@@ -37,7 +37,7 @@ public class RuleAlertRelationDaoImpl extends BasicDaoImpl<RuleAlertRelation> im
 
     @Cacheable
     @Override
-    public List<RuleAlertRelation> findByRule(long ruleId) {
+    public List<RuleAlertRelation> findAllByRule(long ruleId) {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("ruleId", ruleId);
 
@@ -48,7 +48,7 @@ public class RuleAlertRelationDaoImpl extends BasicDaoImpl<RuleAlertRelation> im
 
     @Cacheable
     @Override
-    public List<RuleAlertRelation> findByAlert(long alertId) {
+    public List<RuleAlertRelation> findAllByAlert(long alertId) {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("alertId", alertId);
 

@@ -7,33 +7,21 @@
 <table class="grid">
     <thead>
     <tr>
-        <th>
-            {{Id}}
-        </th>
-        <th>
-            {{Name}}
-        </th>
-        <th>
-            {{URL}}
-        </th>
-        <th>
-            {{Rescan period, sec.}}
-        </th>
-        <th>
-            {{Creation time}}
-        </th>
-        <th>
-            {{Actions}}
-        </th>
+        <th>{{Id}}</th>
+        <th>{{Name}}</th>
+        <th>{{URL}}</th>
+        <th>{{Rescan period, sec.}}</th>
+        <th>{{Creation time}}</th>
+        <th>{{Actions}}</th>
     </tr>
     </thead>
     <tbody>
     <#if sites?? && (sites?size > 0)>
     <#list sites as site>
     <tr>
-        <td>${site.id}</td>
+        <td style="text-align:right;">${site.id}</td>
         <td style="text-align:left;">${site.name?html}</td>
-        <td style="text-align:left;">${site.url?html}</td>
+        <td style="text-align:left;"><a href="${site.url?html}">${site.url?html}</a></td>
         <td>${site.rescanPeriodSeconds?int}</td>
         <td>${site.creationTime?datetime}</td>
         <td>

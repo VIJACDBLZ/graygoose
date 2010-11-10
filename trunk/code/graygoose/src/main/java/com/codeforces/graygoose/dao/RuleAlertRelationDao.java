@@ -9,11 +9,11 @@ public interface RuleAlertRelationDao extends BasicDao<RuleAlertRelation> {
 
     List<RuleAlertRelation> findAll();
 
-    List<RuleAlertRelation> findByRuleAndAlert(long ruleId, long alertId);
+    List<RuleAlertRelation> findAllByRuleAndAlert(long ruleId, long alertId);
 
-    List<RuleAlertRelation> findByRule(long ruleId);
+    List<RuleAlertRelation> findAllByRule(long ruleId);
 
-    List<RuleAlertRelation> findByAlert(long alertId);
+    List<RuleAlertRelation> findAllByAlert(long alertId);
 
     void insert(RuleAlertRelation ruleAlertRelation);
 

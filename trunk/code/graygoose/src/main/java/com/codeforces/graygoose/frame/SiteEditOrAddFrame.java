@@ -70,14 +70,14 @@ public class SiteEditOrAddFrame extends ApplicationFrame {
 
             put("ruleTypes", Rule.RuleType.values());
 
-            List<Rule> rules = ruleDao.findBySite(id);
+            List<Rule> rules = ruleDao.findAllBySite(id);
             put("rules", rules);
 
             Map<String, List<Alert>> alertsByRuleId = new TreeMap<String, List<Alert>>();
             Map<String, String> failCountByAlertIdAndRuleIdConcatenation = new HashMap<String, String>();
 
             for (Rule rule : rules) {
-                List<RuleAlertRelation> ruleAlertRelations = ruleAlertRelationDao.findByRule(rule.getId());
+                List<RuleAlertRelation> ruleAlertRelations = ruleAlertRelationDao.findAllByRule(rule.getId());
                 List<Alert> alerts = new ArrayList<Alert>(ruleAlertRelations.size());
 
                 for (RuleAlertRelation ruleAlertRelation : ruleAlertRelations) {

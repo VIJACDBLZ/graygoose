@@ -63,7 +63,7 @@ public class SiteCheckingService {
             long siteRescanPeriodLowerBoundMillis = currentTimeMillis - site.getRescanPeriodSeconds() * 1000L;
 
             //Find rules for current site
-            List<Rule> rules = ruleDao.findBySite(siteId);
+            List<Rule> rules = ruleDao.findAllBySite(siteId);
 
             boolean rescanNeeded = rules.size() > 0;
 
@@ -71,7 +71,7 @@ public class SiteCheckingService {
             for (Rule rule : rules) {
                 //Find check events for current rule
                 List<RuleCheckEvent> ruleCheckEventsForRescanInterval =
-                        ruleCheckEventDao.findByRuleForPeriod(
+                        ruleCheckEventDao.findAllByRuleForPeriod(
                                 rule.getId(), siteRescanPeriodLowerBoundMillis, currentTimeMillis);
                 if (ruleCheckEventsForRescanInterval.size() > 0) {
                     rescanNeeded = false;
@@ -176,10 +176,12 @@ public class SiteCheckingService {
             List<Site> sitesToRescan, Map<Long, List<Rule>> rulesBySiteId,
             Map<Long, RuleCheckEvent> ruleCheckEventByRuleId, RuleCheckEventDao ruleCheckEventDao) {
         for (Site site : sitesToRescan) {
-            for (Rule rule : rulesBySiteId.get(site.getId())) {
-                long ruleId = rule.getId();
+            final long siteId = site.getId();
 
-                RuleCheckEvent ruleCheckEvent = new RuleCheckEvent(ruleId);
+            for (Rule rule : rulesBySiteId.get(siteId)) {
+                final long ruleId = rule.getId();
+
+                RuleCheckEvent ruleCheckEvent = new RuleCheckEvent(ruleId, siteId);
                 ruleCheckEventDao.insert(ruleCheckEvent);
                 ruleCheckEventByRuleId.put(ruleId, ruleCheckEvent);
             }

@@ -7,34 +7,20 @@
 <table class="grid">
     <thead>
     <tr>
-        <th>
-            {{Id}}
-        </th>
-        <th>
-            {{Name}}
-        </th>
-        <th>
-            {{Type}}
-        </th>
-        <th>
-            {{E-mail}}
-        </th>
-        <th>
-            {{Password}}
-        </th>
-        <th>
-            {{Max alerts per hour}}
-        </th>
-        <th>
-            {{Actions}}
-        </th>
+        <th>{{Id}}</th>
+        <th>{{Name}}</th>
+        <th>{{Type}}</th>
+        <th>{{E-mail}}</th>
+        <th>{{Password}}</th>
+        <th>{{Max alerts per hour}}</th>
+        <th>{{Actions}}</th>
     </tr>
     </thead>
     <tbody>
     <#if alerts?? && (alerts?size > 0)>
     <#list alerts as alert>
     <tr>
-        <td>${alert.id}</td>
+        <td style="text-align:right;">${alert.id}</td>
         <td style="text-align:left;">${alert.name?html}</td>
         <td style="text-align:left;">${alert.type?html}</td>
         <td style="text-align:left;">${alert.email?html}</td>

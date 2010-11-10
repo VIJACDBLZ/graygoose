@@ -36,7 +36,7 @@ public class RuleFailStatistics {
             return neededAlerts;
         }
 
-        List<RuleAlertRelation> ruleAlertRelations = ruleAlertRelationDao.findByRule(ruleId);
+        List<RuleAlertRelation> ruleAlertRelations = ruleAlertRelationDao.findAllByRule(ruleId);
         long currentTimeMillis = System.currentTimeMillis();
 
         for (RuleAlertRelation ruleAlertRelation : ruleAlertRelations) {
@@ -45,7 +45,7 @@ public class RuleFailStatistics {
 
                 if (alert != null) {
                     List<AlertTriggerEvent> alertTriggersForLastHour =
-                            alertTriggerEventDao.findByAlertForPeriod(
+                            alertTriggerEventDao.findAllByAlertForPeriod(
                                     alert.getId(), currentTimeMillis - TimeConstants.MILLIS_PER_HOUR, currentTimeMillis);
                     if (alertTriggersForLastHour.size() < alert.getMaxAlertCountPerHour()) {
                         neededAlerts.add(alert);

@@ -46,8 +46,8 @@ public class RuleDaoImpl extends BasicDaoImpl<Rule> implements RuleDao {
     private List<AbstractEntity> getDependentEntities(Rule rule) {
         List<AbstractEntity> dependentEntities = new LinkedList<AbstractEntity>();
 
-        dependentEntities.addAll(ruleCheckEventDao.findByRule(rule.getId()));
-        dependentEntities.addAll(ruleAlertRelationDao.findByRule(rule.getId()));
+        dependentEntities.addAll(ruleCheckEventDao.findAllByRule(rule.getId()));
+        dependentEntities.addAll(ruleAlertRelationDao.findAllByRule(rule.getId()));
 
         return dependentEntities;
     }
@@ -66,7 +66,7 @@ public class RuleDaoImpl extends BasicDaoImpl<Rule> implements RuleDao {
 
     @Cacheable
     @Override
-    public List<Rule> findBySite(long siteId) {
+    public List<Rule> findAllBySite(long siteId) {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("siteId", siteId);
 

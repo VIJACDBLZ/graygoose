@@ -11,13 +11,19 @@ public interface RuleCheckEventDao extends BasicDao<RuleCheckEvent> {
 
     List<RuleCheckEvent> findAllForPeriod(long lowerBoundMillis, long upperBoundMillis);
 
-    List<RuleCheckEvent> findByRule(long ruleId);
+    List<RuleCheckEvent> findAllByRule(long ruleId);
 
-    List<RuleCheckEvent> findByStatusForPeriod(RuleCheckEvent.Status status, long lowerBoundMillis, long upperBoundMillis);
+    List<RuleCheckEvent> findAllByStatusForPeriod(RuleCheckEvent.Status status, long lowerBoundMillis, long upperBoundMillis);
 
-    List<RuleCheckEvent> findByRuleForPeriod(long ruleId, long lowerBoundMillis, long upperBoundMillis);
+    List<RuleCheckEvent> findAllBySiteForPeriod(long siteId, long lowerBoundMillis, long upperBoundMillis);
 
-    List<RuleCheckEvent> findByRuleAndStatusForPeriod(long ruleId, RuleCheckEvent.Status status, long lowerBoundMillis, long upperBoundMillis);
+    List<RuleCheckEvent> findAllByRuleForPeriod(long ruleId, long lowerBoundMillis, long upperBoundMillis);
+
+    List<RuleCheckEvent> findAllBySiteAndStatusForPeriod(long siteId, RuleCheckEvent.Status status, long lowerBoundMillis, long upperBoundMillis);
+
+    List<RuleCheckEvent> findAllByRuleAndStatusForPeriod(long ruleId, RuleCheckEvent.Status status, long lowerBoundMillis, long upperBoundMillis);
+
+    List<Long> findKeysByRuleAndStatusForPeriod(long ruleId, RuleCheckEvent.Status status, long lowerBoundMillis, long upperBoundMillis);
 
     void delete(RuleCheckEvent ruleCheckEvent);
 

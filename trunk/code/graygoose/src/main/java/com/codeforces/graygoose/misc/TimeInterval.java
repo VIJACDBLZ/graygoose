@@ -1,5 +1,10 @@
 package com.codeforces.graygoose.misc;
 
+import org.nocturne.main.ApplicationContext;
+
+import java.util.Arrays;
+import java.util.Comparator;
+
 public enum TimeInterval {
     SIX_HOURS("6 hours", 6L * TimeConstants.MILLIS_PER_HOUR),
     TWELVE_HOURS("12 hours", 12L * TimeConstants.MILLIS_PER_HOUR),
@@ -19,7 +24,7 @@ public enum TimeInterval {
     }
 
     public String getSynonym() {
-        return synonym;
+        return ApplicationContext.getInstance().$(synonym);
     }
 
     public long getValueMillis() {
@@ -28,5 +33,26 @@ public enum TimeInterval {
 
     public static TimeInterval getDefaultValue() {
         return TWENTY_FOUR_HOURS;
+    }
+
+    public static TimeInterval[] getTimeIntervalsOrderedByValueDesc() {
+        final TimeInterval[] timeIntervals = TimeInterval.values();
+
+        Arrays.sort(timeIntervals, new Comparator<TimeInterval>() {
+            @Override
+            public int compare(TimeInterval o1, TimeInterval o2) {
+                if (o1.getValueMillis() < o2.getValueMillis()) {
+                    return 1;
+                }
+
+                if (o1.getValueMillis() > o2.getValueMillis()) {
+                    return -1;
+                }
+
+                return 0;
+            }
+        });
+
+        return timeIntervals;
     }
 }

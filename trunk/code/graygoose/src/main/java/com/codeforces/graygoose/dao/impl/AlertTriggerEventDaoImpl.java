@@ -39,7 +39,7 @@ public class AlertTriggerEventDaoImpl extends BasicDaoImpl<AlertTriggerEvent> im
     }
 
     @Override
-    public List<AlertTriggerEvent> findByAlert(long alertId) {
+    public List<AlertTriggerEvent> findAllByAlert(long alertId) {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("alertId", alertId);
 
@@ -49,7 +49,7 @@ public class AlertTriggerEventDaoImpl extends BasicDaoImpl<AlertTriggerEvent> im
     }
 
     @Override
-    public List<AlertTriggerEvent> findByAlertForPeriod(long alertId, long lowerBoundMillis, long upperBoundMillis) {
+    public List<AlertTriggerEvent> findAllByAlertForPeriod(long alertId, long lowerBoundMillis, long upperBoundMillis) {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("alertId", alertId);
         parameters.put("lowerBound", new Date(lowerBoundMillis));
@@ -66,7 +66,7 @@ public class AlertTriggerEventDaoImpl extends BasicDaoImpl<AlertTriggerEvent> im
     }
 
     @Override
-    public List<AlertTriggerEvent> findByRuleCheckForPeriod(
+    public List<AlertTriggerEvent> findAllByRuleCheckForPeriod(
             long ruleCheckEventId, long lowerBoundMillis, long upperBoundMillis) {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("ruleCheckEventId", ruleCheckEventId);

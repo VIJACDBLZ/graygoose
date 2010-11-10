@@ -13,6 +13,9 @@ public class RuleCheckEvent extends AbstractEntity {
     private Long ruleId;
 
     @Persistent
+    private Long siteId;
+
+    @Persistent
     private Status status;
 
     @Persistent
@@ -27,8 +30,9 @@ public class RuleCheckEvent extends AbstractEntity {
     @Persistent
     private Date creationTime;
 
-    public RuleCheckEvent(long ruleId) {
+    public RuleCheckEvent(long ruleId, long siteId) {
         this.ruleId = ruleId;
+        this.siteId = siteId;
         status = Status.PENDING;
         deleted = false;
         creationTime = new Date();
@@ -45,6 +49,14 @@ public class RuleCheckEvent extends AbstractEntity {
 
     public void setRuleId(Long ruleId) {
         this.ruleId = ruleId;
+    }
+
+    public Long getSiteId() {
+        return siteId;
+    }
+
+    public void setSiteId(Long siteId) {
+        this.siteId = siteId;
     }
 
     public Status getStatus() {

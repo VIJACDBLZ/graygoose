@@ -4,8 +4,6 @@ import com.codeforces.graygoose.dao.AlertTriggerEventDao;
 import com.codeforces.graygoose.dao.RuleCheckEventDao;
 import com.codeforces.graygoose.dao.RuleDao;
 import com.codeforces.graygoose.dao.SiteDao;
-import com.codeforces.graygoose.dao.cache.Cacheable;
-import com.codeforces.graygoose.misc.TimeConstants;
 import com.codeforces.graygoose.misc.TimeInterval;
 import com.codeforces.graygoose.model.AlertTriggerEvent;
 import com.codeforces.graygoose.model.Rule;
@@ -19,8 +17,6 @@ import java.util.*;
 
 @Link("")
 public class DashboardPage extends WebPage {
-    private static final long STATISTICS_REFRESH_INTERVAL_MILLIS = 10L * TimeConstants.MILLIS_PER_MINUTE;
-
     @Inject
     private SiteDao siteDao;
 
@@ -52,97 +48,75 @@ public class DashboardPage extends WebPage {
         }
 
         put("currentTimeInterval", currentTimeInterval);
-        put("timeIntervals", getTimeIntervalsOrderedByValueDesc());
-
-        final List<Site> sites = siteDao.findAll();
-
-        put("sites", sites);
-        put("siteInfoBySiteId", getSiteInfoBySiteIdMap(sites, currentTimeInterval));
+        put("timeIntervals", TimeInterval.getTimeIntervalsOrderedByValueDesc());
+        put("sites", getSiteDtos(siteDao.findAll(), currentTimeInterval));
     }
 
-    private static TimeInterval[] getTimeIntervalsOrderedByValueDesc() {
-        final TimeInterval[] timeIntervals = TimeInterval.values();
-
-        Arrays.sort(timeIntervals, new Comparator<TimeInterval>() {
-            @Override
-            public int compare(TimeInterval o1, TimeInterval o2) {
-                if (o1.getValueMillis() < o2.getValueMillis()) {
-                    return 1;
-                }
-
-                if (o1.getValueMillis() > o2.getValueMillis()) {
-                    return -1;
-                }
-
-                return 0;
-            }
-        });
-
-        return timeIntervals;
-    }
-
-    //TODO: cache for STATISTICS_REFRESH_INTERVAL_MILLIS
-    private Map<String, SiteInfo> getSiteInfoBySiteIdMap(List<Site> sites, TimeInterval currentTimeInterval) {
+    private List<SiteDto> getSiteDtos(List<Site> sites, TimeInterval currentTimeInterval) {
         final long intervalEnd = System.currentTimeMillis();
         final long intervalBegin = intervalEnd - currentTimeInterval.getValueMillis();
-
-        final Hashtable<String, SiteInfo> siteInfoBySiteId = new Hashtable<String, SiteInfo>();
 
         final Map<Long, Long> alertTriggerCountByRuleCheckId =
                 getAlertTriggerCountByRuleCheckIdMap(intervalBegin, intervalEnd);
 
+        final List<SiteDto> siteDtos = new ArrayList<SiteDto>();
+
         for (Site site : sites) {
-            final long siteId = site.getId();
-            final List<Rule> rules = ruleDao.findBySite(siteId);
-
-            long maxTotalRuleCheckCount = 0;
-            long totalRuleCheckCount = 0;
-            long succeededRuleCheckCount = 0;
-            long pendingRuleCheckCount = 0;
-            long failedRuleCheckCount = 0;
-            long alertTriggerCount = 0;
-
-            for (Rule rule : rules) {
-                final Long ruleId = rule.getId();
-
-                final List<RuleCheckEvent> succeededChecks = ruleCheckEventDao.findByRuleAndStatusForPeriod(
-                        ruleId, RuleCheckEvent.Status.SUCCEEDED, intervalBegin, intervalEnd);
-
-                final List<RuleCheckEvent> pendingChecks = ruleCheckEventDao.findByRuleAndStatusForPeriod(
-                        ruleId, RuleCheckEvent.Status.PENDING, intervalBegin, intervalEnd);
-
-                final List<RuleCheckEvent> failedChecks = ruleCheckEventDao.findByRuleAndStatusForPeriod(
-                        ruleId, RuleCheckEvent.Status.FAILED, intervalBegin, intervalEnd);
-
-                for (RuleCheckEvent failedCheck : failedChecks) {
-                    final Long alertCount = alertTriggerCountByRuleCheckId.get(failedCheck.getId());
-                    if (alertCount != null) {
-                        alertTriggerCount += alertCount;
-                    }
-                }
-
-                succeededRuleCheckCount += succeededChecks.size();
-                pendingRuleCheckCount += pendingChecks.size();
-                failedRuleCheckCount += failedChecks.size();
-
-                final long currentRuleCheckCount =
-                        succeededChecks.size() + pendingChecks.size() + failedChecks.size();
-
-                if (currentRuleCheckCount > maxTotalRuleCheckCount) {
-                    maxTotalRuleCheckCount = currentRuleCheckCount;
-                }
-
-                totalRuleCheckCount += currentRuleCheckCount;
-            }
-
-            siteInfoBySiteId.put("" + siteId,
-                    new SiteInfo(siteId, rules.size(), maxTotalRuleCheckCount, totalRuleCheckCount,
-                            succeededRuleCheckCount, pendingRuleCheckCount, failedRuleCheckCount, alertTriggerCount));
+            siteDtos.add(getSiteDto(site, intervalBegin, intervalEnd, alertTriggerCountByRuleCheckId));
         }
 
-        return siteInfoBySiteId;
+        return siteDtos;
     }
 
+    private SiteDto getSiteDto(Site site, long intervalBegin, long intervalEnd,
+                               Map<Long, Long> alertTriggerCountByRuleCheckId) {
+        final List<Rule> rules = ruleDao.findAllBySite(site.getId());
+
+        long maxTotalRuleCheckCount = 0;
+        long totalRuleCheckCount = 0;
+        long succeededRuleCheckCount = 0;
+        long pendingRuleCheckCount = 0;
+        long failedRuleCheckCount = 0;
+        long alertTriggerCount = 0;
+
+        for (Rule rule : rules) {
+            final Long ruleId = rule.getId();
+
+            final List<Long> succeededCheckKeys = ruleCheckEventDao.findKeysByRuleAndStatusForPeriod(
+                    ruleId, RuleCheckEvent.Status.SUCCEEDED, intervalBegin, intervalEnd);
+
+            final List<Long> pendingCheckKeys = ruleCheckEventDao.findKeysByRuleAndStatusForPeriod(
+                    ruleId, RuleCheckEvent.Status.PENDING, intervalBegin, intervalEnd);
+
+            final List<Long> failedCheckKeys = ruleCheckEventDao.findKeysByRuleAndStatusForPeriod(
+                    ruleId, RuleCheckEvent.Status.FAILED, intervalBegin, intervalEnd);
+
+            for (long failedCheckKey : failedCheckKeys) {
+                final Long alertCount = alertTriggerCountByRuleCheckId.get(failedCheckKey);
+                if (alertCount != null) {
+                    alertTriggerCount += alertCount;
+                }
+            }
+
+            succeededRuleCheckCount += succeededCheckKeys.size();
+            pendingRuleCheckCount += pendingCheckKeys.size();
+            failedRuleCheckCount += failedCheckKeys.size();
+
+            final long currentRuleCheckCount =
+                    succeededCheckKeys.size() + pendingCheckKeys.size() + failedCheckKeys.size();
+
+            if (currentRuleCheckCount > maxTotalRuleCheckCount) {
+                maxTotalRuleCheckCount = currentRuleCheckCount;
+            }
+
+            totalRuleCheckCount += currentRuleCheckCount;
+        }
+
+        return new SiteDto(site, rules.size(), maxTotalRuleCheckCount, totalRuleCheckCount,
+                succeededRuleCheckCount, pendingRuleCheckCount, failedRuleCheckCount, alertTriggerCount);
+    }
+
+    //TODO: maybe do not create map and get count on the fly using method findKeysBy...
     private Map<Long, Long> getAlertTriggerCountByRuleCheckIdMap(long intervalBegin, long intervalEnd) {
         final Map<Long, Long> alertTriggerCountByRuleCheckId = new HashMap<Long, Long>();
         final List<AlertTriggerEvent> alertTriggers = alertTriggerEventDao.findAllForPeriod(intervalBegin, intervalEnd);
@@ -156,8 +130,8 @@ public class DashboardPage extends WebPage {
         return alertTriggerCountByRuleCheckId;
     }
 
-    public static class SiteInfo {
-        private final long siteId;
+    public static class SiteDto {
+        private final Site site;
         private final long ruleCount;
         private final long maxTotalRuleCheckCount;
         private final long totalRuleCheckCount;
@@ -166,10 +140,10 @@ public class DashboardPage extends WebPage {
         private final long failedRuleCheckCount;
         private final long alertTriggerCount;
 
-        public SiteInfo(long siteId, long ruleCount, long maxTotalRuleCheckCount, long totalRuleCheckCount,
-                        long succeededRuleCheckCount, long pendingRuleCheckCount, long failedRuleCheckCount,
-                        long alertTriggerCount) {
-            this.siteId = siteId;
+        public SiteDto(Site site, long ruleCount, long maxTotalRuleCheckCount, long totalRuleCheckCount,
+                       long succeededRuleCheckCount, long pendingRuleCheckCount, long failedRuleCheckCount,
+                       long alertTriggerCount) {
+            this.site = site;
             this.ruleCount = ruleCount;
             this.maxTotalRuleCheckCount = maxTotalRuleCheckCount;
             this.totalRuleCheckCount = totalRuleCheckCount;
@@ -179,8 +153,24 @@ public class DashboardPage extends WebPage {
             this.alertTriggerCount = alertTriggerCount;
         }
 
-        public long getSiteId() {
-            return siteId;
+        public long getId() {
+            return site.getId();
+        }
+
+        public String getName() {
+            return site.getName();
+        }
+
+        public String getUrl() {
+            return site.getUrl();
+        }
+
+        public int getRescanPeriodSeconds() {
+            return site.getRescanPeriodSeconds();
+        }
+
+        public Date getCreationTime() {
+            return site.getCreationTime();
         }
 
         public long getRuleCount() {

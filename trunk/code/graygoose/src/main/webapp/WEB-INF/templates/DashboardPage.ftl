@@ -47,28 +47,27 @@
     <tbody>
     <#if sites?? && (sites?size > 0)>
     <#list sites as site>
-    <#assign siteInfo=siteInfoBySiteId[site.id?string]>
     <tr>
-        <td>${site.id}</td>
+        <td style="text-align:right;">${site.id}</td>
         <td style="text-align:left;">${site.name?html}</td>
-        <td style="text-align:left;">${site.url?html}</td>
-        <td>${siteInfo.ruleCount}</td>
-        <td>${siteInfo.maxTotalRuleCheckCount}</td>
+        <td style="text-align:left;"><a href="${site.url?html}">${site.url?html}</a></td>
+        <td>${site.ruleCount}</td>
+        <td>${site.maxTotalRuleCheckCount}</td>
         <td>
             <div style="width:100%;">
                 <table style="width:100%;">
                     <tbody>
                     <tr style="width:100%;">
-                        <td style="width:25%;border-style:none;">${siteInfo.totalRuleCheckCount}</td>
-                        <td style="width:25%;border-style:none;">${siteInfo.succeededRuleCheckCount}</td>
-                        <td style="width:25%;border-style:none;">${siteInfo.pendingRuleCheckCount}</td>
-                        <td style="width:25%;border-style:none;">${siteInfo.failedRuleCheckCount}</td>
+                        <td style="width:25%;border-style:none;">${site.totalRuleCheckCount}</td>
+                        <td style="width:25%;border-style:none;">${site.succeededRuleCheckCount}</td>
+                        <td style="width:25%;border-style:none;">${site.pendingRuleCheckCount}</td>
+                        <td style="width:25%;border-style:none;">${site.failedRuleCheckCount}</td>
                     </tr>
                     </tbody>
                 </table>
             </div>
         </td>
-        <td>${siteInfo.alertTriggerCount}</td>
+        <td>${site.alertTriggerCount}</td>
     </tr>
     </#list>
     <#else>

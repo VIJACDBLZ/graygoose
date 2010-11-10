@@ -44,8 +44,8 @@ public class AlertDaoImpl extends BasicDaoImpl<Alert> implements AlertDao {
     private List<AbstractEntity> getDependentEntities(Alert alert) {
         List<AbstractEntity> dependentEntities = new LinkedList<AbstractEntity>();
 
-        dependentEntities.addAll(alertTriggerEventDao.findByAlert(alert.getId()));
-        dependentEntities.addAll(ruleAlertRelationDao.findByAlert(alert.getId()));
+        dependentEntities.addAll(alertTriggerEventDao.findAllByAlert(alert.getId()));
+        dependentEntities.addAll(ruleAlertRelationDao.findAllByAlert(alert.getId()));
 
         return dependentEntities;
     }

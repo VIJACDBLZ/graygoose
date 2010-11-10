@@ -33,7 +33,7 @@ public class RuleAlertRelationsDataPage extends DataPage {
         super.initializeAction();
 
         if (alertId != null && ruleId != null) {
-            ruleAlertRelations = ruleAlertRelationDao.findByRuleAndAlert(ruleId, alertId);
+            ruleAlertRelations = ruleAlertRelationDao.findAllByRuleAndAlert(ruleId, alertId);
         }
     }
 

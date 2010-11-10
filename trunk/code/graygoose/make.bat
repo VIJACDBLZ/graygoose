@@ -5,10 +5,11 @@ IF "%1"=="" (
     echo Example: make sample
 ) ELSE (
     mvn clean
-    if not exist profiles\profiles.xml.%1 (
+    IF NOT EXIST profiles\profiles.xml.%1 (
         echo ERROR: file "profiles\profiles.xml.%1" not found
         pause
-    )    
-    copy profiles\profiles.xml.%1 profiles.xml
-    mvn package -Dfile.encoding=UTF-8
+    ) ELSE (    
+        copy profiles\profiles.xml.%1 profiles.xml
+        mvn package -Dfile.encoding=UTF-8
+    )
 )

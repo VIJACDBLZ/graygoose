@@ -11,11 +11,11 @@ public interface AlertTriggerEventDao extends BasicDao<AlertTriggerEvent> {
 
     List<AlertTriggerEvent> findAllForPeriod(long lowerBoundMillis, long upperBoundMillis);
 
-    List<AlertTriggerEvent> findByAlert(long alertId);
+    List<AlertTriggerEvent> findAllByAlert(long alertId);
 
-    List<AlertTriggerEvent> findByAlertForPeriod(long alertId, long lowerBoundMillis, long upperBoundMillis);
+    List<AlertTriggerEvent> findAllByAlertForPeriod(long alertId, long lowerBoundMillis, long upperBoundMillis);
 
-    List<AlertTriggerEvent> findByRuleCheckForPeriod(long ruleCheckEventId, long lowerBoundMillis, long upperBoundMillis);
+    List<AlertTriggerEvent> findAllByRuleCheckForPeriod(long ruleCheckEventId, long lowerBoundMillis, long upperBoundMillis);
 
     void insert(AlertTriggerEvent alertTriggerEvent);
 }

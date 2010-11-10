@@ -45,6 +45,12 @@
         <property name="checkTime" direction="asc"/>
     </datastore-index>
 
+    <!--<datastore-index kind="RuleCheckEvent" ancestor="false" source="manual">
+        <property name="deleted" direction="asc"/>
+        <property name="siteId" direction="asc"/>
+        <property name="checkTime" direction="asc"/>
+    </datastore-index>-->
+
     <datastore-index kind="RuleCheckEvent" ancestor="false" source="manual">
         <property name="deleted" direction="asc"/>
         <property name="checkTime" direction="asc"/>
@@ -62,5 +68,12 @@
         <property name="status" direction="asc"/>
         <property name="checkTime" direction="asc"/>
     </datastore-index>
+
+    <!--<datastore-index kind="RuleCheckEvent" ancestor="false" source="manual">
+        <property name="deleted" direction="asc"/>
+        <property name="siteId" direction="asc"/>
+        <property name="status" direction="asc"/>
+        <property name="checkTime" direction="asc"/>
+    </datastore-index>-->
 
 </datastore-indexes>

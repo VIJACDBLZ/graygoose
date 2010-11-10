@@ -9,7 +9,7 @@ public interface RuleDao extends BasicDao<Rule> {
 
     List<Rule> findAll();
 
-    List<Rule> findBySite(long siteId);
+    List<Rule> findAllBySite(long siteId);
 
     void markDeleted(Rule rule);
 

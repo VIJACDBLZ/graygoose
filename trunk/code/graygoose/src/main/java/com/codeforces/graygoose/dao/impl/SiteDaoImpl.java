@@ -40,7 +40,7 @@ public class SiteDaoImpl extends BasicDaoImpl<Site> implements SiteDao {
     private List<AbstractEntity> getDependentEntities(Site site) {
         List<AbstractEntity> dependentEntities = new LinkedList<AbstractEntity>();
 
-        dependentEntities.addAll(ruleDao.findBySite(site.getId()));
+        dependentEntities.addAll(ruleDao.findAllBySite(site.getId()));
 
         return dependentEntities;
     }
