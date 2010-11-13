@@ -7,9 +7,11 @@ import com.codeforces.graygoose.dao.cache.InvalidateCache;
 import com.codeforces.graygoose.model.Alert;
 import com.codeforces.graygoose.model.RuleAlertRelation;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import java.util.List;
 
+@Singleton
 public class AlertDaoImpl extends BasicDaoImpl<Alert> implements AlertDao {
     @Inject
     private RuleAlertRelationDao ruleAlertRelationDao;

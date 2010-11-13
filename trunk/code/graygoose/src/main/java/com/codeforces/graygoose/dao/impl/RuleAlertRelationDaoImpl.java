@@ -4,11 +4,13 @@ import com.codeforces.graygoose.dao.RuleAlertRelationDao;
 import com.codeforces.graygoose.dao.cache.Cacheable;
 import com.codeforces.graygoose.dao.cache.InvalidateCache;
 import com.codeforces.graygoose.model.RuleAlertRelation;
+import com.google.inject.Singleton;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Singleton
 public class RuleAlertRelationDaoImpl extends BasicDaoImpl<RuleAlertRelation> implements RuleAlertRelationDao {
     @Cacheable
     @Override

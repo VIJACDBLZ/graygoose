@@ -43,18 +43,19 @@ public class LogsPage extends WebPage {
 
     @Override
     public void action() {
-        RuleCheckEvent.Status statusValue = getStatusValue();
+        boolean withAlertsOnlyValue = getWithAlertsOnlyValue();
+        RuleCheckEvent.Status statusValue = getStatusValue(withAlertsOnlyValue);
         TimeInterval currentTimeIntervalValue = getCurrentTimeIntervalValue();
         int limitValue = getLimitValue();
         Long siteIdValue = getSiteIdValue();
-        boolean withAlertsOnlyValue = getWithAlertsOnlyValue();
 
         final long intervalEnd = System.currentTimeMillis();
         final long intervalBegin = intervalEnd - currentTimeIntervalValue.getValueMillis();
 
-        List<RuleCheckEvent> eventsForPeriod = getEventsForPeriod(siteIdValue, statusValue, intervalEnd, intervalBegin);
+        final List<RuleCheckEvent> eventsForPeriod =
+                getEventsForPeriod(siteIdValue, statusValue, intervalEnd, intervalBegin);
 
-        List<EventDto> events = new ArrayList<EventDto>(limitValue);
+        final List<EventDto> events = new ArrayList<EventDto>(limitValue);
 
         final Iterator<RuleCheckEvent> eventsIterator = eventsForPeriod.iterator();
         int eventsAdded = 0;
@@ -63,7 +64,9 @@ public class LogsPage extends WebPage {
             final RuleCheckEvent ruleCheckEvent = eventsIterator.next();
 
             final List<AlertTriggerEvent> alertTriggerEvents =
-                    alertTriggerEventDao.findAllByRuleCheck(ruleCheckEvent.getId());
+                    ruleCheckEvent.getStatus() == RuleCheckEvent.Status.FAILED ?
+                            alertTriggerEventDao.findAllByRuleCheck(ruleCheckEvent.getId()) :
+                            new ArrayList<AlertTriggerEvent>();
 
             if (!withAlertsOnlyValue || alertTriggerEvents.size() > 0) {
                 final List<Alert> alerts = new ArrayList<Alert>(alertTriggerEvents.size());
@@ -105,7 +108,11 @@ public class LogsPage extends WebPage {
         return siteId == null || siteId <= 0 ? null : siteId;
     }
 
-    private RuleCheckEvent.Status getStatusValue() {
+    private RuleCheckEvent.Status getStatusValue(boolean withAlertsOnlyValue) {
+        if (withAlertsOnlyValue) {
+            return RuleCheckEvent.Status.FAILED;
+        }
+
         try {
             return RuleCheckEvent.Status.valueOf(this.status);
         } catch (RuntimeException e) {

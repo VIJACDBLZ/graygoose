@@ -7,9 +7,11 @@ import com.codeforces.graygoose.dao.cache.InvalidateCache;
 import com.codeforces.graygoose.model.Rule;
 import com.codeforces.graygoose.model.Site;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import java.util.List;
 
+@Singleton
 public class SiteDaoImpl extends BasicDaoImpl<Site> implements SiteDao {
     @Inject
     private RuleDao ruleDao;

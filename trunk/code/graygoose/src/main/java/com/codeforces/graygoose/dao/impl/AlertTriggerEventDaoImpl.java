@@ -2,12 +2,14 @@ package com.codeforces.graygoose.dao.impl;
 
 import com.codeforces.graygoose.dao.AlertTriggerEventDao;
 import com.codeforces.graygoose.model.AlertTriggerEvent;
+import com.google.inject.Singleton;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Singleton
 public class AlertTriggerEventDaoImpl extends BasicDaoImpl<AlertTriggerEvent> implements AlertTriggerEventDao {
     @Override
     public void insert(AlertTriggerEvent alertTriggerEvent) {

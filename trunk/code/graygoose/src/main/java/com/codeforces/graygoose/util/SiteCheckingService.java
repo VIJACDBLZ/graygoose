@@ -133,20 +133,18 @@ public class SiteCheckingService {
 
         //Iterate through rule check events and trigger alert for failed ones
         for (RuleCheckEvent ruleCheckEvent : ruleCheckEventByRuleId.values()) {
-            if (ruleCheckEvent.getStatus() == RuleCheckEvent.Status.SUCCEEDED) {
-                continue;
-            }
+            if (ruleCheckEvent.getStatus() == RuleCheckEvent.Status.FAILED) {
+                List<Alert> triggeredAlerts = RuleFailStatistics.getTriggeredAlerts(
+                        ruleCheckEvent.getRuleId(), ruleAlertRelationDao, alertDao, alertTriggerEventDao);
 
-            List<Alert> triggeredAlerts = RuleFailStatistics.getTriggeredAlerts(
-                    ruleCheckEvent.getRuleId(), ruleAlertRelationDao, alertDao, alertTriggerEventDao);
-
-            for (Alert triggeredAlert : triggeredAlerts) {
-                try {
-                    logger.warn("Trigger alert [" + triggeredAlert.getName() + "].");
-                    triggerAlert(ruleCheckEvent, triggeredAlert);
-                    alertTriggerEventDao.insert(new AlertTriggerEvent(triggeredAlert.getId(), ruleCheckEvent.getId()));
-                } catch (RuntimeException e) {
-                    logger.error("Failed to trigger alert [" + triggeredAlert.getName() + "] or to save trigger event.", e);
+                for (Alert triggeredAlert : triggeredAlerts) {
+                    try {
+                        logger.warn("Trigger alert [" + triggeredAlert.getName() + "].");
+                        triggerAlert(ruleCheckEvent, triggeredAlert);
+                        alertTriggerEventDao.insert(new AlertTriggerEvent(triggeredAlert.getId(), ruleCheckEvent.getId()));
+                    } catch (RuntimeException e) {
+                        logger.error("Failed to trigger alert [" + triggeredAlert.getName() + "] or to save trigger event.", e);
+                    }
                 }
             }
         }
