@@ -7,6 +7,8 @@ import java.util.List;
 public interface RuleDao extends BasicDao<Rule> {
     Rule find(long id);
 
+    Rule find(long id, boolean ignoreDeleted);
+
     List<Rule> findAll();
 
     List<Rule> findAllBySite(long siteId);

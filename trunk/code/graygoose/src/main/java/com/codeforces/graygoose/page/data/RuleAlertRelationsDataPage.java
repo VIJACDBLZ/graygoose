@@ -52,11 +52,15 @@ public class RuleAlertRelationsDataPage extends DataPage {
     @Action("attachAlert")
     public void onAttachAlert() {
         try {
-            RuleAlertRelation ruleAlertRelation = new RuleAlertRelation(ruleId, alertId, maxConsecutiveFailCount);
-            ruleAlertRelationDao.insert(ruleAlertRelation);
+            if (ruleAlertRelations == null || ruleAlertRelations.size() == 0) {
+                RuleAlertRelation ruleAlertRelation = new RuleAlertRelation(ruleId, alertId, maxConsecutiveFailCount);
+                ruleAlertRelationDao.insert(ruleAlertRelation);
 
-            put("success", true);
-            setMessage($("Alert has been attached."));
+                put("success", true);
+                setMessage($("Alert has been attached."));
+            } else {
+                put("error", String.format($("A relation between alert #%d and rule #%d is already exists."), alertId, ruleId));
+            }
         } catch (Exception e) {
             put("error", e.getMessage());
         }

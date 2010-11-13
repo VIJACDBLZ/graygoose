@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cronentries>
+    <!--Normal mode jobs-->
     <cron>
         <url>/cron/sites?action=checkSites</url>
         <description>Check sites</description>
@@ -10,4 +11,11 @@
         <description>Remove old events with 'SUCCESS' status from the data storage</description>
         <schedule>every 30 minutes</schedule>
     </cron>
+
+    <!--Used for technical needs-->
+    <!--<cron>
+        <url>/cron/events?action=removeAll</url>
+        <description>Remove all events</description>
+        <schedule>every 1 minutes</schedule>
+    </cron>-->
 </cronentries>

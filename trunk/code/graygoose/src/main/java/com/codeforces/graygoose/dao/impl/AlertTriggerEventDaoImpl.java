@@ -66,20 +66,13 @@ public class AlertTriggerEventDaoImpl extends BasicDaoImpl<AlertTriggerEvent> im
     }
 
     @Override
-    public List<AlertTriggerEvent> findAllByRuleCheckForPeriod(
-            long ruleCheckEventId, long lowerBoundMillis, long upperBoundMillis) {
+    public List<AlertTriggerEvent> findAllByRuleCheck(long ruleCheckEventId) {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("ruleCheckEventId", ruleCheckEventId);
-        parameters.put("lowerBound", new Date(lowerBoundMillis));
-        parameters.put("upperBound", new Date(upperBoundMillis));
 
         return super.findAll(AlertTriggerEvent.class,
                 "this.ruleCheckEventId == ruleCheckEventId"
-                        + " && this.creationTime >= lowerBound"
-                        + " && this.creationTime <= upperBound"
-                        + " PARAMETERS long ruleCheckEventId,"
-                        + " java.util.Date lowerBound,"
-                        + " java.util.Date upperBound",
+                        + " PARAMETERS long ruleCheckEventId",
                 null, parameters, true);
     }
 }

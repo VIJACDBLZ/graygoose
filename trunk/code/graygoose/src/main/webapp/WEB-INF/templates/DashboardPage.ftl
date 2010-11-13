@@ -3,7 +3,7 @@
 <@common.page>
 <table class="grid">
     <caption>
-        <strong>Monitoring statistics for last ${currentTimeInterval.synonym!?html}.</strong>
+        <strong>{{Monitoring statistics for last}} ${currentTimeInterval.synonym!?html}.</strong>
         <ul class="menu">
             <#list timeIntervals as timeInterval>
             <#if timeInterval == currentTimeInterval>
@@ -23,7 +23,6 @@
     <tr>
         <th>{{Site id}}</th>
         <th>{{Site name}}</th>
-        <th>{{Site URL}}</th>
         <th>{{Rules for site}}</th>
         <th>{{Max rule checks}}</th>
         <th>
@@ -32,16 +31,36 @@
                 <table style="width:100%;">
                     <tbody>
                     <tr style="width:100%;">
-                        <td style="width:25%;border-style:none;">{{Total}}</td>
-                        <td style="width:25%;border-style:none;">{{Succeeded}}</td>
-                        <td style="width:25%;border-style:none;">{{Pending}}</td>
-                        <td style="width:25%;border-style:none;">{{Failed}}</td>
+                        <td style="width:25%;border-style:none;">
+                            <a href="<@link name="LogsPage"/>?timeInterval=${currentTimeInterval!?string}">
+                                {{Total}}
+                            </a>
+                        </td>
+                        <td style="width:25%;border-style:none;">
+                            <a href="<@link name="LogsPage"/>?timeInterval=${currentTimeInterval!?string}&status=SUCCEEDED">
+                                {{Succeeded}}
+                            </a>
+                        </td>
+                        <td style="width:25%;border-style:none;">
+                            <a href="<@link name="LogsPage"/>?timeInterval=${currentTimeInterval!?string}&status=PENDING">
+                                {{Pending}}
+                            </a>
+                        </td>
+                        <td style="width:25%;border-style:none;">
+                            <a href="<@link name="LogsPage"/>?timeInterval=${currentTimeInterval!?string}&status=FAILED">
+                                {{Failed}}
+                            </a>
+                        </td>
                     </tr>
                     </tbody>
                 </table>
             </div>
         </th>
-        <th>{{Alert triggers}}</th>
+        <th>
+            <a href="<@link name="LogsPage"/>?timeInterval=${currentTimeInterval!?string}&withAlertsOnly=true">
+                {{Alert triggers}}
+            </a>
+        </th>
     </tr>
     </thead>
     <tbody>
@@ -49,8 +68,7 @@
     <#list sites as site>
     <tr>
         <td style="text-align:right;">${site.id}</td>
-        <td style="text-align:left;">${site.name?html}</td>
-        <td style="text-align:left;"><a href="${site.url?html}">${site.url?html}</a></td>
+        <td style="text-align:left;"><a href="${site.url?html}">${site.name?html}</a></td>
         <td>${site.ruleCount}</td>
         <td>${site.maxTotalRuleCheckCount}</td>
         <td>
@@ -58,21 +76,41 @@
                 <table style="width:100%;">
                     <tbody>
                     <tr style="width:100%;">
-                        <td style="width:25%;border-style:none;">${site.totalRuleCheckCount}</td>
-                        <td style="width:25%;border-style:none;">${site.succeededRuleCheckCount}</td>
-                        <td style="width:25%;border-style:none;">${site.pendingRuleCheckCount}</td>
-                        <td style="width:25%;border-style:none;">${site.failedRuleCheckCount}</td>
+                        <td style="width:25%;border-style:none;">
+                            <a href="<@link name="LogsPage"/>?timeInterval=${currentTimeInterval!?string}&limit=${site.totalRuleCheckCount}&siteId=${site.id?number}">
+                                ${site.totalRuleCheckCount}
+                            </a>
+                        </td>
+                        <td style="width:25%;border-style:none;">
+                            <a href="<@link name="LogsPage"/>?timeInterval=${currentTimeInterval!?string}&limit=${site.succeededRuleCheckCount}&siteId=${site.id?number}&status=SUCCEEDED">
+                                ${site.succeededRuleCheckCount}
+                            </a>
+                        </td>
+                        <td style="width:25%;border-style:none;">
+                            <a href="<@link name="LogsPage"/>?timeInterval=${currentTimeInterval!?string}&limit=${site.pendingRuleCheckCount}&siteId=${site.id?number}&status=PENDING">
+                                ${site.pendingRuleCheckCount}
+                            </a>
+                        </td>
+                        <td style="width:25%;border-style:none;">
+                            <a href="<@link name="LogsPage"/>?timeInterval=${currentTimeInterval!?string}&limit=${site.failedRuleCheckCount}&siteId=${site.id?number}&status=FAILED">
+                                ${site.failedRuleCheckCount}
+                            </a>
+                        </td>
                     </tr>
                     </tbody>
                 </table>
             </div>
         </td>
-        <td>${site.alertTriggerCount}</td>
+        <td>
+            <a href="<@link name="LogsPage"/>?timeInterval=${currentTimeInterval!?string}&limit=${site.alertTriggerCount}&siteId=${site.id?number}&withAlertsOnly=true">
+                ${site.alertTriggerCount}
+            </a>
+        </td>
     </tr>
     </#list>
     <#else>
     <tr>
-        <td colspan="7">
+        <td colspan="6">
             {{No sites currently monitored}}
         </td>
     </tr>

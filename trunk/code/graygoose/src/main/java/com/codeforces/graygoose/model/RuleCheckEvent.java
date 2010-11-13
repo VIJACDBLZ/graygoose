@@ -19,7 +19,7 @@ public class RuleCheckEvent extends AbstractEntity {
     private Status status;
 
     @Persistent
-    private String desription;
+    private String description;
 
     @Persistent
     private Date checkTime;
@@ -67,12 +67,12 @@ public class RuleCheckEvent extends AbstractEntity {
         this.status = status;
     }
 
-    public String getDesription() {
-        return desription;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDesription(String desription) {
-        this.desription = desription;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Date getCheckTime() {

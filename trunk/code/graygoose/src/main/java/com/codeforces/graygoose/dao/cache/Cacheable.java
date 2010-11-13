@@ -60,7 +60,8 @@ public @interface Cacheable {
 
         private boolean supportsArgumentClass(Class<?> argumentClass) {
             return argumentClass.isPrimitive()
-                    || argumentClass.equals(String.class)
+                    || argumentClass == String.class
+                    || argumentClass == Boolean.class
                     || argumentClass.isEnum()
                     || Number.class.isAssignableFrom(argumentClass)
                     || AbstractEntity.class.isAssignableFrom(argumentClass);

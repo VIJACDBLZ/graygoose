@@ -1,21 +1,16 @@
 package com.codeforces.graygoose.dao.impl;
 
 import com.codeforces.graygoose.dao.AlertDao;
-import com.codeforces.graygoose.dao.AlertTriggerEventDao;
 import com.codeforces.graygoose.dao.RuleAlertRelationDao;
 import com.codeforces.graygoose.dao.cache.Cacheable;
 import com.codeforces.graygoose.dao.cache.InvalidateCache;
-import com.codeforces.graygoose.model.AbstractEntity;
 import com.codeforces.graygoose.model.Alert;
+import com.codeforces.graygoose.model.RuleAlertRelation;
 import com.google.inject.Inject;
 
-import java.util.LinkedList;
 import java.util.List;
 
 public class AlertDaoImpl extends BasicDaoImpl<Alert> implements AlertDao {
-    @Inject
-    private AlertTriggerEventDao alertTriggerEventDao;
-
     @Inject
     private RuleAlertRelationDao ruleAlertRelationDao;
 
@@ -30,8 +25,8 @@ public class AlertDaoImpl extends BasicDaoImpl<Alert> implements AlertDao {
     public void markDeleted(Alert alert) {
         super.markDeleted(alert);
 
-        for (AbstractEntity dependentEntity : getDependentEntities(alert)) {
-            dependentEntity.setDeleted(true);
+        for (RuleAlertRelation ruleAlertRelation : ruleAlertRelationDao.findAllByAlert(alert.getId())) {
+            ruleAlertRelationDao.delete(ruleAlertRelation);
         }
     }
 
@@ -41,19 +36,16 @@ public class AlertDaoImpl extends BasicDaoImpl<Alert> implements AlertDao {
         super.update(alert);
     }
 
-    private List<AbstractEntity> getDependentEntities(Alert alert) {
-        List<AbstractEntity> dependentEntities = new LinkedList<AbstractEntity>();
-
-        dependentEntities.addAll(alertTriggerEventDao.findAllByAlert(alert.getId()));
-        dependentEntities.addAll(ruleAlertRelationDao.findAllByAlert(alert.getId()));
-
-        return dependentEntities;
-    }
-
     @Cacheable
     @Override
     public Alert find(long id) {
         return super.find(Alert.class, id);
+    }
+
+    @Cacheable
+    @Override
+    public Alert find(long id, boolean ignoreDeleted) {
+        return super.find(Alert.class, id, ignoreDeleted);
     }
 
     @Cacheable

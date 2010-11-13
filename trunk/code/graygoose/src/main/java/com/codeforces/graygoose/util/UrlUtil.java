@@ -14,6 +14,8 @@ import java.util.concurrent.Future;
 public class UrlUtil {
     private static final Logger logger = Logger.getLogger(UrlUtil.class);
 
+    private static final double URL_FETCH_DEADLINE_SECONDS = 10D;
+
     private static final String CONTENT_TYPE_HTTP_HEADER = "content-type";
     private static final String CHARSET_EQ = "charset=";
     private static final int CHARSET_EQ_LENGTH = CHARSET_EQ.length();
@@ -37,7 +39,8 @@ public class UrlUtil {
             logger.info("Start to fetch URL [" + urlString + "] ...");
 
             try {
-                HTTPRequest httpRequest = new HTTPRequest(new URL(urlString));
+                HTTPRequest httpRequest = new HTTPRequest(new URL(urlString), HTTPMethod.GET,
+                        FetchOptions.Builder.withDeadline(URL_FETCH_DEADLINE_SECONDS));
                 httpRequest.setHeader(new HTTPHeader("X-User-Agent", "Graygoose"));
                 futureResponses.add(urlFetchService.fetchAsync(httpRequest));
             } catch (MalformedURLException e) {

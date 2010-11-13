@@ -4,11 +4,10 @@ import com.codeforces.graygoose.dao.RuleDao;
 import com.codeforces.graygoose.dao.SiteDao;
 import com.codeforces.graygoose.dao.cache.Cacheable;
 import com.codeforces.graygoose.dao.cache.InvalidateCache;
-import com.codeforces.graygoose.model.AbstractEntity;
+import com.codeforces.graygoose.model.Rule;
 import com.codeforces.graygoose.model.Site;
 import com.google.inject.Inject;
 
-import java.util.LinkedList;
 import java.util.List;
 
 public class SiteDaoImpl extends BasicDaoImpl<Site> implements SiteDao {
@@ -26,8 +25,8 @@ public class SiteDaoImpl extends BasicDaoImpl<Site> implements SiteDao {
     public void markDeleted(Site site) {
         super.markDeleted(site);
 
-        for (AbstractEntity dependentEntity : getDependentEntities(site)) {
-            dependentEntity.setDeleted(true);
+        for (Rule rule : ruleDao.findAllBySite(site.getId())) {
+            ruleDao.markDeleted(rule);
         }
     }
 
@@ -37,18 +36,16 @@ public class SiteDaoImpl extends BasicDaoImpl<Site> implements SiteDao {
         super.update(site);
     }
 
-    private List<AbstractEntity> getDependentEntities(Site site) {
-        List<AbstractEntity> dependentEntities = new LinkedList<AbstractEntity>();
-
-        dependentEntities.addAll(ruleDao.findAllBySite(site.getId()));
-
-        return dependentEntities;
-    }
-
     @Cacheable
     @Override
     public Site find(long id) {
         return super.find(Site.class, id);
+    }
+
+    @Cacheable
+    @Override
+    public Site find(long id, boolean ignoreDeleted) {
+        return super.find(Site.class, id, ignoreDeleted);
     }
 
     @Cacheable

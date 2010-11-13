@@ -116,7 +116,6 @@ public class DashboardPage extends WebPage {
                 succeededRuleCheckCount, pendingRuleCheckCount, failedRuleCheckCount, alertTriggerCount);
     }
 
-    //TODO: maybe do not create map and get count on the fly using method findKeysBy...
     private Map<Long, Long> getAlertTriggerCountByRuleCheckIdMap(long intervalBegin, long intervalEnd) {
         final Map<Long, Long> alertTriggerCountByRuleCheckId = new HashMap<Long, Long>();
         final List<AlertTriggerEvent> alertTriggers = alertTriggerEventDao.findAllForPeriod(intervalBegin, intervalEnd);

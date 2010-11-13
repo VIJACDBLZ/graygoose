@@ -41,39 +41,150 @@
     <!--RuleCheckEvent-->
     <datastore-index kind="RuleCheckEvent" ancestor="false" source="manual">
         <property name="deleted" direction="asc"/>
+        <property name="checkTime" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="RuleCheckEvent" ancestor="false" source="manual">
+        <property name="deleted" direction="asc"/>
+        <property name="checkTime" direction="desc"/>
+    </datastore-index>
+
+    <datastore-index kind="RuleCheckEvent" ancestor="false" source="manual">
+        <property name="deleted" direction="asc"/>
         <property name="ruleId" direction="asc"/>
-        <property name="checkTime" direction="asc"/>
-    </datastore-index>
-
-    <!--<datastore-index kind="RuleCheckEvent" ancestor="false" source="manual">
-        <property name="deleted" direction="asc"/>
-        <property name="siteId" direction="asc"/>
-        <property name="checkTime" direction="asc"/>
-    </datastore-index>-->
-
-    <datastore-index kind="RuleCheckEvent" ancestor="false" source="manual">
-        <property name="deleted" direction="asc"/>
-        <property name="checkTime" direction="asc"/>
-    </datastore-index>
-
-    <datastore-index kind="RuleCheckEvent" ancestor="false" source="manual">
-        <property name="deleted" direction="asc"/>
-        <property name="status" direction="asc"/>
         <property name="checkTime" direction="asc"/>
     </datastore-index>
 
     <datastore-index kind="RuleCheckEvent" ancestor="false" source="manual">
         <property name="deleted" direction="asc"/>
         <property name="ruleId" direction="asc"/>
+        <property name="checkTime" direction="desc"/>
+    </datastore-index>
+
+    <datastore-index kind="RuleCheckEvent" ancestor="false" source="manual">
+        <property name="deleted" direction="asc"/>
+        <property name="siteId" direction="asc"/>
+        <property name="checkTime" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="RuleCheckEvent" ancestor="false" source="manual">
+        <property name="deleted" direction="asc"/>
+        <property name="siteId" direction="asc"/>
+        <property name="checkTime" direction="desc"/>
+    </datastore-index>
+
+    <datastore-index kind="RuleCheckEvent" ancestor="false" source="manual">
+        <property name="deleted" direction="asc"/>
         <property name="status" direction="asc"/>
         <property name="checkTime" direction="asc"/>
     </datastore-index>
 
-    <!--<datastore-index kind="RuleCheckEvent" ancestor="false" source="manual">
+    <datastore-index kind="RuleCheckEvent" ancestor="false" source="manual">
+        <property name="deleted" direction="asc"/>
+        <property name="status" direction="asc"/>
+        <property name="checkTime" direction="desc"/>
+    </datastore-index>
+
+    <datastore-index kind="RuleCheckEvent" ancestor="false" source="manual">
+        <property name="deleted" direction="asc"/>
+        <property name="ruleId" direction="asc"/>
+        <property name="status" direction="asc"/>
+        <property name="checkTime" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="RuleCheckEvent" ancestor="false" source="manual">
+        <property name="deleted" direction="asc"/>
+        <property name="ruleId" direction="asc"/>
+        <property name="status" direction="asc"/>
+        <property name="checkTime" direction="desc"/>
+    </datastore-index>
+
+    <datastore-index kind="RuleCheckEvent" ancestor="false" source="manual">
         <property name="deleted" direction="asc"/>
         <property name="siteId" direction="asc"/>
         <property name="status" direction="asc"/>
         <property name="checkTime" direction="asc"/>
-    </datastore-index>-->
+    </datastore-index>
+
+    <datastore-index kind="RuleCheckEvent" ancestor="false" source="manual">
+        <property name="deleted" direction="asc"/>
+        <property name="siteId" direction="asc"/>
+        <property name="status" direction="asc"/>
+        <property name="checkTime" direction="desc"/>
+    </datastore-index>
+
+    <datastore-index kind="RuleCheckEvent" ancestor="false" source="manual">
+        <property name="deleted" direction="asc"/>
+        <property name="creationTime" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="RuleCheckEvent" ancestor="false" source="manual">
+        <property name="deleted" direction="asc"/>
+        <property name="creationTime" direction="desc"/>
+    </datastore-index>
+
+    <datastore-index kind="RuleCheckEvent" ancestor="false" source="manual">
+        <property name="deleted" direction="asc"/>
+        <property name="ruleId" direction="asc"/>
+        <property name="creationTime" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="RuleCheckEvent" ancestor="false" source="manual">
+        <property name="deleted" direction="asc"/>
+        <property name="ruleId" direction="asc"/>
+        <property name="creationTime" direction="desc"/>
+    </datastore-index>
+
+    <datastore-index kind="RuleCheckEvent" ancestor="false" source="manual">
+        <property name="deleted" direction="asc"/>
+        <property name="siteId" direction="asc"/>
+        <property name="creationTime" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="RuleCheckEvent" ancestor="false" source="manual">
+        <property name="deleted" direction="asc"/>
+        <property name="siteId" direction="asc"/>
+        <property name="creationTime" direction="desc"/>
+    </datastore-index>
+
+    <datastore-index kind="RuleCheckEvent" ancestor="false" source="manual">
+        <property name="deleted" direction="asc"/>
+        <property name="status" direction="asc"/>
+        <property name="creationTime" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="RuleCheckEvent" ancestor="false" source="manual">
+        <property name="deleted" direction="asc"/>
+        <property name="status" direction="asc"/>
+        <property name="creationTime" direction="desc"/>
+    </datastore-index>
+
+    <datastore-index kind="RuleCheckEvent" ancestor="false" source="manual">
+        <property name="deleted" direction="asc"/>
+        <property name="ruleId" direction="asc"/>
+        <property name="status" direction="asc"/>
+        <property name="creationTime" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="RuleCheckEvent" ancestor="false" source="manual">
+        <property name="deleted" direction="asc"/>
+        <property name="ruleId" direction="asc"/>
+        <property name="status" direction="asc"/>
+        <property name="creationTime" direction="desc"/>
+    </datastore-index>
+
+    <datastore-index kind="RuleCheckEvent" ancestor="false" source="manual">
+        <property name="deleted" direction="asc"/>
+        <property name="siteId" direction="asc"/>
+        <property name="status" direction="asc"/>
+        <property name="creationTime" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="RuleCheckEvent" ancestor="false" source="manual">
+        <property name="deleted" direction="asc"/>
+        <property name="siteId" direction="asc"/>
+        <property name="status" direction="asc"/>
+        <property name="creationTime" direction="desc"/>
+    </datastore-index>
 
 </datastore-indexes>

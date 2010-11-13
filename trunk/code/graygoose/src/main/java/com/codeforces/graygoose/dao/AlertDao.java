@@ -7,6 +7,8 @@ import java.util.List;
 public interface AlertDao extends BasicDao<Alert> {
     Alert find(long id);
 
+    Alert find(long id, boolean ignoreDeleted);
+
     List<Alert> findAll();
 
     void insert(Alert alert);

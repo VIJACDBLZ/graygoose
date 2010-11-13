@@ -1,36 +1,38 @@
 package com.codeforces.graygoose.page.web;
 
-import com.codeforces.graygoose.dao.RuleCheckEventDao;
+import com.codeforces.graygoose.dao.*;
 import com.codeforces.graygoose.misc.TimeInterval;
-import com.codeforces.graygoose.model.RuleCheckEvent;
+import com.codeforces.graygoose.model.*;
 import com.google.inject.Inject;
 import org.nocturne.annotation.Parameter;
 import org.nocturne.link.Link;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 @Link("logs")
 public class LogsPage extends WebPage {
-    private static final int DEFAULT_LIMIT = 50;
-    private static final int MAX_LIMIT = 200;
+    public static final int DEFAULT_EVENT_LIMIT = 50;
+    public static final int MAX_EVENT_LIMIT = 200;
 
     @Inject
     private RuleCheckEventDao ruleCheckEventDao;
+    @Inject
+    private AlertTriggerEventDao alertTriggerEventDao;
+    @Inject
+    private SiteDao siteDao;
+    @Inject
+    private AlertDao alertDao;
+    @Inject
+    private RuleDao ruleDao;
 
     @Parameter
     private Long siteId;
-
     @Parameter
     private String status;
-
-    @Parameter
-    private Boolean withAlertsOnly;
-
     @Parameter
     private String timeInterval;
-
+    @Parameter
+    private Boolean withAlertsOnly;
     @Parameter
     private Integer limit;
 
@@ -41,70 +43,146 @@ public class LogsPage extends WebPage {
 
     @Override
     public void action() {
-        RuleCheckEvent.Status status = getStatus();
-        TimeInterval currentTimeInterval = getCurrentTimeInterval();
-        int limit = getLimit();
-        boolean withAlertsOnly = this.withAlertsOnly == null ? false : this.withAlertsOnly;
+        RuleCheckEvent.Status statusValue = getStatusValue();
+        TimeInterval currentTimeIntervalValue = getCurrentTimeIntervalValue();
+        int limitValue = getLimitValue();
+        Long siteIdValue = getSiteIdValue();
+        boolean withAlertsOnlyValue = getWithAlertsOnlyValue();
 
         final long intervalEnd = System.currentTimeMillis();
-        final long intervalBegin = intervalEnd - currentTimeInterval.getValueMillis();
+        final long intervalBegin = intervalEnd - currentTimeIntervalValue.getValueMillis();
 
-        List<RuleCheckEvent> eventsForPeriod = getEventsForPeriod(status, intervalEnd, intervalBegin);
+        List<RuleCheckEvent> eventsForPeriod = getEventsForPeriod(siteIdValue, statusValue, intervalEnd, intervalBegin);
 
-        List<RuleCheckEvent> events = new ArrayList<RuleCheckEvent>(limit);
+        List<EventDto> events = new ArrayList<EventDto>(limitValue);
 
         final Iterator<RuleCheckEvent> eventsIterator = eventsForPeriod.iterator();
         int eventsAdded = 0;
 
-        while (eventsIterator.hasNext()) {
-            //TODO:
-            //if (!withAlertsOnly)
+        while (eventsIterator.hasNext() && eventsAdded < limitValue) {
+            final RuleCheckEvent ruleCheckEvent = eventsIterator.next();
+
+            final List<AlertTriggerEvent> alertTriggerEvents =
+                    alertTriggerEventDao.findAllByRuleCheck(ruleCheckEvent.getId());
+
+            if (!withAlertsOnlyValue || alertTriggerEvents.size() > 0) {
+                final List<Alert> alerts = new ArrayList<Alert>(alertTriggerEvents.size());
+
+                for (AlertTriggerEvent alertTriggerEvent : alertTriggerEvents) {
+                    alerts.add(alertDao.find(alertTriggerEvent.getAlertId(), false));
+                }
+
+                events.add(new EventDto(
+                        siteDao.find(ruleCheckEvent.getSiteId(), false),
+                        ruleDao.find(ruleCheckEvent.getRuleId(), false),
+                        ruleCheckEvent,
+                        alerts
+                ));
+
+                ++eventsAdded;
+            }
         }
+
+        if (siteIdValue != null) {
+            put("siteId", siteIdValue);
+        }
+
+        if (statusValue != null) {
+            put("status", statusValue);
+        }
+
+        if (withAlertsOnlyValue) {
+            put("withAlertsOnly", withAlertsOnlyValue);
+        }
+
+        put("limit", limitValue);
+        put("currentTimeInterval", currentTimeIntervalValue);
+        put("timeIntervals", TimeInterval.getTimeIntervalsOrderedByValueDesc());
+        put("events", events);
     }
 
-    private RuleCheckEvent.Status getStatus() {
-        RuleCheckEvent.Status status;
+    private Long getSiteIdValue() {
+        return siteId == null || siteId <= 0 ? null : siteId;
+    }
 
+    private RuleCheckEvent.Status getStatusValue() {
         try {
-            status = RuleCheckEvent.Status.valueOf(this.status);
+            return RuleCheckEvent.Status.valueOf(this.status);
         } catch (RuntimeException e) {
-            status = null;
+            return null;
         }
-
-        return status;
     }
 
-    private TimeInterval getCurrentTimeInterval() {
-        TimeInterval currentTimeInterval;
-
+    private TimeInterval getCurrentTimeIntervalValue() {
         try {
-            currentTimeInterval = TimeInterval.valueOf(timeInterval);
+            return TimeInterval.valueOf(timeInterval);
         } catch (RuntimeException e) {
-            currentTimeInterval = TimeInterval.getDefaultValue();
+            return TimeInterval.getDefaultValue();
         }
-
-        return currentTimeInterval;
     }
 
-    private int getLimit() {
-        return limit == null || limit <= 0 || limit > MAX_LIMIT ?
-                DEFAULT_LIMIT :
-                limit;
-    }
-
-    private List<RuleCheckEvent> getEventsForPeriod(RuleCheckEvent.Status status, long intervalEnd, long intervalBegin) {
-        List<RuleCheckEvent> eventsForPeriod;
-
-        if (siteId != null && status != null) {
-            eventsForPeriod = ruleCheckEventDao.findAllBySiteAndStatusForPeriod(siteId, status, intervalBegin, intervalEnd);
-        } else if (siteId != null) {
-            eventsForPeriod = ruleCheckEventDao.findAllBySiteForPeriod(siteId, intervalBegin, intervalEnd);
-        } else if (status != null) {
-            eventsForPeriod = ruleCheckEventDao.findAllByStatusForPeriod(status, intervalBegin, intervalEnd);
+    private int getLimitValue() {
+        if (limit == null || limit <= 0) {
+            return DEFAULT_EVENT_LIMIT;
+        } else if (limit > MAX_EVENT_LIMIT) {
+            return MAX_EVENT_LIMIT;
         } else {
-            eventsForPeriod = ruleCheckEventDao.findAllForPeriod(intervalBegin, intervalEnd);
+            return limit;
+        }
+    }
+
+    private boolean getWithAlertsOnlyValue() {
+        return this.withAlertsOnly == null ? false : this.withAlertsOnly;
+    }
+
+    private List<RuleCheckEvent> getEventsForPeriod(
+            Long siteIdValue, RuleCheckEvent.Status statusValue, long intervalEnd, long intervalBegin) {
+        if (siteIdValue != null && statusValue != null) {
+            return ruleCheckEventDao.findAllBySiteAndStatusForPeriod(siteIdValue, statusValue, intervalBegin, intervalEnd);
+        } else if (siteIdValue != null) {
+            return ruleCheckEventDao.findAllBySiteForPeriod(siteIdValue, intervalBegin, intervalEnd);
+        } else if (statusValue != null) {
+            return ruleCheckEventDao.findAllByStatusForPeriod(statusValue, intervalBegin, intervalEnd);
+        } else {
+            return ruleCheckEventDao.findAllForPeriod(intervalBegin, intervalEnd);
+        }
+    }
+
+    public static class EventDto {
+        private final Site site;
+        private final Rule rule;
+        private final RuleCheckEvent ruleCheckEvent;
+        private final List<Alert> alerts;
+
+        public EventDto(Site site, Rule rule, RuleCheckEvent ruleCheckEvent, List<Alert> alerts) {
+            this.site = site;
+            this.rule = rule;
+            this.ruleCheckEvent = ruleCheckEvent;
+            this.alerts = Collections.unmodifiableList(alerts);
         }
 
-        return eventsForPeriod;
+        public Site getSite() {
+            return site;
+        }
+
+        public Rule getRule() {
+            return rule;
+        }
+
+        public RuleCheckEvent.Status getStatus() {
+            return ruleCheckEvent.getStatus();
+        }
+
+        public String getDescription() {
+            return ruleCheckEvent.getDescription();
+        }
+
+        public Date getCheckTime() {
+            return ruleCheckEvent.getCheckTime();
+        }
+
+        public List<Alert> getAlerts() {
+            return alerts;
+        }
     }
 }

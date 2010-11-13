@@ -1,23 +1,18 @@
 package com.codeforces.graygoose.dao.impl;
 
 import com.codeforces.graygoose.dao.RuleAlertRelationDao;
-import com.codeforces.graygoose.dao.RuleCheckEventDao;
 import com.codeforces.graygoose.dao.RuleDao;
 import com.codeforces.graygoose.dao.cache.Cacheable;
 import com.codeforces.graygoose.dao.cache.InvalidateCache;
-import com.codeforces.graygoose.model.AbstractEntity;
 import com.codeforces.graygoose.model.Rule;
+import com.codeforces.graygoose.model.RuleAlertRelation;
 import com.google.inject.Inject;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 public class RuleDaoImpl extends BasicDaoImpl<Rule> implements RuleDao {
-    @Inject
-    private RuleCheckEventDao ruleCheckEventDao;
-
     @Inject
     private RuleAlertRelationDao ruleAlertRelationDao;
 
@@ -32,8 +27,8 @@ public class RuleDaoImpl extends BasicDaoImpl<Rule> implements RuleDao {
     public void markDeleted(Rule rule) {
         super.markDeleted(rule);
 
-        for (AbstractEntity dependentEntity : getDependentEntities(rule)) {
-            dependentEntity.setDeleted(true);
+        for (RuleAlertRelation ruleAlertRelation : ruleAlertRelationDao.findAllByRule(rule.getId())) {
+            ruleAlertRelationDao.delete(ruleAlertRelation);
         }
     }
 
@@ -43,18 +38,15 @@ public class RuleDaoImpl extends BasicDaoImpl<Rule> implements RuleDao {
         super.update(rule);
     }
 
-    private List<AbstractEntity> getDependentEntities(Rule rule) {
-        List<AbstractEntity> dependentEntities = new LinkedList<AbstractEntity>();
-
-        dependentEntities.addAll(ruleCheckEventDao.findAllByRule(rule.getId()));
-        dependentEntities.addAll(ruleAlertRelationDao.findAllByRule(rule.getId()));
-
-        return dependentEntities;
+    @Cacheable
+    @Override
+    public Rule find(long id) {
+        return super.find(Rule.class, id);
     }
 
     @Cacheable
     @Override
-    public Rule find(long id) {
+    public Rule find(long id, boolean ignoreDeleted) {
         return super.find(Rule.class, id);
     }
 

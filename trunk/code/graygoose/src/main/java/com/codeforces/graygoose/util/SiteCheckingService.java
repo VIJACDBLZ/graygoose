@@ -125,7 +125,7 @@ public class SiteCheckingService {
                     logger.warn("Rule check has been failed: " + errorMessage + ".");
 
                     ruleCheckEvent.setStatus(RuleCheckEvent.Status.FAILED);
-                    ruleCheckEvent.setDesription(errorMessage);
+                    ruleCheckEvent.setDescription(errorMessage);
                     RuleFailStatistics.increaseConsecutiveFailCountByRuleId(ruleId);
                 }
             }
@@ -156,13 +156,13 @@ public class SiteCheckingService {
         if ("E-mail".equals(alert.getType())) {
             try {
                 MailUtil.sendMail(alert.getEmail(), "GrayGoose alert: " + alert.getName(),
-                        ruleCheckEvent.getDesription());
+                        ruleCheckEvent.getDescription());
             } catch (MessagingException e) {
                 throw new RuntimeException("E-mail was not sent: " + e.getMessage());
             }
         } else if ("Google calendar event".equals(alert.getType())) {
             try {
-                SmsUtil.send("GrayGoose alert: " + ruleCheckEvent.getDesription(), "",
+                SmsUtil.send("GrayGoose alert: " + ruleCheckEvent.getDescription(), "",
                         alert.getEmail(), alert.getPassword());
             } catch (SmsSendException e) {
                 throw new RuntimeException("Can't add Google calendar event: " + e.getMessage());
