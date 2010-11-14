@@ -9,7 +9,10 @@
     <cron>
         <url>/cron/events?action=removeOld</url>
         <description>Remove old events with 'SUCCESS' status from the data storage</description>
-        <schedule>every 30 minutes</schedule>
+        <!--To prevent App Engine deadline exception there is a limited number (100 by default) of records
+        to remove per single action. So if your application generates more events for specified amount of time,
+        you must reduce this interval.-->
+        <schedule>every 15 minutes</schedule>
     </cron>
 
     <!--Used for technical needs-->
