@@ -176,6 +176,10 @@ public class LogsPage extends WebPage {
             return rule;
         }
 
+        public Long getResponseId() {
+            return ruleCheckEvent.getResponseId();
+        }
+
         public RuleCheckEvent.Status getStatus() {
             return ruleCheckEvent.getStatus();
         }

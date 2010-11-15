@@ -1,10 +1,12 @@
 package com.codeforces.graygoose.page.data;
 
 import com.codeforces.graygoose.dao.RuleDao;
+import com.codeforces.graygoose.model.Response;
 import com.codeforces.graygoose.model.Rule;
 import com.codeforces.graygoose.util.ResponseCheckingService;
 import com.codeforces.graygoose.util.RuleTypeUtil;
 import com.codeforces.graygoose.util.UrlUtil;
+import com.google.appengine.api.datastore.Text;
 import com.google.inject.Inject;
 import org.nocturne.annotation.Action;
 import org.nocturne.annotation.Parameter;
@@ -144,8 +146,8 @@ public class RulesDataPage extends DataPage {
     @Action("checkRule")
     public void onCheckRule() {
         try {
-            ResponseCheckingService.Response response = new ResponseCheckingService.Response(
-                    getString("url"), getInteger("responseCode"), getString("responseText"));
+            Response response = new Response(
+                    getString("url"), getInteger("responseCode"), new Text(getString("responseText")));
 
             String errorMessage = ResponseCheckingService.getErrorMessage(response, ruleDao.find(getLong("ruleId")));
 
@@ -163,7 +165,7 @@ public class RulesDataPage extends DataPage {
 
     @Action("fetch")
     public void onFetch() {
-        ResponseCheckingService.Response response = UrlUtil.fetchUrl(getString("url"));
+        Response response = UrlUtil.fetchUrl(getString("url"), 1);
 
         put("responseCode", response.getCode());
         put("responseText", response.getText());

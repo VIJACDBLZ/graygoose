@@ -16,6 +16,9 @@ public class RuleCheckEvent extends AbstractEntity {
     private Long siteId;
 
     @Persistent
+    private Long responseId;
+
+    @Persistent
     private Status status;
 
     @Persistent
@@ -57,6 +60,14 @@ public class RuleCheckEvent extends AbstractEntity {
 
     public void setSiteId(Long siteId) {
         this.siteId = siteId;
+    }
+
+    public Long getResponseId() {
+        return responseId;
+    }
+
+    public void setResponseId(Long responseId) {
+        this.responseId = responseId;
     }
 
     public Status getStatus() {

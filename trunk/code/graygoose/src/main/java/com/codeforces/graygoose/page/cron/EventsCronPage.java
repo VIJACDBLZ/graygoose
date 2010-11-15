@@ -1,8 +1,8 @@
 package com.codeforces.graygoose.page.cron;
 
 import com.codeforces.graygoose.dao.RuleCheckEventDao;
-import com.codeforces.graygoose.model.RuleCheckEvent;
 import com.codeforces.graygoose.misc.TimeConstants;
+import com.codeforces.graygoose.model.RuleCheckEvent;
 import com.google.inject.Inject;
 import org.apache.log4j.Logger;
 import org.nocturne.annotation.Action;

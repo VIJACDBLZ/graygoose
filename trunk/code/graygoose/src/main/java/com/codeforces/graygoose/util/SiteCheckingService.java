@@ -24,6 +24,9 @@ public class SiteCheckingService {
     private AlertDao alertDao;
 
     @Inject
+    private ResponseDao responseDao;
+
+    @Inject
     private RuleAlertRelationDao ruleAlertRelationDao;
 
     @Inject
@@ -91,7 +94,7 @@ public class SiteCheckingService {
 
     private void processSitesToRescan(ArrayList<Site> sitesToRescan, Map<Long, List<Rule>> rulesBySiteId,
                                       Map<Long, RuleCheckEvent> ruleCheckEventByRuleId) {
-        enqueuePendingRules(sitesToRescan, rulesBySiteId, ruleCheckEventByRuleId, ruleCheckEventDao);
+        enqueuePendingRuleCheckEvents(sitesToRescan, rulesBySiteId, ruleCheckEventByRuleId);
 
         final int siteCount = sitesToRescan.size();
         ArrayList<String> urlStrings = new ArrayList<String>(siteCount);
@@ -101,21 +104,22 @@ public class SiteCheckingService {
             urlStrings.add(sitesToRescan.get(siteIndex).getUrl());
         }
 
-        List<ResponseCheckingService.Response> responses = UrlUtil.fetchUrls(urlStrings);
+        List<Response> responses = UrlUtil.fetchUrls(urlStrings, 3);
 
         //Scan sites and commit rule check events by setting check time,
         //status (SUCCEEDED or FAILED) and description
         for (int siteIndex = 0; siteIndex < siteCount; ++siteIndex) {
             Site site = sitesToRescan.get(siteIndex);
-            ResponseCheckingService.Response response = responses.get(siteIndex);
+            Response response = responses.get(siteIndex);
 
             for (Rule rule : rulesBySiteId.get(site.getId())) {
                 long ruleId = rule.getId();
 
                 RuleCheckEvent ruleCheckEvent = ruleCheckEventByRuleId.get(ruleId);
-                String errorMessage = response.getCode() == -1 && !StringUtil.isEmptyOrNull(response.getText()) ?
-                        response.getText() :
-                        ResponseCheckingService.getErrorMessage(response, rule);
+                String errorMessage =
+                        response.getCode() == -1 && !StringUtil.isEmptyOrNull(response.getText().getValue()) ?
+                                response.getText().getValue() :
+                                ResponseCheckingService.getErrorMessage(response, rule);
 
                 ruleCheckEvent.setCheckTime(new Date());
                 if (errorMessage == null) {
@@ -126,6 +130,12 @@ public class SiteCheckingService {
 
                     ruleCheckEvent.setStatus(RuleCheckEvent.Status.FAILED);
                     ruleCheckEvent.setDescription(errorMessage);
+
+                    if (response.getId() == null) {
+                        responseDao.insert(response);
+                    }
+
+                    ruleCheckEvent.setResponseId(response.getId());
                     RuleFailStatistics.increaseConsecutiveFailCountByRuleId(ruleId);
                 }
             }
@@ -170,9 +180,8 @@ public class SiteCheckingService {
         }
     }
 
-    private void enqueuePendingRules(
-            List<Site> sitesToRescan, Map<Long, List<Rule>> rulesBySiteId,
-            Map<Long, RuleCheckEvent> ruleCheckEventByRuleId, RuleCheckEventDao ruleCheckEventDao) {
+    private void enqueuePendingRuleCheckEvents(List<Site> sitesToRescan, Map<Long, List<Rule>> rulesBySiteId,
+                                               Map<Long, RuleCheckEvent> ruleCheckEventByRuleId) {
         for (Site site : sitesToRescan) {
             final long siteId = site.getId();
 

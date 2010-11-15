@@ -1,12 +1,13 @@
 package com.codeforces.graygoose.util;
 
+import com.codeforces.graygoose.model.Response;
+import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.urlfetch.*;
 import org.apache.log4j.Logger;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -14,50 +15,71 @@ import java.util.concurrent.Future;
 public class UrlUtil {
     private static final Logger logger = Logger.getLogger(UrlUtil.class);
 
-    private static final double URL_FETCH_DEADLINE_SECONDS = 10D;
+    private static final HTTPHeader GRAYGOOSE_AGENT_HTTP_HEADER = new HTTPHeader("X-User-Agent", "Graygoose");
 
     private static final String CONTENT_TYPE_HTTP_HEADER = "content-type";
     private static final String CHARSET_EQ = "charset=";
     private static final int CHARSET_EQ_LENGTH = CHARSET_EQ.length();
 
-    public static ResponseCheckingService.Response fetchUrl(String urlString) {
-        return fetchUrls(Arrays.asList(urlString)).get(0);
+    public static Response fetchUrl(String urlString, int attemptCount) {
+        return fetchUrls(Arrays.asList(urlString), attemptCount).get(0);
     }
 
-    public static List<ResponseCheckingService.Response> fetchUrls(List<String> urlStrings) {
-        final int urlStringCount = urlStrings.size();
-        final String[] urlStringsInternal = new String[urlStringCount];
-        urlStrings.toArray(urlStringsInternal);
+    public static List<Response> fetchUrls(List<String> urlStrings, int attemptCount) {
+        if (attemptCount < 1) {
+            throw new IllegalArgumentException("Argument \'attemptCount\' can't be less than \'1\'.");
+        }
 
         final URLFetchService urlFetchService = URLFetchServiceFactory.getURLFetchService();
 
-        final ResponseCheckingService.Response[] responses = new ResponseCheckingService.Response[urlStringCount];
-        final List<Future<HTTPResponse>> futureResponses = new ArrayList<Future<HTTPResponse>>(urlStringCount);
+        final int urlStringCount = urlStrings.size();
+        final String[] urlStringsInternal = new String[urlStrings.size()];
+        urlStrings.toArray(urlStringsInternal);
 
+        final Response[] responses = new Response[urlStringCount];
+        final Future[] futureResponses = new Future[urlStringCount];
+
+        for (int attemptIndex = 0; attemptIndex < attemptCount; ++attemptIndex) {
+            fetchUrlsInternal(urlFetchService, urlStringCount, urlStringsInternal, responses, futureResponses);
+        }
+
+        return Arrays.asList(responses);
+    }
+
+    private static void fetchUrlsInternal(
+            final URLFetchService urlFetchService, final int urlStringCount,
+            final String[] urlStringsInternal, final Response[] responses, final Future[] futureResponses) {
         for (int i = 0; i < urlStringCount; ++i) {
+            if (responses[i] != null && responses[i].getCode() != -1) {
+                continue;
+            }
+
             final String urlString = urlStringsInternal[i];
             logger.info("Start to fetch URL [" + urlString + "] ...");
 
             try {
-                HTTPRequest httpRequest = new HTTPRequest(new URL(urlString), HTTPMethod.GET,
-                        FetchOptions.Builder.withDeadline(URL_FETCH_DEADLINE_SECONDS));
-                httpRequest.setHeader(new HTTPHeader("X-User-Agent", "Graygoose"));
-                futureResponses.add(urlFetchService.fetchAsync(httpRequest));
+                HTTPRequest httpRequest = new HTTPRequest(new URL(urlString));
+                httpRequest.setHeader(GRAYGOOSE_AGENT_HTTP_HEADER);
+                futureResponses[i] = urlFetchService.fetchAsync(httpRequest);
             } catch (MalformedURLException e) {
                 logger.error("Fetch error: " + e.getMessage() + ".");
-                futureResponses.add(null);
-                responses[i] = new ResponseCheckingService.Response(urlString, -1, e.getMessage());
+                futureResponses[i] = null;
+                responses[i] = new Response(urlString, -1, new Text(e.getMessage()));
             }
         }
 
         for (int i = 0; i < urlStringCount; ++i) {
-            final Future<HTTPResponse> futureResponse = futureResponses.get(i);
+            if (responses[i] != null && responses[i].getCode() != -1) {
+                continue;
+            }
+
+            final Future futureResponse = futureResponses[i];
 
             if (futureResponse != null) {
                 final String urlString = urlStringsInternal[i];
 
                 try {
-                    HTTPResponse httpResponse = futureResponse.get();
+                    HTTPResponse httpResponse = (HTTPResponse) futureResponse.get();
                     logger.info("URL [" + urlString + "] has been successfully fetched.");
 
                     int responseCode = httpResponse.getResponseCode();
@@ -75,15 +97,13 @@ public class UrlUtil {
                         }
                     }
 
-                    responses[i] = new ResponseCheckingService.Response(urlString, responseCode, responseText);
+                    responses[i] = new Response(urlString, responseCode, new Text(responseText));
                 } catch (Exception e) {
                     logger.error("Fetch error: " + e.getMessage() + ".");
-                    responses[i] = new ResponseCheckingService.Response(urlString, -1, e.getMessage());
+                    responses[i] = new Response(urlString, -1, new Text(e.getMessage()));
                 }
             }
         }
-
-        return Arrays.asList(responses);
     }
 
     private static Charset getHttpResponseCharset(HTTPResponse httpResponse) {

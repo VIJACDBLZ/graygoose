@@ -36,9 +36,11 @@
 </div>
 <div id="footer">
     <@caption params=["http://code.google.com/p/graygoose"]>
-    Easy configurable system to rescan your web applications periodically and send notifications in case of failure.
+    {{Easy configurable system to rescan your web applications periodically and send notifications in case of failure.}}
     <br/>
     <a href="{0}">Graygoose</a>
+    <br/>
+    {{Server time}}: ${serverTime!?datetime}
     </@caption>
 </div>
 </body>

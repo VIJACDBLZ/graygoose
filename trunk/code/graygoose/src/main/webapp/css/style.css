@@ -86,15 +86,17 @@ body {
 
 .grid {
     width: 98%;
-    margin: 0.25em 1em 0 1em;
+    margin: 4px 12px 0 12px;
 }
 
 .grid caption {
-    border: 1px solid #c5d7ef;
+    border: 1px solid #B2B2B2;
+    border-bottom: none;
     background: #e5ecf9;
     -moz-margin-start: -1px;
     padding: 3px 5px;
-    text-align: left
+    text-align: left;
+    margin-right: -1px;
 }
 
 .grid tr td {
@@ -145,6 +147,11 @@ body {
 .gray-box .t {
     border: 1px solid #909090;
     background-color: #f0f0f0;
+}
+
+.white-box .t {
+    border: 1px solid #909090;
+    background-color: white;
 }
 
 .brown-box .t {

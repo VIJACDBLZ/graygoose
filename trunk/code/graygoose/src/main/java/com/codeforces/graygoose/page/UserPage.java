@@ -6,6 +6,8 @@ import com.google.appengine.api.users.UserService;
 import com.google.inject.Inject;
 import org.apache.log4j.Logger;
 
+import java.util.Date;
+
 public abstract class UserPage extends ApplicationPage {
     private static final Logger logger = Logger.getLogger(UserPage.class);
 
@@ -28,6 +30,8 @@ public abstract class UserPage extends ApplicationPage {
             logger.info("User is not logged in, redirecting ...");
             abortWithRedirect(getUserService().createLoginURL(getRequest().getRequestURI()));
         }
+
+        put("serverTime", new Date());
     }
 
     public void setMessage(String message) {

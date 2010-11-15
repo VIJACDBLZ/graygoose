@@ -1,24 +1,29 @@
 <#import "macros/common.ftl" as common/>
 
 <@common.page>
+
+<@common.colorBox clazz="white-box">
+<div style="font-size:11px;">
+    <strong>{{Monitoring statistics for last}} ${currentTimeInterval.synonym!?html}.</strong>
+    <ul class="menu">
+        <#list timeIntervals as timeInterval>
+        <#if timeInterval == currentTimeInterval>
+        <#assign clazz="active">
+        <#else>
+        <#assign clazz="">
+        </#if>
+        <li>
+            <a href="<@link name="DashboardPage"/>?timeInterval=${timeInterval!?string}" class="${clazz!}">
+                ${timeInterval.synonym!?html}
+            </a>
+        </li>
+        </#list>
+    </ul>
+</div>
+</@common.colorBox>
+
+
 <table class="grid">
-    <caption>
-        <strong>{{Monitoring statistics for last}} ${currentTimeInterval.synonym!?html}.</strong>
-        <ul class="menu">
-            <#list timeIntervals as timeInterval>
-            <#if timeInterval == currentTimeInterval>
-            <#assign clazz="active">
-            <#else>
-            <#assign clazz="">
-            </#if>
-            <li>
-                <a href="<@link name="DashboardPage"/>?timeInterval=${timeInterval!?string}" class="${clazz!}">
-                    ${timeInterval.synonym!?html}
-                </a>
-            </li>
-            </#list>
-        </ul>
-    </caption>
     <thead>
     <tr>
         <th>{{Site id}}</th>
@@ -67,7 +72,11 @@
     <#if sites?? && (sites?size > 0)>
     <#list sites as site>
     <tr>
-        <td style="text-align:right;">${site.id}</td>
+        <td style="text-align:right;">
+            <a href="<@link name="SiteEditPage" id="${site.id}"/>">
+                ${site.id}
+            </a>
+        </td>
         <td style="text-align:left;"><a href="${site.url?html}">${site.name?html}</a></td>
         <td>${site.ruleCount}</td>
         <td>${site.maxTotalRuleCheckCount}</td>

@@ -28,6 +28,7 @@ public class ApplicationModule implements Module {
         binder.bind(RuleAlertRelationDao.class).to(RuleAlertRelationDaoImpl.class).in(Singleton.class);
         binder.bind(RuleCheckEventDao.class).to(RuleCheckEventDaoImpl.class).in(Singleton.class);
         binder.bind(AlertTriggerEventDao.class).to(AlertTriggerEventDaoImpl.class).in(Singleton.class);
+        binder.bind(ResponseDao.class).to(ResponseDaoImpl.class).in(Singleton.class);
 
         binder.bind(Cache.class).to(InMemoryCache.class).in(Singleton.class);
 

@@ -1,5 +1,6 @@
 package com.codeforces.graygoose.util;
 
+import com.codeforces.graygoose.model.Response;
 import com.codeforces.graygoose.model.Rule;
 import org.apache.log4j.Logger;
 
@@ -83,7 +84,7 @@ public class ResponseCheckingService {
     }
 
     private static boolean checkSubstringCount(Response response, Rule rule) {
-        String text = response.getText();
+        String text = response.getText().getValue();
         String substring = rule.getProperty("expectedSubstring");
 
         int matchCount = 0;
@@ -107,39 +108,6 @@ public class ResponseCheckingService {
             compiledPatternByRegexString.put(regexString, pattern);
         }
 
-        return pattern.matcher(response.getText()).matches();
-    }
-
-    public static class Response {
-        private final String siteUrl;
-        private final int code;
-        private final String text;
-
-        /**
-         * Constructs a <code>ResponseCheckingService.Response</code> with specified parameters.
-         *
-         * @param siteUrl URL of the site from which came the HTTP-response
-         * @param code    response code or <code>-1</code> if no HTTP-response came within specified timeout
-         *                or any other exception has been thrown during URL fetching
-         * @param text    body of the HTTP-response in case of success,
-         *                empty string or <code>exception.getMessage()</code>, in case of failure
-         */
-        public Response(String siteUrl, int code, String text) {
-            this.siteUrl = siteUrl;
-            this.code = code;
-            this.text = text;
-        }
-
-        public String getSiteUrl() {
-            return siteUrl;
-        }
-
-        public int getCode() {
-            return code;
-        }
-
-        public String getText() {
-            return text;
-        }
+        return pattern.matcher(response.getText().getValue()).matches();
     }
 }
