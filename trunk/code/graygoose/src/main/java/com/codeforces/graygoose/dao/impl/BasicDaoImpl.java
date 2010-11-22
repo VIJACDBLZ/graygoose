@@ -13,7 +13,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-public abstract class BasicDaoImpl<T extends AbstractEntity> implements BasicDao<T> {
+public class BasicDaoImpl<T extends AbstractEntity> implements BasicDao<T> {
     private static final ThreadLocal<PersistenceManager> persistenceManagerByThread =
             new ThreadLocal<PersistenceManager>();
 
@@ -51,14 +51,14 @@ public abstract class BasicDaoImpl<T extends AbstractEntity> implements BasicDao
         openPersistenceManager();
     }
 
-    private Object executeQueryWithMap(String queryString, Map<String, Object> parameters) {
+    private static Object executeQueryWithMap(String queryString, Map<String, Object> parameters) {
         PersistenceManager persistenceManager = getPersistenceManager();
         Object result = persistenceManager.newQuery(queryString).executeWithMap(parameters);
         persistenceManager.retrieveAll((Collection) result);
         return result;
     }
 
-    private Object executeKeyQueryWithMap(String queryString, Map<String, Object> parameters) {
+    private static Object executeKeyQueryWithMap(String queryString, Map<String, Object> parameters) {
         return getPersistenceManager().newQuery(queryString).executeWithMap(parameters);
     }
 
@@ -71,7 +71,7 @@ public abstract class BasicDaoImpl<T extends AbstractEntity> implements BasicDao
             PersistenceManager persistenceManager = getPersistenceManager();
             T entity = persistenceManager.getObjectById(clazz, id);
             persistenceManager.retrieve(entity);
-            return entity == null || (entity.isDeleted() && ignoreDeleted) ? null : entity;
+            return entity == null || entity.isDeleted() && ignoreDeleted ? null : entity;
         } catch (JDOObjectNotFoundException e) {
             return null;
         }
@@ -187,5 +187,8 @@ public abstract class BasicDaoImpl<T extends AbstractEntity> implements BasicDao
             throw new JDOObjectNotFoundException("Persistent entity [" + persistentEntity
                     + "] is not found in the DataStorage.");
         }
+    }
+
+    protected BasicDaoImpl() {
     }
 }

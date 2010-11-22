@@ -32,8 +32,8 @@ public class ResponsesDataPage extends DataPage {
 
     @Action("downloadResponse")
     public void onDownloadResponse() {
-        final Response response = responseDao.find(responseId);
-        final HttpServletResponse httpServletResponse = getResponse();
+        Response response = responseDao.find(responseId);
+        HttpServletResponse httpServletResponse = getResponse();
 
         if (response != null) {
             try {

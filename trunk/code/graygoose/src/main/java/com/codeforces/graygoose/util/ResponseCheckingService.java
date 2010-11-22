@@ -4,17 +4,21 @@ import com.codeforces.graygoose.model.Response;
 import com.codeforces.graygoose.model.Rule;
 import org.apache.log4j.Logger;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 public class ResponseCheckingService {
     private static final Logger logger = Logger.getLogger(ResponseCheckingService.class);
 
     private static final Map<String, Pattern> compiledPatternByRegexString =
-            new Hashtable<String, Pattern>();
+            new ConcurrentHashMap<String, Pattern>();
 
     private static final Map<String, Set<Integer>> responseCodesByCodesString =
-            new Hashtable<String, Set<Integer>>();
+            new ConcurrentHashMap<String, Set<Integer>>();
 
     public static String getErrorMessage(Response response, Rule rule) {
         logger.info("Check response from URL [" + response.getSiteUrl()
@@ -109,5 +113,8 @@ public class ResponseCheckingService {
         }
 
         return pattern.matcher(response.getText().getValue()).matches();
+    }
+
+    private ResponseCheckingService() {
     }
 }

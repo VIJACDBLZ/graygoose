@@ -9,7 +9,7 @@ public abstract class ApplicationFrame extends Frame {
     @Inject
     private UserService userService;
 
-    public UserService getUserService() {
+    protected UserService getUserService() {
         return userService;
     }
 
@@ -17,7 +17,7 @@ public abstract class ApplicationFrame extends Frame {
         return userService.getCurrentUser();
     }
 
-    public void setMessage(String message) {
+    void setMessage(String message) {
         putSession(MessageBoxFrame.MESSAGE_BOX_TEXT, message);
     }
 }

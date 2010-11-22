@@ -12,7 +12,7 @@ public abstract class AbstractEntity {
     public abstract Long getId();
 
     @Override
-    public String toString() {
+    public final String toString() {
         return getClass().getCanonicalName() + '#' + getId();
     }
 }

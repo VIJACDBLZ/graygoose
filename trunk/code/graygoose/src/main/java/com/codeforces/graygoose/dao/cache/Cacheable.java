@@ -13,10 +13,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Cacheable {
-    public static class Interceptor implements MethodInterceptor {
+    class Interceptor implements MethodInterceptor {
         private static final String CACHE_KEY_SEPARATOR = "###";
 
-        public Cache getCache() {
+        public static Cache getCache() {
             return CacheHolder.getCache();
         }
 
@@ -25,20 +25,16 @@ public @interface Cacheable {
             String hashKey = ensureArgumentsAreSupportedAndReturnHashKey(invocation);
 
             Object result = getCache().get(hashKey);
-            if (result == null) {
-                return invokeAndCache(invocation, hashKey);
-            } else {
-                return result;
-            }
+            return result == null ? invokeAndCache(invocation, hashKey) : result;
         }
 
-        private Object invokeAndCache(MethodInvocation invocation, String hashKey) throws Throwable {
+        private static Object invokeAndCache(MethodInvocation invocation, String hashKey) throws Throwable {
             Object result = invocation.proceed();
             getCache().put(hashKey, result);
             return result;
         }
 
-        private String ensureArgumentsAreSupportedAndReturnHashKey(MethodInvocation invocation) {
+        private static String ensureArgumentsAreSupportedAndReturnHashKey(MethodInvocation invocation) {
             StringBuilder result = new StringBuilder();
 
             result.append(CACHE_KEY_SEPARATOR).append(invocation.getMethod().toString()).append(CACHE_KEY_SEPARATOR);
@@ -58,7 +54,7 @@ public @interface Cacheable {
             return result.toString();
         }
 
-        private boolean supportsArgumentClass(Class<?> argumentClass) {
+        private static boolean supportsArgumentClass(Class<?> argumentClass) {
             return argumentClass.isPrimitive()
                     || argumentClass == String.class
                     || argumentClass == Boolean.class

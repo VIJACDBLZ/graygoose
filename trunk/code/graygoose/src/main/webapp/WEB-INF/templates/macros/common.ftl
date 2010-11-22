@@ -13,61 +13,61 @@
     <link rel="stylesheet" href="${home}/css/style.css" type="text/css"/>
     <link rel="stylesheet" href="${home}/css/modal.css" type="text/css"/>
     <#list css as file>
-    <link rel="stylesheet" href="${home}/${file}"/>
+        <link rel="stylesheet" href="${home}/${file}"/>
     </#list>
     <script type="text/javascript" src="${home}/js/jquery-1.3.2.min.js"></script>
     <#list js as file>
-    <script type="text/javascript" src="${home}/${file}"></script>
+        <script type="text/javascript" src="${home}/${file}"></script>
     </#list>
 </head>
 <body>
 <@frame name="messageBoxFrame"/>
 <div id="header">
-    <@frame name="topMenuFrame"/>
+<@frame name="topMenuFrame"/>
     <a href="${home}" title="{{Webmail home page}}">
         <img src="${home}/images/logo.png" width="95" height="56"/>
     </a>
 </div>
 <div id="content">
-    <@frame name="mainMenuFrame"/>
+<@frame name="mainMenuFrame"/>
     <div style="padding: 1em 0;">
         <#nested>
     </div>
 </div>
 <div id="footer">
-    <@caption params=["http://code.google.com/p/graygoose"]>
+<@caption params=["http://code.google.com/p/graygoose"]>
     {{Easy configurable system to rescan your web applications periodically and send notifications in case of failure.}}
     <br/>
     <a href="{0}">Graygoose</a>
     <br/>
     {{Server time}}: ${serverTime!?datetime}
-    </@caption>
+</@caption>
 </div>
 </body>
 </html>
 </#macro>
 
 <#macro errorLabel text = "">
-<#if text?? && (text?length > 0)>
-<div class="error">${text!?html}</div>
-</#if>
+    <#if text?? && (text?length > 0)>
+    <div class="error">${text!?html}</div>
+    </#if>
 </#macro>
 
 <#macro subscript error = "" hint = "" clazz = "under">
-<#if (error?? && (error?length > 0)) || (hint?? && (hint?length > 0))>
-<tr>
-    <td>&nbsp;</td>
-    <td>
-        <div class="${clazz}">
-            <#if error?? && (error?length > 0)>
+    <#if (error?? && (error?length > 0)) || (hint?? && (hint?length > 0))>
+    <tr>
+        <td>&nbsp;</td>
+        <td>
+            <div class="${clazz}">
+                <#if error?? && (error?length > 0)>
             <@errorLabel text=error/>
             <#else>
-            ${hint}
-            </#if>
-        </div>
-    </td>
-</tr>
-</#if>
+                ${hint}
+                </#if>
+            </div>
+        </td>
+    </tr>
+    </#if>
 </#macro>
 
 <#macro colorBox clazz style="">

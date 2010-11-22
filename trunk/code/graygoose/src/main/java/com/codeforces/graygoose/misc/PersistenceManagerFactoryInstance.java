@@ -10,4 +10,7 @@ public class PersistenceManagerFactoryInstance {
     public static PersistenceManagerFactory getFactory() {
         return factory;
     }
+
+    private PersistenceManagerFactoryInstance() {
+    }
 }

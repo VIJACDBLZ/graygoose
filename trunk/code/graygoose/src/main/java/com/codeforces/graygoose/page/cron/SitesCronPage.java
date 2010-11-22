@@ -10,11 +10,6 @@ public class SitesCronPage extends CronPage {
     @Inject
     private SiteCheckingService siteCheckingService;
 
-    @Override
-    public void initializeAction() {
-        super.initializeAction();
-    }
-
     @Action("checkSites")
     public void onCheckSites() {
         siteCheckingService.checkSites();

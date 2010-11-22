@@ -11,8 +11,8 @@ import java.util.*;
 
 @Link("logs")
 public class LogsPage extends WebPage {
-    public static final int DEFAULT_EVENT_LIMIT = 50;
-    public static final int MAX_EVENT_LIMIT = 200;
+    private static final int DEFAULT_EVENT_LIMIT = 50;
+    private static final int MAX_EVENT_LIMIT = 200;
 
     @Inject
     private RuleCheckEventDao ruleCheckEventDao;
@@ -49,27 +49,27 @@ public class LogsPage extends WebPage {
         int limitValue = getLimitValue();
         Long siteIdValue = getSiteIdValue();
 
-        final long intervalEnd = System.currentTimeMillis();
-        final long intervalBegin = intervalEnd - currentTimeIntervalValue.getValueMillis();
+        long intervalEnd = System.currentTimeMillis();
+        long intervalBegin = intervalEnd - currentTimeIntervalValue.getValueMillis();
 
-        final List<RuleCheckEvent> eventsForPeriod =
+        List<RuleCheckEvent> eventsForPeriod =
                 getEventsForPeriod(siteIdValue, statusValue, intervalEnd, intervalBegin);
 
-        final List<EventDto> events = new ArrayList<EventDto>(limitValue);
+        List<EventDto> events = new ArrayList<EventDto>(limitValue);
 
-        final Iterator<RuleCheckEvent> eventsIterator = eventsForPeriod.iterator();
+        Iterator<RuleCheckEvent> eventsIterator = eventsForPeriod.iterator();
         int eventsAdded = 0;
 
         while (eventsIterator.hasNext() && eventsAdded < limitValue) {
-            final RuleCheckEvent ruleCheckEvent = eventsIterator.next();
+            RuleCheckEvent ruleCheckEvent = eventsIterator.next();
 
-            final List<AlertTriggerEvent> alertTriggerEvents =
+            List<AlertTriggerEvent> alertTriggerEvents =
                     ruleCheckEvent.getStatus() == RuleCheckEvent.Status.FAILED ?
                             alertTriggerEventDao.findAllByRuleCheck(ruleCheckEvent.getId()) :
                             new ArrayList<AlertTriggerEvent>();
 
-            if (!withAlertsOnlyValue || alertTriggerEvents.size() > 0) {
-                final List<Alert> alerts = new ArrayList<Alert>(alertTriggerEvents.size());
+            if (!withAlertsOnlyValue || !alertTriggerEvents.isEmpty()) {
+                List<Alert> alerts = new ArrayList<Alert>(alertTriggerEvents.size());
 
                 for (AlertTriggerEvent alertTriggerEvent : alertTriggerEvents) {
                     alerts.add(alertDao.find(alertTriggerEvent.getAlertId(), false));
@@ -165,7 +165,7 @@ public class LogsPage extends WebPage {
             this.site = site;
             this.rule = rule;
             this.ruleCheckEvent = ruleCheckEvent;
-            this.alerts = Collections.unmodifiableList(alerts);
+            this.alerts = new ArrayList<Alert>(alerts);
         }
 
         public Site getSite() {
@@ -193,7 +193,7 @@ public class LogsPage extends WebPage {
         }
 
         public List<Alert> getAlerts() {
-            return alerts;
+            return Collections.unmodifiableList(alerts);
         }
     }
 }

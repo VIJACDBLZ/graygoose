@@ -5,7 +5,7 @@ import org.nocturne.validation.Validator;
 
 public class ConfirmPasswordValidator extends Validator {
 
-    private String password;
+    private final String password;
 
     public ConfirmPasswordValidator(String password) {
         this.password = password;

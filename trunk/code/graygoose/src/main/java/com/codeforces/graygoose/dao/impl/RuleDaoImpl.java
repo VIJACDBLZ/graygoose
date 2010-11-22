@@ -49,7 +49,7 @@ public class RuleDaoImpl extends BasicDaoImpl<Rule> implements RuleDao {
     @Cacheable
     @Override
     public Rule find(long id, boolean ignoreDeleted) {
-        return super.find(Rule.class, id);
+        return super.find(Rule.class, id, ignoreDeleted);
     }
 
     @Cacheable

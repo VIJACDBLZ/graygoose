@@ -52,6 +52,7 @@ public class SiteEditOrAddFrame extends ApplicationFrame {
         this.redirectPageClass = redirectPageClass;
     }
 
+    @SuppressWarnings({"MethodOverloadsMethodOfSuperclass"})
     public void setup(Class<? extends WebPage> redirectPageClass) {
         this.redirectPageClass = redirectPageClass;
     }
@@ -66,7 +67,7 @@ public class SiteEditOrAddFrame extends ApplicationFrame {
             put("id", site.getId());
             put("name", site.getName());
             put("url", site.getUrl());
-            put("rescanPeriod", "" + site.getRescanPeriodSeconds());
+            put("rescanPeriod", String.valueOf(site.getRescanPeriodSeconds()));
 
             put("ruleTypes", Rule.RuleType.values());
 
@@ -84,11 +85,11 @@ public class SiteEditOrAddFrame extends ApplicationFrame {
                     Alert alert = alertDao.find(ruleAlertRelation.getAlertId());
                     alerts.add(alert);
                     failCountByAlertIdAndRuleIdConcatenation.put(
-                            "" + alert.getId() + "#" + rule.getId(),
-                            "" + ruleAlertRelation.getMaxConsecutiveFailCount());
+                            String.valueOf(alert.getId()) + '#' + rule.getId(),
+                            String.valueOf(ruleAlertRelation.getMaxConsecutiveFailCount()));
                 }
 
-                alertsByRuleId.put("" + rule.getId(), alerts);
+                alertsByRuleId.put(String.valueOf(rule.getId()), alerts);
             }
 
             put("alertsByRuleId", alertsByRuleId);

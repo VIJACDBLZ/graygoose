@@ -67,6 +67,7 @@ import java.io.IOException;
  * @version $Id: TextBlock.java,v 1.17 2004/01/06 17:06:42 szegedia
  *          Exp $
  */
+@SuppressWarnings({"ALL"})
 public final class TextBlock extends TemplateElement {
     private static final char[] EMPTY_CHAR_ARRAY = new char[0];
     static final TextBlock EMPTY_BLOCK = new TextBlock

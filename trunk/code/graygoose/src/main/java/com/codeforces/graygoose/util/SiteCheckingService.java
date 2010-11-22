@@ -13,6 +13,7 @@ import java.util.*;
 @Singleton
 public class SiteCheckingService {
     private static final Logger logger = Logger.getLogger(SiteCheckingService.class);
+    private static final Object lock = new Object();
 
     @Inject
     private SiteDao siteDao;
@@ -35,27 +36,28 @@ public class SiteCheckingService {
     @Inject
     private AlertTriggerEventDao alertTriggerEventDao;
 
-    public synchronized void checkSites() {
-        logger.info("Start site checking procedures ...");
+    public void checkSites() {
         long currentTimeMillis = System.currentTimeMillis();
+        synchronized (lock) {
+            logger.info("Start site checking procedures ...");
+            logger.info("Retrieve list of the sites from data storage.");
+            List<Site> allSites = siteDao.findAll();
 
-        logger.info("Retrieve list of the sites from data storage.");
-        List<Site> allSites = siteDao.findAll();
+            ArrayList<Site> sitesToRescan = new ArrayList<Site>();
+            Map<Long, List<Rule>> rulesBySiteId = new HashMap<Long, List<Rule>>();
+            Map<Long, RuleCheckEvent> ruleCheckEventByRuleId = new HashMap<Long, RuleCheckEvent>();
 
-        ArrayList<Site> sitesToRescan = new ArrayList<Site>();
-        Map<Long, List<Rule>> rulesBySiteId = new HashMap<Long, List<Rule>>();
-        Map<Long, RuleCheckEvent> ruleCheckEventByRuleId = new HashMap<Long, RuleCheckEvent>();
+            logger.info("Fill list of the sites to rescan ...");
+            fillSitesToRescan(currentTimeMillis, allSites, sitesToRescan, rulesBySiteId);
 
-        logger.info("Fill list of the sites to rescan ...");
-        fillSitesToRescan(currentTimeMillis, allSites, sitesToRescan, rulesBySiteId);
+            if (sitesToRescan.isEmpty()) {
+                logger.info("There is no sites to rescan at this moment.");
+                return;
+            }
 
-        if (sitesToRescan.size() == 0) {
-            logger.info("There is no sites to rescan at this moment.");
-            return;
+            logger.info("Start to rescan sites ...");
+            processSitesToRescan(sitesToRescan, rulesBySiteId, ruleCheckEventByRuleId);
         }
-
-        logger.info("Start to rescan sites ...");
-        processSitesToRescan(sitesToRescan, rulesBySiteId, ruleCheckEventByRuleId);
     }
 
     private void fillSitesToRescan(long currentTimeMillis, List<Site> allSites,
@@ -68,7 +70,7 @@ public class SiteCheckingService {
             //Find rules for current site
             List<Rule> rules = ruleDao.findAllBySite(siteId);
 
-            boolean rescanNeeded = rules.size() > 0;
+            boolean rescanNeeded = !rules.isEmpty();
 
             //Check if no rescan needed for site
             for (Rule rule : rules) {
@@ -76,7 +78,7 @@ public class SiteCheckingService {
                 List<RuleCheckEvent> ruleCheckEventsForRescanInterval =
                         ruleCheckEventDao.findAllByRuleForPeriod(
                                 rule.getId(), siteRescanPeriodLowerBoundMillis, currentTimeMillis);
-                if (ruleCheckEventsForRescanInterval.size() > 0) {
+                if (!ruleCheckEventsForRescanInterval.isEmpty()) {
                     rescanNeeded = false;
                     break;
                 }
@@ -92,12 +94,13 @@ public class SiteCheckingService {
         }
     }
 
+    @SuppressWarnings({"OverlyLongMethod"})
     private void processSitesToRescan(ArrayList<Site> sitesToRescan, Map<Long, List<Rule>> rulesBySiteId,
                                       Map<Long, RuleCheckEvent> ruleCheckEventByRuleId) {
         enqueuePendingRuleCheckEvents(sitesToRescan, rulesBySiteId, ruleCheckEventByRuleId);
 
-        final int siteCount = sitesToRescan.size();
-        ArrayList<String> urlStrings = new ArrayList<String>(siteCount);
+        int siteCount = sitesToRescan.size();
+        List<String> urlStrings = new ArrayList<String>(siteCount);
 
         //Start to fetch URLs
         for (int siteIndex = 0; siteIndex < siteCount; ++siteIndex) {
@@ -126,7 +129,7 @@ public class SiteCheckingService {
                     ruleCheckEvent.setStatus(RuleCheckEvent.Status.SUCCEEDED);
                     RuleFailStatistics.resetConsecutiveFailCountByRuleId(ruleId);
                 } else {
-                    logger.warn("Rule check has been failed: " + errorMessage + ".");
+                    logger.warn("Rule check has been failed: " + errorMessage + '.');
 
                     ruleCheckEvent.setStatus(RuleCheckEvent.Status.FAILED);
                     ruleCheckEvent.setDescription(errorMessage);
@@ -160,7 +163,7 @@ public class SiteCheckingService {
         }
     }
 
-    private void triggerAlert(RuleCheckEvent ruleCheckEvent, Alert alert) {
+    private static void triggerAlert(RuleCheckEvent ruleCheckEvent, Alert alert) {
         if ("E-mail".equals(alert.getType())) {
             try {
                 MailUtil.sendMail(alert.getEmail(), "GrayGoose alert: " + alert.getName(),
@@ -183,10 +186,10 @@ public class SiteCheckingService {
     private void enqueuePendingRuleCheckEvents(List<Site> sitesToRescan, Map<Long, List<Rule>> rulesBySiteId,
                                                Map<Long, RuleCheckEvent> ruleCheckEventByRuleId) {
         for (Site site : sitesToRescan) {
-            final long siteId = site.getId();
+            long siteId = site.getId();
 
             for (Rule rule : rulesBySiteId.get(siteId)) {
-                final long ruleId = rule.getId();
+                long ruleId = rule.getId();
 
                 RuleCheckEvent ruleCheckEvent = new RuleCheckEvent(ruleId, siteId);
                 ruleCheckEventDao.insert(ruleCheckEvent);

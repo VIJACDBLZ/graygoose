@@ -67,4 +67,7 @@ public class SmsUtil {
 
         entry.addTime(when);
     }
+
+    private SmsUtil() {
+    }
 }

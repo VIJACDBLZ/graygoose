@@ -18,6 +18,7 @@ public abstract class WebPage extends UserPage {
 
     public abstract String getTitle();
 
+    @Override
     public void initializeAction() {
         super.initializeAction();
 

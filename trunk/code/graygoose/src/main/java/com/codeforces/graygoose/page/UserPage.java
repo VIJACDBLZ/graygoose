@@ -14,11 +14,11 @@ public abstract class UserPage extends ApplicationPage {
     @Inject
     private UserService userService;
 
-    public UserService getUserService() {
+    protected UserService getUserService() {
         return userService;
     }
 
-    public User getCurrentUser() {
+    protected User getCurrentUser() {
         return userService.getCurrentUser();
     }
 
@@ -28,13 +28,13 @@ public abstract class UserPage extends ApplicationPage {
 
         if (getCurrentUser() == null) {
             logger.info("User is not logged in, redirecting ...");
-            abortWithRedirect(getUserService().createLoginURL(getRequest().getRequestURI()));
+            abortWithRedirect(userService.createLoginURL(getRequest().getRequestURI()));
         }
 
         put("serverTime", new Date());
     }
 
-    public void setMessage(String message) {
+    protected void setMessage(String message) {
         putSession(MessageBoxFrame.MESSAGE_BOX_TEXT, message);
     }
 }

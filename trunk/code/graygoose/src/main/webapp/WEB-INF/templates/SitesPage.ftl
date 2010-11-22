@@ -16,27 +16,27 @@
     </tr>
     </thead>
     <tbody>
-    <#if sites?? && (sites?size > 0)>
-    <#list sites as site>
-    <tr>
-        <td style="text-align:right;">${site.id}</td>
-        <td style="text-align:left;">${site.name?html}</td>
-        <td style="text-align:left;"><a href="${site.url?html}">${site.url?html}</a></td>
-        <td>${site.rescanPeriodSeconds?int}</td>
-        <td>${site.creationTime?datetime}</td>
-        <td>
-            <a href="<@link name="SiteEditPage" id="${site.id}"/>">{{Edit}}</a>
-            <a href="#" class="delete-site-link" siteName="${site.name}" siteId="${site.id}">{{Delete}}</a>
-        </td>
-    </tr>
-    </#list>
-    <#else>
-    <tr>
-        <td colspan="6">
-            {{No sites}}
-        </td>
-    </tr>
-    </#if>
+        <#if sites?? && (sites?size > 0)>
+            <#list sites as site>
+            <tr>
+                <td style="text-align:right;">${site.id}</td>
+                <td style="text-align:left;">${site.name?html}</td>
+                <td style="text-align:left;"><a href="${site.url?html}">${site.url?html}</a></td>
+                <td>${site.rescanPeriodSeconds?int}</td>
+                <td>${site.creationTime?datetime}</td>
+                <td>
+                    <a href="<@link name="SiteEditPage" id="${site.id}"/>">{{Edit}}</a>
+                    <a href="#" class="delete-site-link" siteName="${site.name}" siteId="${site.id}">{{Delete}}</a>
+                </td>
+            </tr>
+            </#list>
+            <#else>
+            <tr>
+                <td colspan="6">
+                    {{No sites}}
+                </td>
+            </tr>
+        </#if>
     </tbody>
 </table>
 <script type="text/javascript">
@@ -56,4 +56,4 @@
         });
     });
 </script>
-        </@common.page>
+</@common.page>

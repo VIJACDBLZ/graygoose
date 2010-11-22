@@ -12,8 +12,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface InvalidateCache {
-    public static class Interceptor implements MethodInterceptor {
-        public Cache getCache() {
+    class Interceptor implements MethodInterceptor {
+        public static Cache getCache() {
             return Internal.cache;
         }
 

@@ -4,18 +4,18 @@
     <table>
         <tr>
             <td colspan="2" style="text-align:center;padding-bottom:1em;">
-                <#if edit>
+            <#if edit>
                 <h4>{{Edit Site Form}}</h4>
                 <#else>
-                <h4>{{Add Site Form}}</h4>
-                </#if>
+                    <h4>{{Add Site Form}}</h4>
+            </#if>
             </td>
         </tr>
         <form action="" method="post">
             <input type="hidden" name="action" value="<#if edit>edit<#else>add</#if>">
-            <#if id??>
+        <#if id??>
             <input type="hidden" name="id" value="${id!}">
-            </#if>
+        </#if>
 
             <tr>
                 <td class="field-name">
@@ -25,7 +25,7 @@
                     <input class="textbox" name="name" value="${name!?html}">
                 </td>
             </tr>
-            <@common.subscript error="${error__name!?html}"/>
+        <@common.subscript error="${error__name!?html}"/>
 
             <tr>
                 <td class="field-name">
@@ -35,7 +35,7 @@
                     <input class="textbox" name="url" value="${url!?html}">
                 </td>
             </tr>
-            <@common.subscript error="${error__url!?html}"/>
+        <@common.subscript error="${error__url!?html}"/>
 
             <tr>
                 <td class="field-name">
@@ -43,27 +43,27 @@
                 </td>
                 <td>
                     <select name="rescanPeriod">
-                        <#assign values=[60, 120, 300, 600]/>
-                        <#list values as value>
+                    <#assign values=[60, 120, 300, 600]/>
+                    <#list values as value>
                         <#if rescanPeriod?? && value?string==rescanPeriod>
-                        <option selected="selected" value="${value}">${value}</option>
-                        <#else>
-                        <option value="${value}">${value}</option>
+                            <option selected="selected" value="${value}">${value}</option>
+                            <#else>
+                                <option value="${value}">${value}</option>
                         </#if>
-                        </#list>
+                    </#list>
                     </select>
                     {{seconds}}
                 </td>
             </tr>
-            <@common.subscript error="${error__rescanPeriod!?html}"/>
+        <@common.subscript error="${error__rescanPeriod!?html}"/>
 
             <tr>
                 <td colspan="2" class="buttons">
-                    <#if edit>
+                <#if edit>
                     <input class="button" type="submit" value="{{Save}}">
                     <#else>
-                    <input class="button" type="submit" value="{{Add}}">
-                    </#if>
+                        <input class="button" type="submit" value="{{Add}}">
+                </#if>
                 </td>
             </tr>
         </form>
@@ -96,46 +96,48 @@
         </tr>
         </thead>
         <tbody>
-        <#if rules?? && (rules?size > 0)>
-        <#list rules as rule>
-        <tr id="rule${rule.id}">
-            <td style="text-align:right;">${rule.id}</td>
-            <td>${rule.ruleType?html}</td>
-            <td>
-                <#list rule.ruleType.propertyNames as propertyName>
-                <div style="text-align:left;"><label>${propertyName}: </label>${(rule.data[propertyName])!?html}</div>
+            <#if rules?? && (rules?size > 0)>
+                <#list rules as rule>
+                <tr id="rule${rule.id}">
+                    <td style="text-align:right;">${rule.id}</td>
+                    <td>${rule.ruleType?html}</td>
+                    <td>
+                        <#list rule.ruleType.propertyNames as propertyName>
+                            <div style="text-align:left;"><label>${propertyName}
+                                : </label>${(rule.data[propertyName])!?html}</div>
+                        </#list>
+                    </td>
+                    <td>${rule.creationTime?datetime}</td>
+                    <td>
+                        <p>
+                            <a href="#" class="attach-alert-link" rel="alert-attach-dialog" ruleId="${rule.id}">{{Attach
+                                alert}}</a>
+                        </p>
+                        <#list alertsByRuleId[rule.id?string] as alert>
+                            <p id="alert${alert.id}rule${rule.id}relation">
+                            ${alert.name} (id=${alert.id})
+                                on ${failCountByAlertIdAndRuleIdConcatenation[alert.id?string + "#" + rule.id?string]}
+                                fail(s)
+                                <a href="#" class="detach-alert-link" alertId="${alert.id}" ruleId="${rule.id}">
+                                    <img src="${home}/images/detach_alert.gif">
+                                </a>
+                            </p>
+                        </#list>
+                    </td>
+                    <td>
+                        <a href="#" class="edit-rule-link" rel="rule-add-edit-dialog" ruleId="${rule.id}">{{Edit}}</a>
+                        <a href="#" class="delete-rule-link" ruleId="${rule.id}">{{Delete}}</a>
+                        <a href="#" class="test-rule-link" rel="rule-test-dialog" ruleId="${rule.id}">{{Test}}</a>
+                    </td>
+                </tr>
                 </#list>
-            </td>
-            <td>${rule.creationTime?datetime}</td>
-            <td>
-                <p>
-                    <a href="#" class="attach-alert-link" rel="alert-attach-dialog" ruleId="${rule.id}">{{Attach
-                        alert}}</a>
-                </p>
-                <#list alertsByRuleId[rule.id?string] as alert>
-                <p id="alert${alert.id}rule${rule.id}relation">
-                    ${alert.name} (id=${alert.id})
-                    on ${failCountByAlertIdAndRuleIdConcatenation[alert.id?string + "#" + rule.id?string]} fail(s)
-                    <a href="#" class="detach-alert-link" alertId="${alert.id}" ruleId="${rule.id}">
-                        <img src="${home}/images/detach_alert.gif">
-                    </a>
-                </p>
-                </#list>
-            </td>
-            <td>
-                <a href="#" class="edit-rule-link" rel="rule-add-edit-dialog" ruleId="${rule.id}">{{Edit}}</a>
-                <a href="#" class="delete-rule-link" ruleId="${rule.id}">{{Delete}}</a>
-                <a href="#" class="test-rule-link" rel="rule-test-dialog" ruleId="${rule.id}">{{Test}}</a>
-            </td>
-        </tr>
-        </#list>
-        <#else>
-        <tr>
-            <td colspan="6">
-                {{No rules for this site}}
-            </td>
-        </tr>
-        </#if>
+                <#else>
+                <tr>
+                    <td colspan="6">
+                        {{No rules for this site}}
+                    </td>
+                </tr>
+            </#if>
         </tbody>
     </table>
 </div>
@@ -255,7 +257,7 @@
                         <select name="alertId">
                             <option value="">{{&lt;select value&gt;}}</option>
                             <#list alerts as alert>
-                            <option value="${alert.id}">${alert.name} (id=${alert.id})</option>
+                                <option value="${alert.id}">${alert.name} (id=${alert.id})</option>
                             </#list>
                         </select>
                     </td>
@@ -477,4 +479,4 @@
         });
     });
 </script>
-        </#if>
+</#if>

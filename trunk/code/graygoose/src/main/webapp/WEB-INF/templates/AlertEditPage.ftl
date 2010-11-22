@@ -2,4 +2,4 @@
 
 <@common.page>
 <@frame name="alertAddFrame"/>
-        </@common.page>
+</@common.page>

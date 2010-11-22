@@ -53,13 +53,13 @@ public class DashboardPage extends WebPage {
     }
 
     private List<SiteDto> getSiteDtos(List<Site> sites, TimeInterval currentTimeInterval) {
-        final long intervalEnd = System.currentTimeMillis();
-        final long intervalBegin = intervalEnd - currentTimeInterval.getValueMillis();
+        long intervalEnd = System.currentTimeMillis();
+        long intervalBegin = intervalEnd - currentTimeInterval.getValueMillis();
 
-        final Map<Long, Long> alertTriggerCountByRuleCheckId =
+        Map<Long, Long> alertTriggerCountByRuleCheckId =
                 getAlertTriggerCountByRuleCheckIdMap(intervalBegin, intervalEnd);
 
-        final List<SiteDto> siteDtos = new ArrayList<SiteDto>();
+        List<SiteDto> siteDtos = new ArrayList<SiteDto>();
 
         for (Site site : sites) {
             siteDtos.add(getSiteDto(site, intervalBegin, intervalEnd, alertTriggerCountByRuleCheckId));
@@ -70,7 +70,7 @@ public class DashboardPage extends WebPage {
 
     private SiteDto getSiteDto(Site site, long intervalBegin, long intervalEnd,
                                Map<Long, Long> alertTriggerCountByRuleCheckId) {
-        final List<Rule> rules = ruleDao.findAllBySite(site.getId());
+        List<Rule> rules = ruleDao.findAllBySite(site.getId());
 
         long maxTotalRuleCheckCount = 0;
         long totalRuleCheckCount = 0;
@@ -80,19 +80,19 @@ public class DashboardPage extends WebPage {
         long alertTriggerCount = 0;
 
         for (Rule rule : rules) {
-            final Long ruleId = rule.getId();
+            Long ruleId = rule.getId();
 
-            final List<Long> succeededCheckKeys = ruleCheckEventDao.findKeysByRuleAndStatusForPeriod(
+            List<Long> succeededCheckKeys = ruleCheckEventDao.findKeysByRuleAndStatusForPeriod(
                     ruleId, RuleCheckEvent.Status.SUCCEEDED, intervalBegin, intervalEnd);
 
-            final List<Long> pendingCheckKeys = ruleCheckEventDao.findKeysByRuleAndStatusForPeriod(
+            List<Long> pendingCheckKeys = ruleCheckEventDao.findKeysByRuleAndStatusForPeriod(
                     ruleId, RuleCheckEvent.Status.PENDING, intervalBegin, intervalEnd);
 
-            final List<Long> failedCheckKeys = ruleCheckEventDao.findKeysByRuleAndStatusForPeriod(
+            List<Long> failedCheckKeys = ruleCheckEventDao.findKeysByRuleAndStatusForPeriod(
                     ruleId, RuleCheckEvent.Status.FAILED, intervalBegin, intervalEnd);
 
             for (long failedCheckKey : failedCheckKeys) {
-                final Long alertCount = alertTriggerCountByRuleCheckId.get(failedCheckKey);
+                Long alertCount = alertTriggerCountByRuleCheckId.get(failedCheckKey);
                 if (alertCount != null) {
                     alertTriggerCount += alertCount;
                 }
@@ -102,7 +102,7 @@ public class DashboardPage extends WebPage {
             pendingRuleCheckCount += pendingCheckKeys.size();
             failedRuleCheckCount += failedCheckKeys.size();
 
-            final long currentRuleCheckCount =
+            long currentRuleCheckCount =
                     succeededCheckKeys.size() + pendingCheckKeys.size() + failedCheckKeys.size();
 
             if (currentRuleCheckCount > maxTotalRuleCheckCount) {
@@ -117,11 +117,11 @@ public class DashboardPage extends WebPage {
     }
 
     private Map<Long, Long> getAlertTriggerCountByRuleCheckIdMap(long intervalBegin, long intervalEnd) {
-        final Map<Long, Long> alertTriggerCountByRuleCheckId = new HashMap<Long, Long>();
-        final List<AlertTriggerEvent> alertTriggers = alertTriggerEventDao.findAllForPeriod(intervalBegin, intervalEnd);
+        Map<Long, Long> alertTriggerCountByRuleCheckId = new HashMap<Long, Long>();
+        List<AlertTriggerEvent> alertTriggers = alertTriggerEventDao.findAllForPeriod(intervalBegin, intervalEnd);
 
         for (AlertTriggerEvent alertTrigger : alertTriggers) {
-            final Long alertTriggerCount = alertTriggerCountByRuleCheckId.get(alertTrigger.getRuleCheckEventId());
+            Long alertTriggerCount = alertTriggerCountByRuleCheckId.get(alertTrigger.getRuleCheckEventId());
             alertTriggerCountByRuleCheckId.put(
                     alertTrigger.getRuleCheckEventId(), alertTriggerCount == null ? 1L : alertTriggerCount + 1L);
         }

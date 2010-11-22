@@ -52,7 +52,7 @@ public class RuleAlertRelationsDataPage extends DataPage {
     @Action("attachAlert")
     public void onAttachAlert() {
         try {
-            if (ruleAlertRelations == null || ruleAlertRelations.size() == 0) {
+            if (ruleAlertRelations == null || ruleAlertRelations.isEmpty()) {
                 RuleAlertRelation ruleAlertRelation = new RuleAlertRelation(ruleId, alertId, maxConsecutiveFailCount);
                 ruleAlertRelationDao.insert(ruleAlertRelation);
 
@@ -71,7 +71,7 @@ public class RuleAlertRelationsDataPage extends DataPage {
     @Action("detachAlert")
     public void onDetachAlert() {
         try {
-            if (ruleAlertRelations != null && ruleAlertRelations.size() != 0) {
+            if (ruleAlertRelations != null && !ruleAlertRelations.isEmpty()) {
                 for (RuleAlertRelation ruleAlertRelation : ruleAlertRelations) {
                     ruleAlertRelationDao.delete(ruleAlertRelation);
                 }

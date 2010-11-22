@@ -58,6 +58,7 @@ public class RulesDataPage extends DataPage {
         printTemplateMapAsStringsUsingJson("success", "error");
     }
 
+    @SuppressWarnings({"KeySetIterationMayUseEntrySet"})
     @Action("findById")
     public void onFindById() {
         try {
@@ -129,10 +130,10 @@ public class RulesDataPage extends DataPage {
     @Action("add")
     public void onAdd() {
         try {
-            Rule rule = new Rule(siteId, Rule.RuleType.valueOf(ruleType));
-            setupRuleProperties(rule);
+            Rule newRule = new Rule(siteId, Rule.RuleType.valueOf(ruleType));
+            setupRuleProperties(newRule);
 
-            ruleDao.insert(rule);
+            ruleDao.insert(newRule);
 
             put("success", true);
             setMessage($("Rule has been added."));

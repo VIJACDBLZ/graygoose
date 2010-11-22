@@ -17,29 +17,29 @@
     </tr>
     </thead>
     <tbody>
-    <#if alerts?? && (alerts?size > 0)>
-    <#list alerts as alert>
-    <tr>
-        <td style="text-align:right;">${alert.id}</td>
-        <td style="text-align:left;">${alert.name?html}</td>
-        <td style="text-align:left;">${alert.type?html}</td>
-        <td style="text-align:left;">${alert.email?html}</td>
-        <td><#if alert.password?? && (alert.password?length > 0)>{{*present*}}</#if></td>
-        <td>${alert.maxAlertCountPerHour?int}</td>
-        <td>
-            <a href="<@link name="AlertEditPage" id="${alert.id}"/>">{{Edit}}</a>
-            <a href="#" class="delete-alert-link" alertName="${alert.name}" alertId="${alert.id}">{{Delete}}</a>
-            <a href="#" class="test-alert-link" alertId="${alert.id}">{{Test}}</a>
-        </td>
-    </tr>
-    </#list>
-    <#else>
-    <tr>
-        <td colspan="7">
-            {{No alerts}}
-        </td>
-    </tr>
-    </#if>
+        <#if alerts?? && (alerts?size > 0)>
+            <#list alerts as alert>
+            <tr>
+                <td style="text-align:right;">${alert.id}</td>
+                <td style="text-align:left;">${alert.name?html}</td>
+                <td style="text-align:left;">${alert.type?html}</td>
+                <td style="text-align:left;">${alert.email?html}</td>
+                <td><#if alert.password?? && (alert.password?length > 0)>{{*present*}}</#if></td>
+                <td>${alert.maxAlertCountPerHour?int}</td>
+                <td>
+                    <a href="<@link name="AlertEditPage" id="${alert.id}"/>">{{Edit}}</a>
+                    <a href="#" class="delete-alert-link" alertName="${alert.name}" alertId="${alert.id}">{{Delete}}</a>
+                    <a href="#" class="test-alert-link" alertId="${alert.id}">{{Test}}</a>
+                </td>
+            </tr>
+            </#list>
+            <#else>
+            <tr>
+                <td colspan="7">
+                    {{No alerts}}
+                </td>
+            </tr>
+        </#if>
     </tbody>
 </table>
 <script type="text/javascript">
@@ -70,4 +70,4 @@
         });
     });
 </script>
-        </@common.page>
+</@common.page>

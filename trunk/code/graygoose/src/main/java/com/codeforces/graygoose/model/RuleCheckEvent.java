@@ -30,6 +30,7 @@ public class RuleCheckEvent extends AbstractEntity {
     @Persistent
     private boolean deleted;
 
+    @SuppressWarnings({"FieldMayBeFinal"})
     @Persistent
     private Date creationTime;
 
@@ -86,15 +87,16 @@ public class RuleCheckEvent extends AbstractEntity {
         this.description = description;
     }
 
+    @SuppressWarnings({"ReturnOfDateField"})
     public Date getCheckTime() {
         return checkTime;
     }
 
     public void setCheckTime(Date checkTime) {
-        this.checkTime = checkTime;
+        this.checkTime = new Date(checkTime.getTime());
     }
 
-    public static enum Status {
+    public enum Status {
         PENDING,
         SUCCEEDED,
         FAILED
@@ -110,6 +112,7 @@ public class RuleCheckEvent extends AbstractEntity {
         this.deleted = deleted;
     }
 
+    @SuppressWarnings({"ReturnOfDateField"})
     @Override
     public Date getCreationTime() {
         return creationTime;

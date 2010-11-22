@@ -3,14 +3,14 @@ package com.codeforces.graygoose.dao.cache;
 import com.google.inject.Singleton;
 import org.apache.log4j.Logger;
 
-import java.util.Hashtable;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Singleton
 public class InMemoryCache implements Cache {
     private static final Logger logger = Logger.getLogger(InMemoryCache.class);
 
-    private final Map<String, Object> storage = new Hashtable<String, Object>();
+    private final Map<String, Object> storage = new ConcurrentHashMap<String, Object>();
 
     @Override
     public Object get(String key) {

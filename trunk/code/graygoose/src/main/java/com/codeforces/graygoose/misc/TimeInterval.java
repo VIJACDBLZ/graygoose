@@ -18,7 +18,7 @@ public enum TimeInterval {
     private final String synonym;
     private final long valueMillis;
 
-    private TimeInterval(String synonym, Long valueMillis) {
+    TimeInterval(String synonym, Long valueMillis) {
         this.synonym = synonym;
         this.valueMillis = valueMillis;
     }
@@ -31,12 +31,13 @@ public enum TimeInterval {
         return valueMillis;
     }
 
+    @SuppressWarnings({"SameReturnValue"})
     public static TimeInterval getDefaultValue() {
         return TWENTY_FOUR_HOURS;
     }
 
     public static TimeInterval[] getTimeIntervalsOrderedByValueDesc() {
-        final TimeInterval[] timeIntervals = TimeInterval.values();
+        TimeInterval[] timeIntervals = TimeInterval.values();
 
         Arrays.sort(timeIntervals, new Comparator<TimeInterval>() {
             @Override

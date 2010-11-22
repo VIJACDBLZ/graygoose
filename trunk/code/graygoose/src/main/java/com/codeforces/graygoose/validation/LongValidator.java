@@ -40,10 +40,6 @@ public class LongValidator extends Validator {
      */
     @Override
     public void run(String value) throws ValidationException {
-        if (value == null || !value.matches("[-0-9]+")) {
-            throw new ValidationException($("Field should contain long integer value"));
-        }
-
         long numeric;
 
         try {

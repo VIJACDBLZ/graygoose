@@ -11,6 +11,7 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Future;
+import java.util.regex.Pattern;
 
 public class UrlUtil {
     private static final Logger logger = Logger.getLogger(UrlUtil.class);
@@ -21,6 +22,9 @@ public class UrlUtil {
     private static final String CHARSET_EQ = "charset=";
     private static final int CHARSET_EQ_LENGTH = CHARSET_EQ.length();
 
+    private static final Pattern HTML_SPLIT_PATTERN = Pattern.compile("[<>]");
+    private static final Pattern TRANSFORM_CHARSET_STRING_PATTERN = Pattern.compile("[\\r\\n\\s]+");
+
     public static Response fetchUrl(String urlString, int attemptCount) {
         return fetchUrls(Arrays.asList(urlString), attemptCount).get(0);
     }
@@ -30,14 +34,14 @@ public class UrlUtil {
             throw new IllegalArgumentException("Argument \'attemptCount\' can't be less than \'1\'.");
         }
 
-        final URLFetchService urlFetchService = URLFetchServiceFactory.getURLFetchService();
+        URLFetchService urlFetchService = URLFetchServiceFactory.getURLFetchService();
 
-        final int urlStringCount = urlStrings.size();
-        final String[] urlStringsInternal = new String[urlStrings.size()];
+        int urlStringCount = urlStrings.size();
+        String[] urlStringsInternal = new String[urlStrings.size()];
         urlStrings.toArray(urlStringsInternal);
 
-        final Response[] responses = new Response[urlStringCount];
-        final Future[] futureResponses = new Future[urlStringCount];
+        Response[] responses = new Response[urlStringCount];
+        Future[] futureResponses = new Future[urlStringCount];
 
         for (int attemptIndex = 0; attemptIndex < attemptCount; ++attemptIndex) {
             fetchUrlsInternal(urlFetchService, urlStringCount, urlStringsInternal, responses, futureResponses);
@@ -46,15 +50,15 @@ public class UrlUtil {
         return Arrays.asList(responses);
     }
 
-    private static void fetchUrlsInternal(
-            final URLFetchService urlFetchService, final int urlStringCount,
-            final String[] urlStringsInternal, final Response[] responses, final Future[] futureResponses) {
+    @SuppressWarnings({"OverlyLongMethod"})
+    private static void fetchUrlsInternal(URLFetchService urlFetchService, int urlStringCount,
+                                          String[] urlStringsInternal, Response[] responses, Future[] futureResponses) {
         for (int i = 0; i < urlStringCount; ++i) {
             if (responses[i] != null && responses[i].getCode() != -1) {
                 continue;
             }
 
-            final String urlString = urlStringsInternal[i];
+            String urlString = urlStringsInternal[i];
             logger.info("Start to fetch URL [" + urlString + "] ...");
 
             try {
@@ -62,7 +66,7 @@ public class UrlUtil {
                 httpRequest.setHeader(GRAYGOOSE_AGENT_HTTP_HEADER);
                 futureResponses[i] = urlFetchService.fetchAsync(httpRequest);
             } catch (MalformedURLException e) {
-                logger.error("Fetch error: " + e.getMessage() + ".");
+                logger.error("Fetch error: " + e.getMessage() + '.');
                 futureResponses[i] = null;
                 responses[i] = new Response(urlString, -1, new Text(e.getMessage()));
             }
@@ -73,10 +77,10 @@ public class UrlUtil {
                 continue;
             }
 
-            final Future futureResponse = futureResponses[i];
+            Future futureResponse = futureResponses[i];
 
             if (futureResponse != null) {
-                final String urlString = urlStringsInternal[i];
+                String urlString = urlStringsInternal[i];
 
                 try {
                     HTTPResponse httpResponse = (HTTPResponse) futureResponse.get();
@@ -84,7 +88,7 @@ public class UrlUtil {
 
                     int responseCode = httpResponse.getResponseCode();
                     Charset responseCharset = getHttpResponseCharset(httpResponse);
-                    final byte[] responseContent = httpResponse.getContent();
+                    byte[] responseContent = httpResponse.getContent();
 
                     String responseText = responseCharset == null ?
                             new String(responseContent) :
@@ -99,7 +103,7 @@ public class UrlUtil {
 
                     responses[i] = new Response(urlString, responseCode, new Text(responseText));
                 } catch (Exception e) {
-                    logger.error("Fetch error: " + e.getMessage() + ".");
+                    logger.error("Fetch error: " + e.getMessage() + '.');
                     responses[i] = new Response(urlString, -1, new Text(e.getMessage()));
                 }
             }
@@ -107,11 +111,11 @@ public class UrlUtil {
     }
 
     private static Charset getHttpResponseCharset(HTTPResponse httpResponse) {
-        final List<HTTPHeader> headers = httpResponse.getHeaders();
+        List<HTTPHeader> headers = httpResponse.getHeaders();
 
         for (HTTPHeader header : headers) {
-            final String headerName = header.getName();
-            final String headerValue = header.getValue();
+            String headerName = header.getName();
+            String headerValue = header.getValue();
 
             if (CONTENT_TYPE_HTTP_HEADER.equalsIgnoreCase(headerName)) {
                 return extractCharset(headerValue);
@@ -122,19 +126,19 @@ public class UrlUtil {
     }
 
     private static Charset extractCharset(String s) {
-        s = s.replaceAll("[\\r\\n\\s]+", "");
-        final int sLength = s.length();
-        final int charsetEqPos = s.indexOf(CHARSET_EQ);
+        s = TRANSFORM_CHARSET_STRING_PATTERN.matcher(s).replaceAll("");
+        int sLength = s.length();
+        int charsetEqPos = s.indexOf(CHARSET_EQ);
 
         if (charsetEqPos >= 0) {
-            final int charsetNamePos = charsetEqPos + CHARSET_EQ_LENGTH;
+            int charsetNamePos = charsetEqPos + CHARSET_EQ_LENGTH;
 
             int endPos = charsetNamePos;
             while (endPos < sLength && isCharsetCharacter(s.charAt(endPos))) {
                 ++endPos;
             }
 
-            final String charsetName = (endPos == -1 ?
+            String charsetName = (endPos == -1 ?
                     s.substring(charsetNamePos) :
                     s.substring(charsetNamePos, endPos)).trim();
 
@@ -160,7 +164,7 @@ public class UrlUtil {
 
         if (headEnd > 0) {
             String head = html.substring(0, headEnd);
-            String[] tokens = head.split("[<>]");
+            String[] tokens = HTML_SPLIT_PATTERN.split(head);
             for (String token : tokens) {
                 if (token.contains(CONTENT_TYPE_HTTP_HEADER)) {
                     return extractCharset(token);

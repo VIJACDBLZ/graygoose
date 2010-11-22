@@ -43,6 +43,7 @@ public class AlertEditOrAddFrame extends ApplicationFrame {
         this.redirectPageClass = redirectPageClass;
     }
 
+    @SuppressWarnings({"MethodOverloadsMethodOfSuperclass"})
     public void setup(Class<? extends WebPage> redirectPageClass) {
         this.redirectPageClass = redirectPageClass;
     }
@@ -60,7 +61,7 @@ public class AlertEditOrAddFrame extends ApplicationFrame {
                 put("email", alert.getEmail());
                 put("password", alert.getPassword());
                 put("passwordConfirmation", alert.getPassword());
-                put("maxAlertCountPerHour", "" + alert.getMaxAlertCountPerHour());
+                put("maxAlertCountPerHour", String.valueOf(alert.getMaxAlertCountPerHour()));
 
                 put("edit", true);
             }

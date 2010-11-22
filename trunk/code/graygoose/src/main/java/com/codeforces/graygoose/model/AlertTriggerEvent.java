@@ -18,6 +18,7 @@ public class AlertTriggerEvent extends AbstractEntity {
     @Persistent
     private boolean deleted;
 
+    @SuppressWarnings({"FieldMayBeFinal"})
     @Persistent
     private Date creationTime;
 
@@ -59,6 +60,7 @@ public class AlertTriggerEvent extends AbstractEntity {
         this.deleted = deleted;
     }
 
+    @SuppressWarnings({"ReturnOfDateField"})
     @Override
     public Date getCreationTime() {
         return creationTime;

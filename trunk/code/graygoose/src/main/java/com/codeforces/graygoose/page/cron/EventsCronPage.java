@@ -24,7 +24,7 @@ public class EventsCronPage extends CronPage {
     public void onRemoveOld() {
         logger.info("Retrieve old rule check events with \'SUCCESS\' status from the data storage.");
 
-        final List<RuleCheckEvent> oldEvents = ruleCheckEventDao.findAllByStatusForPeriod(
+        List<RuleCheckEvent> oldEvents = ruleCheckEventDao.findAllByStatusForPeriod(
                 RuleCheckEvent.Status.SUCCEEDED, 0, System.currentTimeMillis() - TimeConstants.MILLIS_PER_DAY);
 
         removeEvents(oldEvents);
@@ -34,13 +34,13 @@ public class EventsCronPage extends CronPage {
     public void onRemoveAll() {
         logger.info("Retrieve all rule check events from the data storage.");
 
-        final List<RuleCheckEvent> allEvents = ruleCheckEventDao.findAll();
+        List<RuleCheckEvent> allEvents = ruleCheckEventDao.findAll();
 
         removeEvents(allEvents);
     }
 
     private void removeEvents(List<RuleCheckEvent> ruleCheckEvents) {
-        final int oldEventCount = ruleCheckEvents.size();
+        int oldEventCount = ruleCheckEvents.size();
         logger.info(String.format("%d events was found.", oldEventCount));
 
         if (oldEventCount == 0) {
@@ -52,7 +52,7 @@ public class EventsCronPage extends CronPage {
             logger.info(String.format("Can't remove more than %d events per request.", MAX_EVENTS_TO_REMOVE));
         }
 
-        final Iterator<RuleCheckEvent> oldEventsIterator = ruleCheckEvents.iterator();
+        Iterator<RuleCheckEvent> oldEventsIterator = ruleCheckEvents.iterator();
         int removedEventCount = 0;
 
         while (oldEventsIterator.hasNext() && removedEventCount < MAX_EVENTS_TO_REMOVE) {

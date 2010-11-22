@@ -12,7 +12,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
 public class EncryptUtil {
-
     private static final byte[] RANDOM_SEED = {0x1a, 0x03, 0x52, 0x63, 0x04, 0x1b, 0x0c, 0x0d};
     private static final String XFORM = "DES/ECB/PKCS5Padding";
 

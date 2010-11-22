@@ -25,6 +25,7 @@ public class Rule extends AbstractEntity {
     @Persistent
     private boolean deleted;
 
+    @SuppressWarnings({"FieldMayBeFinal"})
     @Persistent
     private Date creationTime;
 
@@ -56,10 +57,12 @@ public class Rule extends AbstractEntity {
         this.ruleType = ruleType;
     }
 
+    @SuppressWarnings({"ReturnOfCollectionOrArrayField"})
     public SortedMap<String, String> getData() {
         return data;
     }
 
+    @SuppressWarnings({"AssignmentToCollectionOrArrayFieldFromParameter"})
     public void setData(SortedMap<String, String> data) {
         this.data = data;
     }
@@ -87,7 +90,7 @@ public class Rule extends AbstractEntity {
         return result.toString();
     }
 
-    public static enum RuleType {
+    public enum RuleType {
         RESPONSE_CODE_RULE_TYPE("RESP_CODE", "expectedCodes"),
         SUBSTRING_RULE_TYPE("SUBSTR", "expectedSubstring", "expectedSubstringMinimalCount", "expectedSubstringMaximalCount"),
         REGEX_RULE_TYPE("REGEX", "expectedRegex");
@@ -96,7 +99,7 @@ public class Rule extends AbstractEntity {
 
         private final String shortName;
 
-        private RuleType(String shortName, String... propertyNames) {
+        RuleType(String shortName, String... propertyNames) {
             this.shortName = shortName;
             this.propertyNames.addAll(Arrays.asList(propertyNames));
         }
@@ -120,6 +123,7 @@ public class Rule extends AbstractEntity {
         this.deleted = deleted;
     }
 
+    @SuppressWarnings({"ReturnOfDateField"})
     @Override
     public Date getCreationTime() {
         return creationTime;
