@@ -13,7 +13,7 @@ import java.util.*;
 @Singleton
 public class SiteCheckingService {
     private static final Logger logger = Logger.getLogger(SiteCheckingService.class);
-    private static final Object lock = new Object();
+    private static final Object LOCK = new Object();
 
     @Inject
     private SiteDao siteDao;
@@ -38,7 +38,7 @@ public class SiteCheckingService {
 
     public void checkSites() {
         long currentTimeMillis = System.currentTimeMillis();
-        synchronized (lock) {
+        synchronized (LOCK) {
             logger.info("Start site checking procedures ...");
             logger.info("Retrieve list of the sites from data storage.");
             List<Site> allSites = siteDao.findAll();
@@ -94,7 +94,7 @@ public class SiteCheckingService {
         }
     }
 
-    @SuppressWarnings({"OverlyLongMethod"})
+    @SuppressWarnings({"OverlyLongMethod", "ForLoopReplaceableByForEach"})
     private void processSitesToRescan(ArrayList<Site> sitesToRescan, Map<Long, List<Rule>> rulesBySiteId,
                                       Map<Long, RuleCheckEvent> ruleCheckEventByRuleId) {
         enqueuePendingRuleCheckEvents(sitesToRescan, rulesBySiteId, ruleCheckEventByRuleId);
@@ -129,7 +129,7 @@ public class SiteCheckingService {
                     ruleCheckEvent.setStatus(RuleCheckEvent.Status.SUCCEEDED);
                     RuleFailStatistics.resetConsecutiveFailCountByRuleId(ruleId);
                 } else {
-                    logger.warn("Rule check has been failed: " + errorMessage + '.');
+                    logger.warn("Rule check has been failed: [" + errorMessage + "].");
 
                     ruleCheckEvent.setStatus(RuleCheckEvent.Status.FAILED);
                     ruleCheckEvent.setDescription(errorMessage);
@@ -173,7 +173,7 @@ public class SiteCheckingService {
             }
         } else if ("Google calendar event".equals(alert.getType())) {
             try {
-                SmsUtil.send("GrayGoose alert: " + ruleCheckEvent.getDescription(), "",
+                SmsUtil.send("GrayGoose: " + ruleCheckEvent.getDescription(), "",
                         alert.getEmail(), alert.getPassword());
             } catch (SmsSendException e) {
                 throw new RuntimeException("Can't add Google calendar event: " + e.getMessage());

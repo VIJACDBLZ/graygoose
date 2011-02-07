@@ -48,7 +48,7 @@ public class ResponseCheckingService {
     }
 
     private static String getFormattedErrorString(Response response, Rule rule) {
-        return "Site " + response.getSiteUrl() + "; " + rule.toShortString();
+        return response.getSiteUrl() + "; " + rule.toShortString();
     }
 
     private static boolean checkResponseCode(Response response, Rule rule) {

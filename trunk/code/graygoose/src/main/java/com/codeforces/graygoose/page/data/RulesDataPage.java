@@ -169,7 +169,7 @@ public class RulesDataPage extends DataPage {
         Response response = UrlUtil.fetchUrl(getString("url"), 1);
 
         put("responseCode", response.getCode());
-        put("responseText", response.getText());
+        put("responseText", response.getText().getValue());
         put("success", true);
 
         printTemplateMapAsStringsUsingJson("success", "error", "responseCode", "responseText");
