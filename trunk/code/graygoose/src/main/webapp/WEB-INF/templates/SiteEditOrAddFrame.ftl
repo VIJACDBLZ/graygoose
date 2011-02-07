@@ -402,11 +402,12 @@
             var a = $(this);
             var ruleId = a.attr("ruleId");
             var url = $("input.textbox[name='url']").val();
+            var siteName = $("input.textbox[name='name']").val();
 
             a.smart_modal({show: function() {
                 $("#sm_content input[name='test']").click(function() {
                     $.post("<@link name="RulesDataPage"/>", {
-                        action: "checkRule", ruleId: ruleId, url: url,
+                        action: "checkRule", ruleId: ruleId, url: url, siteName: siteName,
                         responseCode: $("#sm_content input[name='responseCode']").val(),
                         responseText: $("#sm_content textarea[name='responseText']").val()
                     }, function(json) {

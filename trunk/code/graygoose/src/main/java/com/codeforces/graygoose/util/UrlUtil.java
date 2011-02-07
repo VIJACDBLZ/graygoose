@@ -68,7 +68,7 @@ public class UrlUtil {
             } catch (MalformedURLException e) {
                 logger.error("Fetch error: " + e.getMessage() + '.');
                 futureResponses[i] = null;
-                responses[i] = new Response(urlString, -1, new Text(urlString + "; " + e.getMessage()));
+                responses[i] = new Response(urlString, -1, new Text(e.getMessage()));
             }
         }
 
@@ -104,7 +104,7 @@ public class UrlUtil {
                     responses[i] = new Response(urlString, responseCode, new Text(responseText));
                 } catch (Exception e) {
                     logger.error("Fetch error: " + e.getMessage() + '.');
-                    responses[i] = new Response(urlString, -1, new Text(urlString + "; " + e.getMessage()));
+                    responses[i] = new Response(urlString, -1, new Text(e.getMessage()));
                 }
             }
         }

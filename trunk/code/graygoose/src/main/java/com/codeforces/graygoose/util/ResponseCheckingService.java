@@ -20,24 +20,24 @@ public class ResponseCheckingService {
     private static final Map<String, Set<Integer>> responseCodesByCodesString =
             new ConcurrentHashMap<String, Set<Integer>>();
 
-    public static String getErrorMessage(Response response, Rule rule) {
+    public static String getErrorMessage(String siteName, Response response, Rule rule) {
         logger.info("Check response from URL [" + response.getSiteUrl()
                 + "] for matching the rule [" + rule.toShortString() + "].");
 
         switch (rule.getRuleType()) {
             case RESPONSE_CODE_RULE_TYPE:
                 if (!checkResponseCode(response, rule)) {
-                    return getFormattedErrorString(response, rule);
+                    return getFormattedErrorString(siteName, rule);
                 }
                 break;
             case SUBSTRING_RULE_TYPE:
                 if (!checkSubstringCount(response, rule)) {
-                    return getFormattedErrorString(response, rule);
+                    return getFormattedErrorString(siteName, rule);
                 }
                 break;
             case REGEX_RULE_TYPE:
                 if (!checkRegexMatch(response, rule)) {
-                    return getFormattedErrorString(response, rule);
+                    return getFormattedErrorString(siteName, rule);
                 }
                 break;
             default:
@@ -47,8 +47,8 @@ public class ResponseCheckingService {
         return null;
     }
 
-    private static String getFormattedErrorString(Response response, Rule rule) {
-        return response.getSiteUrl() + "; " + rule.toShortString();
+    private static String getFormattedErrorString(String siteName, Rule rule) {
+        return siteName + ": " + rule.toShortString();
     }
 
     private static boolean checkResponseCode(Response response, Rule rule) {

@@ -121,8 +121,8 @@ public class SiteCheckingService {
                 RuleCheckEvent ruleCheckEvent = ruleCheckEventByRuleId.get(ruleId);
                 String errorMessage =
                         response.getCode() == -1 && !StringUtil.isEmptyOrNull(response.getText().getValue()) ?
-                                response.getText().getValue() :
-                                ResponseCheckingService.getErrorMessage(response, rule);
+                                site.getName() + ": " + response.getText().getValue() :
+                                ResponseCheckingService.getErrorMessage(site.getName(), response, rule);
 
                 ruleCheckEvent.setCheckTime(new Date());
                 if (errorMessage == null) {

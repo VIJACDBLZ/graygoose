@@ -150,7 +150,8 @@ public class RulesDataPage extends DataPage {
             Response response = new Response(
                     getString("url"), getInteger("responseCode"), new Text(getString("responseText")));
 
-            String errorMessage = ResponseCheckingService.getErrorMessage(response, ruleDao.find(getLong("ruleId")));
+            String errorMessage = ResponseCheckingService.getErrorMessage(
+                    getString("siteName"), response, ruleDao.find(getLong("ruleId")));
 
             if (errorMessage == null) {
                 put("success", true);
