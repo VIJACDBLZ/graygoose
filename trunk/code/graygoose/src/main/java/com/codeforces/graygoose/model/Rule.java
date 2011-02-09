@@ -91,7 +91,7 @@ public class Rule extends AbstractEntity {
     }
 
     public enum RuleType {
-        RESPONSE_CODE_RULE_TYPE("RESP_CODE", "expectedCodes"),
+        RESPONSE_CODE_RULE_TYPE("CODE", "expectedCodes"),
         SUBSTRING_RULE_TYPE("SUBSTR", "expectedSubstring", "expectedSubstringMinimalCount", "expectedSubstringMaximalCount"),
         REGEX_RULE_TYPE("REGEX", "expectedRegex");
 
