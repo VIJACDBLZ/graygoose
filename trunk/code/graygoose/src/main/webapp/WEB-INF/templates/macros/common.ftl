@@ -24,8 +24,8 @@
 <@frame name="messageBoxFrame"/>
 <div id="header">
 <@frame name="topMenuFrame"/>
-    <a href="${home}" title="{{Webmail home page}}">
-        <img src="${home}/images/logo.png" width="95" height="56"/>
+    <a href="${home}" title="{{Graygoose home page}}">
+        <img src="${home}/images/logo.png" width="98" height="84"/>
     </a>
 </div>
 <div id="content">
