@@ -1,13 +1,11 @@
 package com.codeforces.graygoose.util;
 
-import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
-import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
@@ -42,7 +40,7 @@ public class EncryptUtil {
             byte[] input = IOUtils.toByteArray(IOUtils.toInputStream(plainText));
             byte[] output = encrypt(input);
             return Hex.encodeHexString(output);
-        } catch (IOException e) {
+        } catch (Exception ignored) {
             return null;
         }
     }
@@ -52,7 +50,7 @@ public class EncryptUtil {
             byte[] input = Hex.decodeHex(cypherText.toCharArray());
             byte[] output = decrypt(input);
             return new String(output);
-        } catch (DecoderException e) {
+        } catch (Exception ignored) {
             return null;
         }
     }

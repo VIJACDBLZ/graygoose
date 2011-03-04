@@ -72,7 +72,7 @@ public class BasicDaoImpl<T extends AbstractEntity> implements BasicDao<T> {
             T entity = persistenceManager.getObjectById(clazz, id);
             persistenceManager.retrieve(entity);
             return entity == null || entity.isDeleted() && ignoreDeleted ? null : entity;
-        } catch (JDOObjectNotFoundException e) {
+        } catch (JDOObjectNotFoundException ignored) {
             return null;
         }
     }

@@ -41,7 +41,7 @@ public class Alert extends AbstractEntity {
         this.name = name;
         this.type = type;
         this.email = email;
-        this.password = password;
+        this.password = EncryptUtil.encrypt(password);
         this.maxAlertCountPerHour = maxAlertCountPerHour;
         deleted = false;
         creationTime = new Date();
