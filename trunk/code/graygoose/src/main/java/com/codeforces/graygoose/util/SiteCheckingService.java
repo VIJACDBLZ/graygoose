@@ -9,6 +9,7 @@ import org.nocturne.util.StringUtil;
 
 import javax.mail.MessagingException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Singleton
 public class SiteCheckingService {
@@ -36,8 +37,14 @@ public class SiteCheckingService {
     @Inject
     private AlertTriggerEventDao alertTriggerEventDao;
 
+    private Calendar calendar;
+
     public void checkSites() {
         long currentTimeMillis = System.currentTimeMillis();
+        calendar = new GregorianCalendar(TimeZone.getTimeZone("Europe/Moscow"));
+        long currentDayMinutes = calendar.get(Calendar.HOUR_OF_DAY) * TimeUnit.HOURS.toMinutes(1)
+                + calendar.get(Calendar.MINUTE);
+
         synchronized (LOCK) {
             logger.info("Start site checking procedures ...");
             logger.info("Retrieve list of the sites from data storage.");
@@ -48,7 +55,7 @@ public class SiteCheckingService {
             Map<Long, RuleCheckEvent> ruleCheckEventByRuleId = new HashMap<Long, RuleCheckEvent>();
 
             logger.info("Fill list of the sites to rescan ...");
-            fillSitesToRescan(currentTimeMillis, allSites, sitesToRescan, rulesBySiteId);
+            fillSitesToRescan(currentTimeMillis, currentDayMinutes, allSites, sitesToRescan, rulesBySiteId);
 
             if (sitesToRescan.isEmpty()) {
                 logger.info("There is no sites to rescan at this moment.");
@@ -60,10 +67,19 @@ public class SiteCheckingService {
         }
     }
 
-    private void fillSitesToRescan(long currentTimeMillis, List<Site> allSites,
+    private void fillSitesToRescan(long currentTimeMillis, long currentDayMinutes, List<Site> allSites,
                                    List<Site> sitesToRescan, Map<Long, List<Rule>> rulesBySiteId) {
         //Find sites to rescan and initialize data structures
         for (Site site : allSites) {
+            //check if we must not check site now
+            if (site.getPauseFromMinute() != null
+                    && ((site.getPauseFromMinute() <= currentDayMinutes && currentDayMinutes <= site.getPauseToMinute())
+                    || (site.getPauseFromMinute() > site.getPauseToMinute()
+                    && (currentDayMinutes <= site.getPauseToMinute()
+                    || site.getPauseFromMinute() <= currentDayMinutes)))){
+                continue;
+            }
+
             long siteId = site.getId();
             long siteRescanPeriodLowerBoundMillis = currentTimeMillis - site.getRescanPeriodSeconds() * 1000L;
 
@@ -98,7 +114,6 @@ public class SiteCheckingService {
     private void processSitesToRescan(ArrayList<Site> sitesToRescan, Map<Long, List<Rule>> rulesBySiteId,
                                       Map<Long, RuleCheckEvent> ruleCheckEventByRuleId) {
         enqueuePendingRuleCheckEvents(sitesToRescan, rulesBySiteId, ruleCheckEventByRuleId);
-
         int siteCount = sitesToRescan.size();
         List<String> urlStrings = new ArrayList<String>(siteCount);
 

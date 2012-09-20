@@ -39,6 +39,26 @@
 
             <tr>
                 <td class="field-name">
+                    {{Pause from (hh:mm)}}:
+                </td>
+                <td>
+                    <input class="textbox" name="pauseFromMinute" value="${pauseFromMinute!?html}">
+                </td>
+            </tr>
+        <@common.subscript error="${error__pauseFromMinute!?html}"/>
+
+            <tr>
+                <td class="field-name">
+                    {{Pause to (hh:mm)}}:
+                </td>
+                <td>
+                    <input class="textbox" name="pauseToMinute" value="${pauseToMinute!?html}">
+                </td>
+            </tr>
+        <@common.subscript error="${error__pauseToMinute!?html}"/>
+
+            <tr>
+                <td class="field-name">
                     {{Rescan period}}:
                 </td>
                 <td>

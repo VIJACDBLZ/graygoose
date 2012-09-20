@@ -53,7 +53,7 @@
                     ${event.site.id}
                     </a>
                 </td>
-                <td style="text-align:left;"><a href="${event.site.url!?html}">${event.site.name!?html}</a></td>
+                <td style="text-align:left;"><a href="${event.site.url!?html}" target="_blank">${event.site.name!?html}</a></td>
                 <td style="text-align:right;">${event.rule.id}</td>
                 <td>${event.rule.ruleType!?html}</td>
                 <td>
@@ -64,7 +64,7 @@
                     </#list>
                 </td>
                 <td><#if event.status!?html == "FAILED">
-                    <a href="<@link name="ResponsesDataPage"/>?action=downloadResponse&responseId=${event.responseId}">${event.status!?html}</a>
+                    <a href="<@link name="ResponsesDataPage"/>?action=downloadResponse&responseId=${event.responseId}" target="_blank">${event.status!?html}</a>
                     <#else>
                     ${event.status!?html}
                 </#if></td>

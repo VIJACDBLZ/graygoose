@@ -25,12 +25,21 @@ public class Site extends AbstractEntity {
     @Persistent
     private Date creationTime;
 
-    public Site(String name, String url, int rescanPeriodSeconds) {
+    @Persistent
+    private Long pauseFromMinute;
+
+    @Persistent
+    private Long pauseToMinute;
+
+    public Site(String name, String url, int rescanPeriodSeconds, Long pauseFromMinute, Long pauseToMinute) {
         this.name = name;
         this.url = url;
         this.rescanPeriodSeconds = rescanPeriodSeconds;
         deleted = false;
         creationTime = new Date();
+
+        this.pauseFromMinute = pauseFromMinute;
+        this.pauseToMinute = pauseToMinute;
     }
 
     @Override
@@ -76,5 +85,21 @@ public class Site extends AbstractEntity {
     @Override
     public Date getCreationTime() {
         return creationTime;
+    }
+
+    public Long getPauseFromMinute() {
+        return pauseFromMinute;
+    }
+
+    public Long getPauseToMinute() {
+        return pauseToMinute;
+    }
+
+    public void setPauseFromMinute(Long pauseFromMinute) {
+        this.pauseFromMinute = pauseFromMinute;
+    }
+
+    public void setPauseToMinute(Long pauseToMinute) {
+        this.pauseToMinute = pauseToMinute;
     }
 }

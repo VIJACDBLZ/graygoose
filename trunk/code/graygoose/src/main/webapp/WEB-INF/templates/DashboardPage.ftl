@@ -77,7 +77,7 @@
                     ${site.id}
                     </a>
                 </td>
-                <td style="text-align:left;"><a href="${site.url?html}">${site.name?html}</a></td>
+                <td style="text-align:left;"><a href="${site.url?html}" target="_blank">${site.name?html}</a></td>
                 <td>${site.ruleCount}</td>
                 <td>${site.maxTotalRuleCheckCount}</td>
                 <td>

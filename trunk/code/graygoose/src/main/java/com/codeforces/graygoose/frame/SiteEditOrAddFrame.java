@@ -9,7 +9,9 @@ import com.codeforces.graygoose.model.Rule;
 import com.codeforces.graygoose.model.RuleAlertRelation;
 import com.codeforces.graygoose.model.Site;
 import com.codeforces.graygoose.page.web.WebPage;
+import com.codeforces.graygoose.util.DateFormatter;
 import com.google.inject.Inject;
+import org.apache.commons.lang.StringUtils;
 import org.nocturne.annotation.Action;
 import org.nocturne.annotation.Parameter;
 import org.nocturne.annotation.Validate;
@@ -18,8 +20,18 @@ import org.nocturne.validation.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class SiteEditOrAddFrame extends ApplicationFrame {
+    public static final Validator timeValidator = new Validator() {
+        @Override
+        public void run(String value) throws ValidationException {
+            if (!StringUtils.isBlank(value) && !value.matches("^\\s*([0-1]?[0-9]|2[0-4])\\s*:\\s*([0-5][0-9])\\s*$")) {
+                throw new ValidationException($("Enter valid data."));
+            }
+        }
+    };
+
     @Parameter
     private Long id;
 
@@ -28,6 +40,12 @@ public class SiteEditOrAddFrame extends ApplicationFrame {
 
     @Parameter(stripMode = Parameter.StripMode.NONE)
     private String url;
+
+    @Parameter(stripMode = Parameter.StripMode.NONE)
+    private String pauseFromMinute;
+
+    @Parameter(stripMode = Parameter.StripMode.NONE)
+    private String pauseToMinute;
 
     @Parameter
     private int rescanPeriod;
@@ -46,6 +64,8 @@ public class SiteEditOrAddFrame extends ApplicationFrame {
 
     @Inject
     private RuleAlertRelationDao ruleAlertRelationDao;
+
+    private final DateFormatter dateFormatter = new DateFormatter();
 
     public void setup(long id, Class<? extends WebPage> redirectPageClass) {
         this.id = id;
@@ -68,6 +88,11 @@ public class SiteEditOrAddFrame extends ApplicationFrame {
             put("name", site.getName());
             put("url", site.getUrl());
             put("rescanPeriod", String.valueOf(site.getRescanPeriodSeconds()));
+
+            put("pauseFromMinute", site.getPauseFromMinute() == null ? ""
+                    : dateFormatter.longToStringHHMM(site.getPauseFromMinute()));
+            put("pauseToMinute", site.getPauseToMinute() == null ? ""
+                    : dateFormatter.longToStringHHMM(site.getPauseToMinute()));
 
             put("ruleTypes", Rule.RuleType.values());
 
@@ -130,6 +155,31 @@ public class SiteEditOrAddFrame extends ApplicationFrame {
         addValidator("rescanPeriod", new RequiredValidator());
         addValidator("rescanPeriod", new OptionValidator("60", "120", "300", "600"));
 
+        addValidator("pauseFromMinute", timeValidator);
+        addValidator("pauseToMinute", timeValidator);
+
+        final String fromMinute = getString("pauseFromMinute");
+        addValidator("pauseToMinute", new Validator() {
+            @Override
+            public void run(String toMinute) throws ValidationException {
+                if(StringUtils.isBlank(fromMinute) ^ StringUtils.isBlank(toMinute)){
+                    throw new ValidationException($("Pause fields must be both empty or both filled."));
+                }
+                if(StringUtils.isBlank(fromMinute)){
+                    return;
+                }
+
+                //checking that this is correct period
+
+                long fromMinuteValue = dateFormatter.stringHHMMToLong(fromMinute);
+                long toMinuteValue = dateFormatter.stringHHMMToLong(toMinute);
+
+                if (fromMinuteValue == toMinuteValue) {
+                    throw new ValidationException($("Pause to must not be equal to Pause from."));
+                }
+            }
+        });
+
         return runValidation();
     }
 
@@ -149,7 +199,10 @@ public class SiteEditOrAddFrame extends ApplicationFrame {
             site.setName(name);
             site.setRescanPeriodSeconds(rescanPeriod);
             site.setUrl(url);
-
+            site.setPauseFromMinute(StringUtils.isBlank(pauseFromMinute) ? null
+                    : dateFormatter.stringHHMMToLong(pauseFromMinute));
+            site.setPauseToMinute(StringUtils.isBlank(pauseToMinute) ? null
+                    : dateFormatter.stringHHMMToLong(pauseToMinute));
             siteDao.update(site);
             setMessage($("Site has been updated."));
         } else {
@@ -161,7 +214,12 @@ public class SiteEditOrAddFrame extends ApplicationFrame {
 
     @Action("add")
     public void onAdd() {
-        siteDao.insert(new Site(name, url, rescanPeriod));
+        //siteDao.insert(new Site(name, url, rescanPeriod));
+        siteDao.insert(new Site(name,
+                url,
+                rescanPeriod,
+                StringUtils.isBlank(pauseFromMinute) ? null : dateFormatter.stringHHMMToLong(pauseFromMinute),
+                StringUtils.isBlank(pauseToMinute) ? null : dateFormatter.stringHHMMToLong(pauseToMinute)));
         setMessage($("Site has been added."));
         abortWithRedirect(redirectPageClass);
     }

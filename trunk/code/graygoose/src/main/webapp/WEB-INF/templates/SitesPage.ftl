@@ -1,3 +1,4 @@
+<#-- @ftlvariable name="dateFormatter" type="com.codeforces.graygoose.util.DateFormatter" -->
 <#import "macros/common.ftl" as common/>
 
 <@common.page>
@@ -11,6 +12,7 @@
         <th>{{Name}}</th>
         <th>{{URL}}</th>
         <th>{{Rescan period, sec.}}</th>
+        <th>{{Period without scan}}</th>
         <th>{{Creation time}}</th>
         <th>{{Actions}}</th>
     </tr>
@@ -21,8 +23,16 @@
             <tr>
                 <td style="text-align:right;">${site.id}</td>
                 <td style="text-align:left;">${site.name?html}</td>
-                <td style="text-align:left;"><a href="${site.url?html}">${site.url?html}</a></td>
+                <td style="text-align:left;"><a href="${site.url?html}" target="_blank">${site.url?html}</a></td>
                 <td>${site.rescanPeriodSeconds?int}</td>
+                <td>
+                    <#if !(site.pauseFromMinute??)>
+                        None
+                    <#else >
+                        ${dateFormatter.longToStringHHMM(site.pauseFromMinute!"")} <b>-</b>
+                        ${dateFormatter.longToStringHHMM(site.pauseToMinute!"")}
+                    </#if>
+                </td>
                 <td>${site.creationTime?datetime}</td>
                 <td>
                     <a href="<@link name="SiteEditPage" id="${site.id}"/>">{{Edit}}</a>
@@ -30,12 +40,12 @@
                 </td>
             </tr>
             </#list>
-            <#else>
-            <tr>
-                <td colspan="6">
-                    {{No sites}}
-                </td>
-            </tr>
+        <#else>
+        <tr>
+            <td colspan="7">
+                {{No sites}}
+            </td>
+        </tr>
         </#if>
     </tbody>
 </table>
