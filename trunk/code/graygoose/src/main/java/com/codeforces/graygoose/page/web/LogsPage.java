@@ -12,7 +12,7 @@ import java.util.*;
 @Link("logs")
 public class LogsPage extends WebPage {
     private static final int DEFAULT_EVENT_LIMIT = 50;
-    private static final int MAX_EVENT_LIMIT = 200;
+    private static final int MAX_EVENT_LIMIT = 500;
 
     @Inject
     private RuleCheckEventDao ruleCheckEventDao;
