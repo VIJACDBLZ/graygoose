@@ -3,7 +3,7 @@
 <@common.page>
 
 <@common.colorBox clazz="white-box">
-<div style="font-size:11px;">
+<div style="font-size: 11px;">
     <strong>
         {{Rule check events for last}} ${currentTimeInterval.synonym!?html}.
         <#if events??>{{Records}}: ${events?size?int}.</#if>
@@ -30,7 +30,7 @@
 </div>
 </@common.colorBox>
 
-<table class="grid">
+<table class="grid" style="font-size: 10px;">
     <thead>
     <tr>
         <th>{{Site id}}</th>
