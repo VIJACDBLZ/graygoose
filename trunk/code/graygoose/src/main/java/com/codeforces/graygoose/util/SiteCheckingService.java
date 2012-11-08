@@ -137,7 +137,7 @@ public class SiteCheckingService {
                 String errorMessage =
                         response.getCode() == -1 && !StringUtil.isEmptyOrNull(response.getText().getValue()) ?
                                 site.getName() + ": " + response.getText().getValue() :
-                                ResponseCheckingService.getErrorMessage(site.getName(), response, rule);
+                                ResponseCheckingService.getErrorMessageOrNull(site.getName(), response, rule);
 
                 ruleCheckEvent.setCheckTime(new Date());
                 if (errorMessage == null) {

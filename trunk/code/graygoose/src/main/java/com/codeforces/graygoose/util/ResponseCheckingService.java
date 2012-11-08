@@ -18,42 +18,28 @@ public class ResponseCheckingService {
     private static final ConcurrentMap<String, Pattern> compiledPatternByRegexString = new ConcurrentHashMap<String, Pattern>();
     private static final ConcurrentMap<String, Set<Integer>> responseCodesByCodesString = new ConcurrentHashMap<String, Set<Integer>>();
 
-    @SuppressWarnings("OverlyComplexMethod")
-    public static String getErrorMessage(String siteName, Response response, Rule rule) {
+    public static String getErrorMessageOrNull(String siteName, Response response, Rule rule) {
         logger.info("Check response from URL [" + response.getSiteUrl()
                 + "] for matching the rule [" + rule.toShortString() + "].");
 
+        return hasError(response, rule) ? getFormattedErrorString(siteName, rule) : null;
+    }
+
+    private static boolean hasError(Response response, Rule rule) {
         switch (rule.getRuleType()) {
             case RESPONSE_CODE_RULE_TYPE:
-                if (!checkResponseCode(response, rule)) {
-                    return getFormattedErrorString(siteName, rule);
-                }
-                break;
+                return !checkResponseCode(response, rule);
             case SUBSTRING_RULE_TYPE:
-                if (!checkSubstringCount(response, rule)) {
-                    return getFormattedErrorString(siteName, rule);
-                }
-                break;
+                return !checkSubstringCount(response, rule);
             case REGEX_MATCH_RULE_TYPE:
-                if (!checkRegexMatch(response, rule)) {
-                    return getFormattedErrorString(siteName, rule);
-                }
-                break;
+                return !checkRegexMatch(response, rule);
             case REGEX_NOT_MATCH_RULE_TYPE:
-                if (!checkRegexNotMatch(response, rule)) {
-                    return getFormattedErrorString(siteName, rule);
-                }
-                break;
+                return !checkRegexNotMatch(response, rule);
             case REGEX_FIND_RULE_TYPE:
-                if (!checkRegexCount(response, rule)) {
-                    return getFormattedErrorString(siteName, rule);
-                }
-                break;
+                return !checkRegexCount(response, rule);
             default:
                 throw new UnsupportedOperationException("Unsupported rule type.");
         }
-
-        return null;
     }
 
     private static String getFormattedErrorString(String siteName, Rule rule) {
@@ -61,12 +47,7 @@ public class ResponseCheckingService {
     }
 
     private static boolean checkResponseCode(Response response, Rule rule) {
-        String codesString = rule.getProperty("expectedCodes");
-        //todo
-        if (codesString == null || codesString.isEmpty()) {
-            codesString = rule.getProperty("codes");
-        }
-
+        String codesString = rule.getProperty("codes");
         Set<Integer> responseCodes = responseCodesByCodesString.get(codesString);
 
         if (responseCodes == null) {
@@ -84,13 +65,13 @@ public class ResponseCheckingService {
         while (tokenizer.hasMoreTokens()) {
             String codeOrRange = tokenizer.nextToken().replace(" ", "");
 
-            int hyphenPositon = codeOrRange.indexOf('-');
+            int hyphenPosition = codeOrRange.indexOf('-');
 
-            if (hyphenPositon == -1) {
+            if (hyphenPosition == -1) {
                 responseCodes.add(Integer.parseInt(codeOrRange));
             } else {
-                int lowerRange = Integer.parseInt(codeOrRange.substring(0, hyphenPositon));
-                int upperRange = Integer.parseInt(codeOrRange.substring(hyphenPositon + 1, codeOrRange.length()));
+                int lowerRange = Integer.parseInt(codeOrRange.substring(0, hyphenPosition));
+                int upperRange = Integer.parseInt(codeOrRange.substring(hyphenPosition + 1, codeOrRange.length()));
 
                 for (int currentCode = lowerRange; currentCode <= upperRange; ++currentCode) {
                     responseCodes.add(currentCode);
