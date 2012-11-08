@@ -10,6 +10,7 @@ import com.codeforces.graygoose.model.RuleAlertRelation;
 import com.codeforces.graygoose.model.Site;
 import com.codeforces.graygoose.page.web.WebPage;
 import com.codeforces.graygoose.util.DateFormatter;
+import com.codeforces.graygoose.validation.HHMMTimeValidator;
 import com.google.inject.Inject;
 import org.apache.commons.lang.StringUtils;
 import org.nocturne.annotation.Action;
@@ -20,18 +21,8 @@ import org.nocturne.validation.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 public class SiteEditOrAddFrame extends ApplicationFrame {
-    public static final Validator timeValidator = new Validator() {
-        @Override
-        public void run(String value) throws ValidationException {
-            if (!StringUtils.isBlank(value) && !value.matches("^\\s*([0-1]?[0-9]|2[0-4])\\s*:\\s*([0-5][0-9])\\s*$")) {
-                throw new ValidationException($("Enter valid data."));
-            }
-        }
-    };
-
     @Parameter
     private Long id;
 
@@ -146,7 +137,7 @@ public class SiteEditOrAddFrame extends ApplicationFrame {
                     if (!"http".equalsIgnoreCase(protocol)) {
                         throw new ValidationException($("Only http protocol is supported."));
                     }
-                } catch (MalformedURLException e) {
+                } catch (MalformedURLException ignored) {
                     throw new ValidationException($("Enter valid URL."));
                 }
             }
@@ -155,17 +146,17 @@ public class SiteEditOrAddFrame extends ApplicationFrame {
         addValidator("rescanPeriod", new RequiredValidator());
         addValidator("rescanPeriod", new OptionValidator("60", "120", "300", "600"));
 
-        addValidator("pauseFromMinute", timeValidator);
-        addValidator("pauseToMinute", timeValidator);
+        addValidator("pauseFromMinute", HHMMTimeValidator.getInstance());
+        addValidator("pauseToMinute", HHMMTimeValidator.getInstance());
 
         final String fromMinute = getString("pauseFromMinute");
         addValidator("pauseToMinute", new Validator() {
             @Override
             public void run(String toMinute) throws ValidationException {
-                if(StringUtils.isBlank(fromMinute) ^ StringUtils.isBlank(toMinute)){
+                if (StringUtils.isBlank(fromMinute) ^ StringUtils.isBlank(toMinute)) {
                     throw new ValidationException($("Pause fields must be both empty or both filled."));
                 }
-                if(StringUtils.isBlank(fromMinute)){
+                if (StringUtils.isBlank(fromMinute)) {
                     return;
                 }
 

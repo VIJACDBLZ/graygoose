@@ -174,7 +174,9 @@
                             <option value="">{{&lt;select value&gt;}}</option>
                             <option value="RESPONSE_CODE_RULE_TYPE">{{Check response code}}</option>
                             <option value="SUBSTRING_RULE_TYPE">{{Check by substring}}</option>
-                            <option value="REGEX_RULE_TYPE">{{Check by regex}}</option>
+                            <option value="REGEX_MATCH_RULE_TYPE">{{Check by regex (matches)}}</option>
+                            <option value="REGEX_NOT_MATCH_RULE_TYPE">{{Check by regex (not matches)}}</option>
+                            <option value="REGEX_FIND_RULE_TYPE">{{Check by regex (occurrence count)}}</option>
                         </select>
                     </td>
                 </tr>
@@ -185,47 +187,83 @@
 
                 <tr class="RESPONSE_CODE_RULE_TYPE typeRow">
                     <td class="field-name">{{Expected codes}}:</td>
-                    <td><input name="expectedCodes" value="${expectedCodes!?html}"></td>
+                    <td><input name="codes" value="${codes!?html}"></td>
                 </tr>
                 <tr class="RESPONSE_CODE_RULE_TYPE typeRow">
                     <td>&nbsp;</td>
-                    <td class="error under" errorVar="error__expectedCodes"></td>
+                    <td class="error under" errorVar="error__codes"></td>
                 </tr>
 
                 <tr class="SUBSTRING_RULE_TYPE typeRow">
                     <td class="field-name">{{Expected substring}}:</td>
-                    <td><input name="expectedSubstring" value="${expectedSubstring!?html}"></td>
+                    <td><input name="substring" value="${substring!?html}"></td>
                 </tr>
                 <tr class="SUBSTRING_RULE_TYPE typeRow">
                     <td>&nbsp;</td>
-                    <td class="error under" errorVar="error__expectedSubstring"></td>
+                    <td class="error under" errorVar="error__substring"></td>
                 </tr>
 
                 <tr class="SUBSTRING_RULE_TYPE typeRow">
                     <td class="field-name">{{Minimal count}}:</td>
-                    <td><input name="expectedSubstringMinimalCount" value="${expectedSubstringMinimalCount!?html}"></td>
+                    <td><input name="substringMinCount" value="${substringMinCount!?html}"></td>
                 </tr>
                 <tr class="SUBSTRING_RULE_TYPE typeRow">
                     <td>&nbsp;</td>
-                    <td class="error under" errorVar="error__expectedSubstringMinimalCount"></td>
+                    <td class="error under" errorVar="error__substringMinCount"></td>
                 </tr>
 
                 <tr class="SUBSTRING_RULE_TYPE typeRow">
                     <td class="field-name">{{Maximal count}}:</td>
-                    <td><input name="expectedSubstringMaximalCount" value="${expectedSubstringMaximalCount!?html}"></td>
+                    <td><input name="substringMaxCount" value="${substringMaxCount!?html}"></td>
                 </tr>
                 <tr class="SUBSTRING_RULE_TYPE typeRow">
                     <td>&nbsp;</td>
-                    <td class="error under" errorVar="error__expectedSubstringMaximalCount"></td>
+                    <td class="error under" errorVar="error__substringMaxCount"></td>
                 </tr>
 
-                <tr class="REGEX_RULE_TYPE typeRow">
+                <tr class="REGEX_MATCH_RULE_TYPE typeRow">
                     <td class="field-name">{{Regex}}:</td>
-                    <td><input name="expectedRegex" value="${expectedRegex!?html}"></td>
+                    <td><input name="matchPattern" value="${matchPattern!?html}"></td>
                 </tr>
-                <tr class="REGEX_RULE_TYPE typeRow">
+                <tr class="REGEX_MATCH_RULE_TYPE typeRow">
                     <td>&nbsp;</td>
-                    <td class="error under" errorVar="error__expectedRegex"></td>
+                    <td class="error under" errorVar="error__matchPattern"></td>
+                </tr>
+
+                <tr class="REGEX_NOT_MATCH_RULE_TYPE typeRow">
+                    <td class="field-name">{{Regex}}:</td>
+                    <td><input name="notMatchPattern" value="${notMatchPattern!?html}"></td>
+                </tr>
+                <tr class="REGEX_NOT_MATCH_RULE_TYPE typeRow">
+                    <td>&nbsp;</td>
+                    <td class="error under" errorVar="error__notMatchPattern"></td>
+                </tr>
+
+                <tr class="REGEX_FIND_RULE_TYPE typeRow">
+                    <td class="field-name">{{Regex}}:</td>
+                    <td><input name="findPattern" value="${findPattern!?html}"></td>
+                </tr>
+                <tr class="REGEX_FIND_RULE_TYPE typeRow">
+                    <td>&nbsp;</td>
+                    <td class="error under" errorVar="error__findPattern"></td>
+                </tr>
+
+                <tr class="REGEX_FIND_RULE_TYPE typeRow">
+                    <td class="field-name">{{Minimal count}}:</td>
+                    <td><input name="patternMinCount" value="${patternMinCount!?html}"></td>
+                </tr>
+                <tr class="REGEX_FIND_RULE_TYPE typeRow">
+                    <td>&nbsp;</td>
+                    <td class="error under" errorVar="error__patternMinCount"></td>
+                </tr>
+
+                <tr class="REGEX_FIND_RULE_TYPE typeRow">
+                    <td class="field-name">{{Maximal count}}:</td>
+                    <td><input name="patternMaxCount" value="${patternMaxCount!?html}"></td>
+                </tr>
+                <tr class="REGEX_FIND_RULE_TYPE typeRow">
+                    <td>&nbsp;</td>
+                    <td class="error under" errorVar="error__patternMaxCount"></td>
                 </tr>
 
                 <tr>

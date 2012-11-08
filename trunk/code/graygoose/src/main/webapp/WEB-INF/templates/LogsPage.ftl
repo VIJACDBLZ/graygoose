@@ -30,7 +30,7 @@
 </div>
 </@common.colorBox>
 
-<table class="grid" style="font-size: 10px;">
+<table class="grid">
     <thead>
     <tr>
         <th>{{Site id}}</th>

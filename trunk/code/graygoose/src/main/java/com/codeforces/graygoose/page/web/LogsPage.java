@@ -115,7 +115,7 @@ public class LogsPage extends WebPage {
 
         try {
             return RuleCheckEvent.Status.valueOf(this.status);
-        } catch (RuntimeException e) {
+        } catch (RuntimeException ignored) {
             return null;
         }
     }
@@ -123,7 +123,7 @@ public class LogsPage extends WebPage {
     private TimeInterval getCurrentTimeIntervalValue() {
         try {
             return TimeInterval.valueOf(timeInterval);
-        } catch (RuntimeException e) {
+        } catch (RuntimeException ignored) {
             return TimeInterval.getDefaultValue();
         }
     }

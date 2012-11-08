@@ -20,7 +20,7 @@ public class Rule extends AbstractEntity {
      * Type settings can be accessed via <code>(String[]) ruleType.getPropertyNames()</code> function call.
      */
     @Persistent(serialized = "true")
-    private SortedMap<String, String> data = new TreeMap<String, String>();
+    private Map<String, String> data = new LinkedHashMap<String, String>();
 
     @Persistent
     private boolean deleted;
@@ -58,12 +58,12 @@ public class Rule extends AbstractEntity {
     }
 
     @SuppressWarnings({"ReturnOfCollectionOrArrayField"})
-    public SortedMap<String, String> getData() {
+    public Map<String, String> getData() {
         return data;
     }
 
     @SuppressWarnings({"AssignmentToCollectionOrArrayFieldFromParameter"})
-    public void setData(SortedMap<String, String> data) {
+    public void setData(Map<String, String> data) {
         this.data = data;
     }
 
@@ -91,11 +91,13 @@ public class Rule extends AbstractEntity {
     }
 
     public enum RuleType {
-        RESPONSE_CODE_RULE_TYPE("CODE", "expectedCodes"),
-        SUBSTRING_RULE_TYPE("SUBSTR", "expectedSubstring", "expectedSubstringMinimalCount", "expectedSubstringMaximalCount"),
-        REGEX_RULE_TYPE("REGEX", "expectedRegex");
+        RESPONSE_CODE_RULE_TYPE("CODE", "codes"),
+        SUBSTRING_RULE_TYPE("SUBSTR", "substring", "substringMinCount", "substringMaxCount"),
+        REGEX_MATCH_RULE_TYPE("REGEX_MATCH", "matchPattern"),
+        REGEX_NOT_MATCH_RULE_TYPE("REGEX_NOT_MATCH", "notMatchPattern"),
+        REGEX_FIND_RULE_TYPE("REGEX_FIND", "findPattern", "patternMinCount", "patternMaxCount");
 
-        private final SortedSet<String> propertyNames = new TreeSet<String>();
+        private final Set<String> propertyNames = new LinkedHashSet<String>();
 
         private final String shortName;
 
@@ -105,7 +107,7 @@ public class Rule extends AbstractEntity {
         }
 
         public Set<String> getPropertyNames() {
-            return Collections.unmodifiableSortedSet(propertyNames);
+            return Collections.unmodifiableSet(propertyNames);
         }
 
         public String getShortName() {

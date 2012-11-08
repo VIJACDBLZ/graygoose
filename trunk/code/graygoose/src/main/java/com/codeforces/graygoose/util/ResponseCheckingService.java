@@ -5,21 +5,20 @@ import com.codeforces.graygoose.model.Rule;
 import org.apache.log4j.Logger;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ResponseCheckingService {
     private static final Logger logger = Logger.getLogger(ResponseCheckingService.class);
 
-    private static final Map<String, Pattern> compiledPatternByRegexString =
-            new ConcurrentHashMap<String, Pattern>();
+    private static final ConcurrentMap<String, Pattern> compiledPatternByRegexString = new ConcurrentHashMap<String, Pattern>();
+    private static final ConcurrentMap<String, Set<Integer>> responseCodesByCodesString = new ConcurrentHashMap<String, Set<Integer>>();
 
-    private static final Map<String, Set<Integer>> responseCodesByCodesString =
-            new ConcurrentHashMap<String, Set<Integer>>();
-
+    @SuppressWarnings("OverlyComplexMethod")
     public static String getErrorMessage(String siteName, Response response, Rule rule) {
         logger.info("Check response from URL [" + response.getSiteUrl()
                 + "] for matching the rule [" + rule.toShortString() + "].");
@@ -35,8 +34,18 @@ public class ResponseCheckingService {
                     return getFormattedErrorString(siteName, rule);
                 }
                 break;
-            case REGEX_RULE_TYPE:
+            case REGEX_MATCH_RULE_TYPE:
                 if (!checkRegexMatch(response, rule)) {
+                    return getFormattedErrorString(siteName, rule);
+                }
+                break;
+            case REGEX_NOT_MATCH_RULE_TYPE:
+                if (!checkRegexNotMatch(response, rule)) {
+                    return getFormattedErrorString(siteName, rule);
+                }
+                break;
+            case REGEX_FIND_RULE_TYPE:
+                if (!checkRegexCount(response, rule)) {
                     return getFormattedErrorString(siteName, rule);
                 }
                 break;
@@ -53,6 +62,11 @@ public class ResponseCheckingService {
 
     private static boolean checkResponseCode(Response response, Rule rule) {
         String codesString = rule.getProperty("expectedCodes");
+        //todo
+        if (codesString == null || codesString.isEmpty()) {
+            codesString = rule.getProperty("codes");
+        }
+
         Set<Integer> responseCodes = responseCodesByCodesString.get(codesString);
 
         if (responseCodes == null) {
@@ -89,7 +103,7 @@ public class ResponseCheckingService {
 
     private static boolean checkSubstringCount(Response response, Rule rule) {
         String text = response.getText().getValue();
-        String substring = rule.getProperty("expectedSubstring");
+        String substring = rule.getProperty("substring");
 
         int matchCount = 0;
         int position = 0;
@@ -99,22 +113,55 @@ public class ResponseCheckingService {
             position += substring.length();
         }
 
-        return rule.getPropertyAsInteger("expectedSubstringMinimalCount") <= matchCount
-                && matchCount <= rule.getPropertyAsInteger("expectedSubstringMaximalCount");
+        return rule.getPropertyAsInteger("substringMinCount") <= matchCount
+                && matchCount <= rule.getPropertyAsInteger("substringMaxCount");
     }
 
     private static boolean checkRegexMatch(Response response, Rule rule) {
-        String regexString = rule.getProperty("expectedRegex");
+        String regexString = rule.getProperty("matchPattern");
         Pattern pattern = compiledPatternByRegexString.get(regexString);
 
         if (pattern == null) {
             pattern = Pattern.compile(regexString);
-            compiledPatternByRegexString.put(regexString, pattern);
+            compiledPatternByRegexString.putIfAbsent(regexString, pattern);
         }
 
         return pattern.matcher(response.getText().getValue()).matches();
     }
 
+    private static boolean checkRegexNotMatch(Response response, Rule rule) {
+        String regexString = rule.getProperty("notMatchPattern");
+        Pattern pattern = compiledPatternByRegexString.get(regexString);
+
+        if (pattern == null) {
+            pattern = Pattern.compile(regexString);
+            compiledPatternByRegexString.putIfAbsent(regexString, pattern);
+        }
+
+        return !pattern.matcher(response.getText().getValue()).matches();
+    }
+
+    private static boolean checkRegexCount(Response response, Rule rule) {
+        String regexString = rule.getProperty("findPattern");
+        Pattern pattern = compiledPatternByRegexString.get(regexString);
+
+        if (pattern == null) {
+            pattern = Pattern.compile(regexString);
+            compiledPatternByRegexString.putIfAbsent(regexString, pattern);
+        }
+
+        Matcher matcher = pattern.matcher(response.getText().getValue());
+        int matchCount = 0;
+
+        while (matcher.find()) {
+            ++matchCount;
+        }
+
+        return rule.getPropertyAsInteger("patternMinCount") <= matchCount
+                && matchCount <= rule.getPropertyAsInteger("patternMaxCount");
+    }
+
     private ResponseCheckingService() {
+        throw new UnsupportedOperationException();
     }
 }
