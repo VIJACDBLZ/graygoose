@@ -6,7 +6,8 @@ import com.google.appengine.api.users.UserService;
 import com.google.inject.Inject;
 import org.apache.log4j.Logger;
 
-import java.util.Date;
+import java.text.DateFormat;
+import java.util.*;
 
 public abstract class UserPage extends ApplicationPage {
     private static final Logger logger = Logger.getLogger(UserPage.class);
@@ -31,7 +32,9 @@ public abstract class UserPage extends ApplicationPage {
             abortWithRedirect(userService.createLoginURL(getRequest().getRequestURI()));
         }
 
-        put("serverTime", new Date());
+        DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
+        dateFormat.setTimeZone(TimeZone.getTimeZone("Europe/Moscow"));
+        put("serverTime", dateFormat.format(new Date()));
     }
 
     protected void setMessage(String message) {

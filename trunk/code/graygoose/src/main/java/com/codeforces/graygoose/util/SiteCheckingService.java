@@ -37,11 +37,9 @@ public class SiteCheckingService {
     @Inject
     private AlertTriggerEventDao alertTriggerEventDao;
 
-    private Calendar calendar;
-
     public void checkSites() {
         long currentTimeMillis = System.currentTimeMillis();
-        calendar = new GregorianCalendar(TimeZone.getTimeZone("Europe/Moscow"));
+        Calendar calendar = new GregorianCalendar(TimeZone.getTimeZone("Europe/Moscow"));
         long currentDayMinutes = calendar.get(Calendar.HOUR_OF_DAY) * TimeUnit.HOURS.toMinutes(1)
                 + calendar.get(Calendar.MINUTE);
 

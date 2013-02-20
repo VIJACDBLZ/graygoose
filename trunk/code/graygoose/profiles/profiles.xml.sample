@@ -29,6 +29,8 @@
                     GAE project), used as "from" for emails from Graygoose.
                 -->
                 <mail.from>sample@gmail.com</mail.from>
+
+                <time-zone>Europe/Moscow</time-zone>
             </properties>
         </profile>
     </profiles>

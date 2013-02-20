@@ -1,3 +1,4 @@
+<#-- @ftlvariable name="serverTime" type="java.lang.String" -->
 <#setting url_escaping_charset='UTF-8'>
 <#macro page>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
@@ -40,7 +41,7 @@
     <br/>
     <a href="{0}">Graygoose</a>
     <br/>
-    {{Server time}}: ${serverTime!?datetime}
+    {{Server time}}: ${serverTime!?html}
 </@caption>
 </div>
 </body>
