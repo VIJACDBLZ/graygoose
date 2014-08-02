@@ -2,22 +2,22 @@
 <profilesXml>
     <profiles>
         <profile>
-            <id>development-settings</id>
+            <id>profile</id>
             <properties>
-                <development.home>P:/spamforces/code</development.home>
-                <!--  <development.home>Z:/Projects/spamforces/code</development.home>-->
+                <development.home>P:/graygoose/code/graygoose</development.home>
                 <nocturne.debug>true</nocturne.debug>
-                <nocturne.templates-path>${development.home}/src/main/webapp/WEB-INF/templates</nocturne.templates-path>
-                <logging.path>${development.home}/spamforces.log</logging.path>
-                <database.url>jdbc:mysql://212.193.33.41/spamforces-dev?useUnicode=true&amp;characterSetResults=UTF-8&amp;characterEncoding=UTF-8</database.url>
+                <nocturne.template-paths>${development.home}/src/main/webapp/WEB-INF/templates</nocturne.template-paths>
+                <logging.path>${development.home}/graygoose.log</logging.path>
+                <database.url>jdbc:mysql://?/graygoose?useUnicode=true&amp;characterSetResults=UTF-8&amp;characterEncoding=UTF-8</database.url>
                 <database.driver>com.mysql.jdbc.Driver</database.driver>
                 <database.user>?</database.user>
                 <database.password>?</database.password>
                 <timezone>Europe/Moscow</timezone>
+                <mail.from>sample@gmail.com</mail.from>
             </properties>
         </profile>
     </profiles>
     <activeProfiles>
-        <activeProfile>development-settings</activeProfile>
+        <activeProfile>profile</activeProfile>
     </activeProfiles>
 </profilesXml>
