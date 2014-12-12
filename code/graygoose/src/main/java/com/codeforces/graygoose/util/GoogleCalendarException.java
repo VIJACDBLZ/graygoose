@@ -1,8 +1,8 @@
 package com.codeforces.graygoose.util;
 
 @SuppressWarnings({"DeserializableClassInSecureContext"})
-public class SmsSendException extends Exception {
-    public SmsSendException(String message, Throwable cause) {
+public class GoogleCalendarException extends Exception {
+    public GoogleCalendarException(String message, Throwable cause) {
         super(message, cause);
     }
 }

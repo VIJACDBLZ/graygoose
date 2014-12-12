@@ -50,7 +50,7 @@ public class SiteCheckingService {
             logger.info("Retrieve list of the sites from data storage.");
             List<Site> allSites = siteDao.findAll();
 
-            ArrayList<Site> sitesToRescan = new ArrayList<>();
+            List<Site> sitesToRescan = new ArrayList<>();
             Map<Long, List<Rule>> rulesBySiteId = new HashMap<>();
             Map<Long, RuleCheckEvent> ruleCheckEventByRuleId = new HashMap<>();
 
@@ -181,22 +181,28 @@ public class SiteCheckingService {
     }
 
     private static void triggerAlert(RuleCheckEvent ruleCheckEvent, Alert alert) {
-        if ("E-mail".equals(alert.getType())) {
+        if (Alert.E_MAIL_ALERT_TYPE.equals(alert.getType())) {
             try {
-                MailUtil.sendMail(alert.getEmail(), "GrayGoose alert: " + alert.getName(),
-                        ruleCheckEvent.getDescription());
+                MailUtil.sendMail(
+                        alert.getEmail(), "GrayGoose alert '" + alert.getName() + '\'', ruleCheckEvent.getDescription()
+                );
             } catch (MessagingException e) {
                 throw new RuntimeException("E-mail was not sent: " + e.getMessage());
             }
-        } else if ("Google calendar event".equals(alert.getType())) {
+        } else if (Alert.GOOGLE_CALENDAR_ALERT_TYPE.equals(alert.getType())) {
             try {
-                SmsUtil.send("GG " + ruleCheckEvent.getDescription(),
-                        alert.getEmail(), alert.getPassword());
-            } catch (SmsSendException e) {
+                GoogleCalendarUtil.addEvent(
+                        "GG " + ruleCheckEvent.getDescription(), alert.getEmail(), alert.getPassword()
+                );
+            } catch (GoogleCalendarException e) {
                 throw new RuntimeException("Can't add Google calendar event: " + e.getMessage());
             }
+        } else if (Alert.SMS_REQUEST_ALERT_TYPE.equals(alert.getType())) {
+            SmsUtil.send(alert, com.codeforces.commons.text.StringUtil.shrinkTo(
+                    "GrayGoose alert '" + alert.getName() + "': " + ruleCheckEvent.getDescription(), 100
+            ));
         } else {
-            throw new UnsupportedOperationException("Unsupported alert type.");
+            throw new UnsupportedOperationException("Unsupported alert type: '" + alert.getType() + "'.");
         }
     }
 

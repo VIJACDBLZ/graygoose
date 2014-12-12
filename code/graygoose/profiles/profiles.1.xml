@@ -8,10 +8,12 @@
                 <nocturne.debug>true</nocturne.debug>
                 <nocturne.template-paths>${development.home}/src/main/webapp/WEB-INF/templates</nocturne.template-paths>
                 <logging.path>${development.home}/graygoose.log</logging.path>
+
                 <database.url>jdbc:mysql://?/graygoose?useUnicode=true&amp;characterSetResults=UTF-8&amp;characterEncoding=UTF-8</database.url>
                 <database.driver>com.mysql.jdbc.Driver</database.driver>
                 <database.user>?</database.user>
                 <database.password>?</database.password>
+
                 <timezone>Europe/Moscow</timezone>
                 <mail.from>sample@gmail.com</mail.from>
             </properties>

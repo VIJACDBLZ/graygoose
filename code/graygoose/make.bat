@@ -9,6 +9,6 @@ IF "%1"=="" (
         pause
     ) ELSE (    
         copy profiles\profiles.%1.xml profiles.xml
-        mvn package -Dfile.encoding=UTF-8
+        mvn clean package -Dfile.encoding=UTF-8
     )
 )

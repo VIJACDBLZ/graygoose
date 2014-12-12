@@ -1,5 +1,7 @@
 package com.codeforces.graygoose.rescanner;
 
+import com.codeforces.commons.process.ThreadUtil;
+import com.codeforces.commons.time.TimeUtil;
 import com.codeforces.graygoose.ApplicationModule;
 import com.codeforces.graygoose.dao.RuleCheckEventDao;
 import com.codeforces.graygoose.misc.TimeConstants;
@@ -10,18 +12,17 @@ import org.apache.log4j.Logger;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class RescannerRunnable implements Runnable {
     private static final Logger logger = Logger.getLogger(RescannerRunnable.class);
 
+    private final AtomicBoolean running = new AtomicBoolean(true);
     private static final int MAX_EVENTS_TO_REMOVE = 100;
 
-    private RuleCheckEventDao ruleCheckEventDao;
+    private final RuleCheckEventDao ruleCheckEventDao;
 
-    private RescannerContextListener rescannerContextListener;
-
-    public RescannerRunnable(RescannerContextListener rescannerContextListener) {
-        this.rescannerContextListener = rescannerContextListener;
+    public RescannerRunnable() {
         this.ruleCheckEventDao = Guice.createInjector(new ApplicationModule()).getInstance(RuleCheckEventDao.class);
     }
 
@@ -29,7 +30,8 @@ public class RescannerRunnable implements Runnable {
         logger.info("Retrieve old rule check events with \'SUCCESS\' status from the data storage.");
 
         List<RuleCheckEvent> oldEvents = ruleCheckEventDao.findAllByStatusForPeriod(
-                RuleCheckEvent.Status.SUCCEEDED, 0, System.currentTimeMillis() - TimeConstants.MILLIS_PER_WEEK);
+                RuleCheckEvent.Status.SUCCEEDED, 0, System.currentTimeMillis() - TimeConstants.MILLIS_PER_WEEK
+        );
 
         removeEvents(oldEvents);
     }
@@ -69,26 +71,29 @@ public class RescannerRunnable implements Runnable {
     @Override
     public void run() {
         SiteCheckingService siteCheckingService = SiteCheckingService.newSiteCheckingService();
+        int iteration = 0;
 
-        try {
-            int iteration = 0;
-
-            while (rescannerContextListener.isAlive()) {
-                logger.info(String.format("Start sites checking."));
+        while (running.get()) {
+            try {
+                logger.info("Start checking of sites.");
                 siteCheckingService.checkSites();
-                logger.info(String.format("Finish sites checking."));
+                logger.info("Finished checking of sites.");
 
-                Thread.sleep(60 * 1000);
-                iteration++;
+                ThreadUtil.sleep(TimeUtil.MILLIS_PER_MINUTE);
+                ++iteration;
 
-                if (iteration == 15) {
+                if (iteration >= 15) {
                     iteration = 0;
                     removeOld();
                 }
+            } catch (Exception e) {
+                logger.error("Got unexpected exception while checking sites.", e);
+                ThreadUtil.sleep(10L * TimeUtil.MILLIS_PER_MINUTE);
             }
-        } catch (Exception e) {
-            logger.error("Unexpected exception " + e, e);
         }
     }
 
+    public final void stop() {
+        running.set(false);
+    }
 }
