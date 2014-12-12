@@ -59,7 +59,7 @@ public class UrlUtil {
         } finally {
             try {
                 client.close();
-            } catch (IOException e) {
+            } catch (IOException ignored) {
                 // No operations.
             }
         }
@@ -111,7 +111,6 @@ public class UrlUtil {
 
                     int responseCode = httpResponse.getStatusLine().getStatusCode();
                     Charset responseCharset = getHttpResponseCharset(httpResponse);
-                    System.out.println("Headers charset: " + responseCharset);
 
                     byte[] responseContent = IOUtils.toByteArray(httpResponse.getEntity().getContent());
 

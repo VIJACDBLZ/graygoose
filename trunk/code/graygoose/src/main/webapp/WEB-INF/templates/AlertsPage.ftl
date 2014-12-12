@@ -1,3 +1,4 @@
+<#-- @ftlvariable name="alerts" type="java.util.Collection<com.codeforces.graygoose.model.Alert>" -->
 <#import "macros/common.ftl" as common>
 
 <@common.page>
@@ -12,7 +13,7 @@
         <th>{{Id}}</th>
         <th>{{Name}}</th>
         <th>{{Type}}</th>
-        <th>{{E-mail}}</th>
+        <th>{{E-mail}}&nbsp;/&nbsp;{{Phone}}</th>
         <th>{{Password}}</th>
         <th>{{Max alerts per hour}}</th>
         <th>{{Actions}}</th>
@@ -25,7 +26,7 @@
                 <td style="text-align:right;">${alert.id}</td>
                 <td style="text-align:left;">${alert.name?html}</td>
                 <td style="text-align:left;">${alert.type?html}</td>
-                <td style="text-align:left;">${alert.email?html}</td>
+                <td style="text-align:left;"><#if alert.email?? && (alert.email?length > 0)>${alert.email?html}<#elseif alert.smsServicePhone?? && (alert.smsServicePhone?length > 0)>${alert.smsServicePhone?html}<#else>&nbsp;</#if></td>
                 <td><#if (alert.password)?? && (alert.password?length > 0)>{{*present*}}<#else>&nbsp;</#if></td>
                 <td>${alert.maxAlertCountPerHour?int}</td>
                 <td>
@@ -37,9 +38,7 @@
             </#list>
         <#else>
         <tr>
-            <td colspan="7">
-                {{No alerts}}
-            </td>
+            <td colspan="7">{{No alerts}}</td>
         </tr>
         </#if>
     </tbody>

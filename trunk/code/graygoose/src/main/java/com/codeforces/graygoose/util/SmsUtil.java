@@ -1,71 +1,88 @@
 package com.codeforces.graygoose.util;
 
-import com.google.gdata.client.calendar.CalendarService;
-import com.google.gdata.data.DateTime;
-import com.google.gdata.data.TextConstruct;
-import com.google.gdata.data.calendar.CalendarEventEntry;
-import com.google.gdata.data.extensions.Reminder;
-import com.google.gdata.data.extensions.When;
-import com.google.gdata.util.AuthenticationException;
-import com.google.gdata.util.ServiceException;
+import com.codeforces.commons.io.http.HttpMethod;
+import com.codeforces.commons.io.http.HttpResponse;
+import com.codeforces.commons.io.http.HttpUtil;
+import com.codeforces.commons.text.StringUtil;
+import com.codeforces.graygoose.exception.ConfigurationException;
+import com.codeforces.graygoose.model.Alert;
+import org.apache.log4j.Logger;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.TimeZone;
+import java.util.regex.Pattern;
 
+/**
+ * @author Maxim Shipko (sladethe@gmail.com)
+ *         Date: 09.12.14
+ */
 public class SmsUtil {
-    public static void send(String title, String username, String password)
-            throws SmsSendException {
-        CalendarEventEntry entry = new CalendarEventEntry();
-        CalendarService service = new CalendarService("GrayGoose-1.0");
+    private static final Logger logger = Logger.getLogger(SmsUtil.class);
 
-        try {
-            service.setUserCredentials(username, password);
-        } catch (AuthenticationException e) {
-            throw new SmsSendException("Illegal credentials.", e);
+    private static final Pattern PHONE_NORMALIZATION_PATTERN = Pattern.compile("[\\(\\)\\-\\+\\s]+");
+    private static final Pattern PHONE_VERIFICATION_PATTERN = Pattern.compile("7[0-9]{10}");
+
+    public static void send(Alert alert, String body) {
+        logger.info("Sending SMS to '" + alert.getSmsServicePhone() + "'.");
+
+        String url = alert.getSmsServiceUrl();
+        if (StringUtil.isBlank(url)) {
+            throw new ConfigurationException("URL of the SMS service is blank.");
         }
 
-        entry.setService(service);
-        entry.setTitle(TextConstruct.plainText(title));
-        entry.setContent(TextConstruct.plainText(""));
+        String phoneParameterName = alert.getSmsServicePhoneParameterName();
+        if (StringUtil.isBlank(phoneParameterName)) {
+            throw new ConfigurationException("Phone parameter name of the SMS service is blank.");
+        }
 
-        setupWhen(entry);
-        try {
-            CalendarEventEntry insertedEntry = service.insert(
-                    new URL("http://www.google.com/calendar/feeds/default/private/full"),
-                    entry
+        String messageParameterName = alert.getSmsServiceMessageParameterName();
+        if (StringUtil.isBlank(messageParameterName)) {
+            throw new ConfigurationException("Message parameter name of the SMS service is blank.");
+        }
+
+        HttpResponse response = HttpUtil.newRequest(url)
+                .setMethod(HttpMethod.POST)
+                .setTimeoutMillis(10000)
+                .appendParameter(phoneParameterName, getPhone(alert))
+                .appendParameter(messageParameterName, body)
+                .executeAndReturnResponse();
+
+        if (response.getCode() == 200 && response.getBytes() != null && response.getUtf8String().startsWith("100\n")) {
+            logger.info(String.format(
+                    "Successfully sent SMS to '%s'.", alert.getSmsServicePhone()
+            ));
+        } else {
+            String message = String.format(
+                    "Received unexpected %s while sending SMS to '%s'.", response, alert.getSmsServicePhone()
             );
-            setupReminder(insertedEntry);
-            insertedEntry.update();
-        } catch (IOException | ServiceException e) {
-            throw new SmsSendException("Can't add calendar event.", e);
+
+            if (response.hasIoException()) {
+                logger.error(message, response.getIoException());
+                throw new SmsException(message, response.getIoException());
+            } else {
+                logger.error(message);
+                throw new SmsException(message);
+            }
         }
     }
 
-    private static void setupReminder(CalendarEventEntry entry) {
-        Reminder reminder = new Reminder();
-        reminder.setMinutes(1);
-        reminder.setMethod(Reminder.Method.SMS);
-        entry.getReminder().add(reminder);
+    public static boolean checkPhone(String phone) {
+        return PHONE_VERIFICATION_PATTERN.matcher(normalizePhone(phone)).matches();
     }
 
-    private static void setupWhen(CalendarEventEntry entry) {
-        When when = new When();
+    private static String getPhone(Alert alert) {
+        String phone = normalizePhone(alert.getSmsServicePhone());
 
-        Calendar startTime = new GregorianCalendar();
-        startTime.add(Calendar.MINUTE, 2);
+        if (!PHONE_VERIFICATION_PATTERN.matcher(phone).matches()) {
+            logger.error("Phone '" + phone + "' verification failed for " + alert + '.');
+        }
 
-        Calendar endTime = new GregorianCalendar();
-        endTime.add(Calendar.MINUTE, 3);
+        return phone;
+    }
 
-        when.setStartTime(new DateTime(startTime.getTime(), TimeZone.getDefault()));
-        when.setEndTime(new DateTime(endTime.getTime(), TimeZone.getDefault()));
-
-        entry.addTime(when);
+    private static String normalizePhone(String phone) {
+        return PHONE_NORMALIZATION_PATTERN.matcher(phone).replaceAll("");
     }
 
     private SmsUtil() {
+        throw new UnsupportedOperationException();
     }
 }

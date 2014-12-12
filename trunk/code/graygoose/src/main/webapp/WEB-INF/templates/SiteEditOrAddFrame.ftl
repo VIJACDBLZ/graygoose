@@ -94,8 +94,7 @@
                     <td>${rule.ruleType?html}</td>
                     <td>
                         <#list rule.ruleType.propertyNames as propertyName>
-                            <div style="text-align:left;"><label>${propertyName}
-                                : </label>${(rule.data[propertyName])!?html}</div>
+                            <div style="text-align:left;"><label>${propertyName}:</label> ${(rule.data[propertyName])!?html}</div>
                         </#list>
                     </td>
                     <td>${rule.creationTime?datetime}</td>

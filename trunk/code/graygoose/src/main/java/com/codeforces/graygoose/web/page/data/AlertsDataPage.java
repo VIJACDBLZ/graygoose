@@ -1,10 +1,12 @@
 package com.codeforces.graygoose.web.page.data;
 
+import com.codeforces.commons.text.StringUtil;
 import com.codeforces.graygoose.dao.AlertDao;
 import com.codeforces.graygoose.misc.Noty;
 import com.codeforces.graygoose.model.Alert;
+import com.codeforces.graygoose.util.GoogleCalendarException;
+import com.codeforces.graygoose.util.GoogleCalendarUtil;
 import com.codeforces.graygoose.util.MailUtil;
-import com.codeforces.graygoose.util.SmsSendException;
 import com.codeforces.graygoose.util.SmsUtil;
 import com.google.inject.Inject;
 import org.nocturne.annotation.Action;
@@ -54,18 +56,22 @@ public class AlertsDataPage extends DataPage {
     public void onTestAlert() {
         try {
             if (alert != null) {
-                if ("E-mail".equals(alert.getType())) {
+                if (Alert.E_MAIL_ALERT_TYPE.equals(alert.getType())) {
                     try {
                         MailUtil.sendMail(alert.getEmail(), "GrayGoose test alert: " + alert.getName(), "...");
                     } catch (MessagingException e) {
                         throw new RuntimeException("E-mail was not sent: " + e.getMessage());
                     }
-                } else if ("Google calendar event".equals(alert.getType())) {
+                } else if (Alert.GOOGLE_CALENDAR_ALERT_TYPE.equals(alert.getType())) {
                     try {
-                        SmsUtil.send("GrayGoose test alert: " + alert.getName(), alert.getEmail(), alert.getPassword());
-                    } catch (SmsSendException e) {
+                        GoogleCalendarUtil.addEvent(
+                                "GrayGoose test alert: " + alert.getName(), alert.getEmail(), alert.getPassword()
+                        );
+                    } catch (GoogleCalendarException e) {
                         throw new RuntimeException("Can't add Google calendar event: " + e.getMessage());
                     }
+                } else if (Alert.SMS_REQUEST_ALERT_TYPE.equals(alert.getType())) {
+                    SmsUtil.send(alert, StringUtil.shrinkTo("GrayGoose test alert: " + alert.getName(), 100));
                 } else {
                     throw new UnsupportedOperationException($("Unsupported alert type."));
                 }
@@ -79,10 +85,5 @@ public class AlertsDataPage extends DataPage {
         }
 
         printTemplateMapAsStringsUsingJson("success", "error");
-    }
-
-    @Override
-    public void action() {
-        // No operations.
     }
 }

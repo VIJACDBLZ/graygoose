@@ -20,7 +20,7 @@ public class UrlValidator extends Validator {
             if (!"http".equalsIgnoreCase(url.getProtocol())) {
                 throw new ValidationException($("Only http protocol is supported"));
             }
-        } catch (MalformedURLException e) {
+        } catch (MalformedURLException ignored) {
             throw new ValidationException($("Enter valid URL"));
         }
     }
