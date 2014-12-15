@@ -79,7 +79,8 @@ public class RescannerRunnable implements Runnable {
                 siteCheckingService.checkSites();
                 logger.info("Finished checking of sites.");
 
-                ThreadUtil.sleep(TimeUtil.MILLIS_PER_MINUTE);
+                checkedSleep(TimeUtil.MILLIS_PER_MINUTE, 10);
+
                 ++iteration;
 
                 if (iteration >= 15) {
@@ -88,12 +89,34 @@ public class RescannerRunnable implements Runnable {
                 }
             } catch (Exception e) {
                 logger.error("Got unexpected exception while checking sites.", e);
-                ThreadUtil.sleep(10L * TimeUtil.MILLIS_PER_MINUTE);
+                checkedSleep(10L * TimeUtil.MILLIS_PER_MINUTE, 100);
             }
         }
     }
 
     public final void stop() {
         running.set(false);
+    }
+
+    private void checkedSleep(long intervalMillis, int iterationCount) {
+        if (intervalMillis <= 0 || iterationCount <= 0) {
+            throw new IllegalArgumentException(String.format(
+                    "Illegal arguments: intervalMillis=%d, iterationCount=%d.", intervalMillis, iterationCount
+            ));
+        }
+
+        long iterationIntervalMillis = intervalMillis / iterationCount;
+        int lastIteration = iterationCount - 1;
+
+        for (int iteration = 0; iteration < lastIteration; ++iteration) {
+            if (!running.get()) {
+                return;
+            }
+            ThreadUtil.sleep(iterationIntervalMillis);
+        }
+
+        if (running.get()) {
+            ThreadUtil.sleep(iterationIntervalMillis + intervalMillis % iterationCount);
+        }
     }
 }
