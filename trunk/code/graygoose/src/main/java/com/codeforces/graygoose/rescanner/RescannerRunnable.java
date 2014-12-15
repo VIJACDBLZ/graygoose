@@ -99,7 +99,7 @@ public class RescannerRunnable implements Runnable {
     }
 
     private void checkedSleep(long intervalMillis, int iterationCount) {
-        if (intervalMillis <= 0 || iterationCount <= 0) {
+        if (intervalMillis <= 0 || iterationCount <= 0 || iterationCount > intervalMillis) {
             throw new IllegalArgumentException(String.format(
                     "Illegal arguments: intervalMillis=%d, iterationCount=%d.", intervalMillis, iterationCount
             ));
