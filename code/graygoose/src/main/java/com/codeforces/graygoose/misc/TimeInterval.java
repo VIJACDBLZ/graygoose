@@ -6,6 +6,10 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 public enum TimeInterval {
+    TEN_MINUTES("10 minutes", 10L * TimeConstants.MILLIS_PER_MINUTE),
+    HALF_HOUR("30 minutes", 30L * TimeConstants.MILLIS_PER_MINUTE),
+    HOUR("1 hour", TimeConstants.MILLIS_PER_HOUR),
+    TWO_HOURS("2 hour", 2L * TimeConstants.MILLIS_PER_HOUR),
     SIX_HOURS("6 hours", 6L * TimeConstants.MILLIS_PER_HOUR),
     TWELVE_HOURS("12 hours", 12L * TimeConstants.MILLIS_PER_HOUR),
     TWENTY_FOUR_HOURS("24 hours", 24L * TimeConstants.MILLIS_PER_HOUR),

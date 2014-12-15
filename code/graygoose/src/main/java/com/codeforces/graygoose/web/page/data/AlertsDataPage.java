@@ -9,6 +9,7 @@ import com.codeforces.graygoose.util.GoogleCalendarUtil;
 import com.codeforces.graygoose.util.MailUtil;
 import com.codeforces.graygoose.util.SmsUtil;
 import com.google.inject.Inject;
+import org.apache.log4j.Logger;
 import org.nocturne.annotation.Action;
 import org.nocturne.annotation.Parameter;
 import org.nocturne.link.Link;
@@ -17,6 +18,8 @@ import javax.mail.MessagingException;
 
 @Link("data/alerts")
 public class AlertsDataPage extends DataPage {
+    private static final Logger logger = Logger.getLogger(AlertsDataPage.class);
+
     @Parameter
     private Long alertId;
 
@@ -60,7 +63,8 @@ public class AlertsDataPage extends DataPage {
                     try {
                         MailUtil.sendMail(alert.getEmail(), "GrayGoose test alert: " + alert.getName(), "...");
                     } catch (MessagingException e) {
-                        throw new RuntimeException("E-mail was not sent: " + e.getMessage());
+                        logger.warn("E-mail was not sent: " + e.getMessage(), e);
+                        throw new RuntimeException("E-mail was not sent: " + e.getMessage(), e);
                     }
                 } else if (Alert.GOOGLE_CALENDAR_ALERT_TYPE.equals(alert.getType())) {
                     try {
@@ -68,7 +72,8 @@ public class AlertsDataPage extends DataPage {
                                 "GrayGoose test alert: " + alert.getName(), alert.getEmail(), alert.getPassword()
                         );
                     } catch (GoogleCalendarException e) {
-                        throw new RuntimeException("Can't add Google calendar event: " + e.getMessage());
+                        logger.warn("Can't add Google calendar event: " + e.getMessage(), e);
+                        throw new RuntimeException("Can't add Google calendar event: " + e.getMessage(), e);
                     }
                 } else if (Alert.SMS_REQUEST_ALERT_TYPE.equals(alert.getType())) {
                     SmsUtil.send(alert, StringUtil.shrinkTo("GrayGoose test alert: " + alert.getName(), 100));
@@ -81,6 +86,7 @@ public class AlertsDataPage extends DataPage {
                 put("error", $("No such alert."));
             }
         } catch (RuntimeException e) {
+            logger.warn("Can't test: " + e.getMessage(), e);
             put("error", e.getMessage());
         }
 

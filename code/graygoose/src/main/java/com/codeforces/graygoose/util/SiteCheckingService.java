@@ -187,6 +187,7 @@ public class SiteCheckingService {
                         alert.getEmail(), "GrayGoose alert '" + alert.getName() + '\'', ruleCheckEvent.getDescription()
                 );
             } catch (MessagingException e) {
+                logger.warn("E-mail was not sent: " + e.getMessage(), e);
                 throw new RuntimeException("E-mail was not sent: " + e.getMessage());
             }
         } else if (Alert.GOOGLE_CALENDAR_ALERT_TYPE.equals(alert.getType())) {
@@ -195,6 +196,7 @@ public class SiteCheckingService {
                         "GG " + ruleCheckEvent.getDescription(), alert.getEmail(), alert.getPassword()
                 );
             } catch (GoogleCalendarException e) {
+                logger.warn("Can't add Google calendar event: " + e.getMessage());
                 throw new RuntimeException("Can't add Google calendar event: " + e.getMessage());
             }
         } else if (Alert.SMS_REQUEST_ALERT_TYPE.equals(alert.getType())) {
