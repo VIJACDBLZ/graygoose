@@ -1,0 +1,5 @@
+Easy configurable system to rescan your web applications periodically and send notifications in case of failure. It can send emails or schedule events in your google calendar with sms notification. This solution allows your to receive email and sms notifications completely for free.
+
+---
+
+Система легко конфигурируется для периодического опроса ваших web-приложений. В случае, если она обнаруживает падение (или просто неожидаемое поведение) web-приложения, она может отослать оповещение в виде электронного письма или нового события в календаре Google (что приведет к получению sms при правильной настройке календаря). Использование GrayGoose позволяет осуществить постоянный мониторинг работоспособности ваших приложений и получать email и sms оповещения абсолютно бесплатно. Важно, что инсталляция GrayGoose, будучи размещенная в дата-центрах компании Google, не зависит от локальных проблем вашей инфраструктуры.
